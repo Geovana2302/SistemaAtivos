@@ -25,8 +25,8 @@
 </div>
 
 <div class="stats-row">
-    <div class="stat-card"><p class="stat-label">Ativos</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.Ativo)</p></div>
     <div class="stat-card"><p class="stat-label">Categorias</p><p class="stat-value">@Model.Categorias.Count</p></div>
+    <div class="stat-card"><p class="stat-label">Ativos</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.Ativo)</p></div>
     <div class="stat-card"><p class="stat-label">Em Manutencao</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.EmManutencao)</p></div>
     <div class="stat-card"><p class="stat-label">Inativos</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.Inativo)</p></div>
 </div>
@@ -59,7 +59,7 @@ else
                 <div style="display:flex;align-items:center;gap:6px" onclick="event.stopPropagation()">
                     @Html.ActionLink("+", "Create", "Ativo", new { categoriaId = cat.Id, empresaId = Model.Id }, new { @class = "acc-action", title = "Adicionar ativo" })
                     <div class="dropdown" style="display:inline-block">
-                        <button type="button" class="acc-action" data-toggle="dropdown" title="Opcoes">...</button>
+                        <button type="button" class="acc-action" data-toggle="dropdown" title="Opcoes">&#8942;</button>
                         <ul class="dropdown-menu dropdown-menu-right">
                             <li>@Html.ActionLink("Editar categoria", "Edit", "Categoria", new { id = cat.Id }, null)</li>
                             <li>
@@ -100,7 +100,7 @@ else
                             <div style="display:flex;gap:4px;align-items:center">
                                 @Html.ActionLink("Detalhes", "Detalhes", "Ativo", new { id = ativo.Id }, new { @class = "btn-xs-outline" })
                                 <div class="dropdown" style="display:inline-block">
-                                    <button type="button" class="btn-xs-outline" data-toggle="dropdown">...</button>
+                                    <button type="button" class="btn-xs-outline" data-toggle="dropdown">&#8942;</button>
                                     <ul class="dropdown-menu dropdown-menu-right">
                                         <li>@Html.ActionLink("Editar", "Edit", "Ativo", new { id = ativo.Id }, null)</li>
                                         <li>

@@ -324,7 +324,7 @@ textarea.field-input { height: auto; padding: 8px 10px; resize: vertical; }
 .ativo-meta { font-size: 11px; color: #888; margin: 0; }
 
 /* ---- TABLE ---- */
-.table-wrap { background: #fff; border: 1px solid #E5E4E0; border-radius: 10px; overflow: hidden; }
+.table-wrap { background: #fff; border: 1px solid #E5E4E0; border-radius: 10px; overflow: visible; }
 .table-custom { width: 100%; border-collapse: collapse; font-size: 13px; }
 .table-custom thead tr { background: #FAFAF8; border-bottom: 1px solid #E5E4E0; }
 .table-custom th { padding: 10px 14px; text-align: left; font-weight: 500; color: #555; font-size: 12px; }
@@ -410,6 +410,7 @@ textarea.field-input { height: auto; padding: 8px 10px; resize: vertical; }
 .acc-card {
     background: #fff; border: 1px solid #E5E4E0;
     border-radius: 10px; margin-bottom: 8px;
+    position: relative; overflow: visible;
 }
 .acc-header-custom {
     display: flex; align-items: center; justify-content: space-between;
