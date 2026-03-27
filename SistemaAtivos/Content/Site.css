@@ -420,3 +420,44 @@ textarea.field-input { height: auto; padding: 8px 10px; resize: vertical; }
 .acc-header-custom:hover { background: #FAFAF8; }
 .acc-body-custom { padding: 0 14px 10px; }
 .acc-chevron-custom { font-size: 10px; color: #aaa; }
+
+/* ---- FILTER CHIPS ---- */
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 26px;
+    padding: 0 10px;
+    border: 1px solid #E5E4E0;
+    border-radius: 20px;
+    background: #fff;
+    color: #555;
+    font-size: 11px;
+    text-decoration: none;
+    transition: all .15s;
+}
+
+    .filter-chip:hover {
+        background: #F5F4F2;
+        text-decoration: none;
+        color: #222;
+    }
+
+.filter-chip-active {
+    background: #534AB7;
+    color: #fff;
+    border-color: #534AB7;
+}
+
+    .filter-chip-active:hover {
+        background: #3C3489;
+        color: #fff;
+    }
+
+.filter-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+}

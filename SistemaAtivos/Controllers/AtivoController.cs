@@ -26,9 +26,30 @@ namespace SistemaAtivos.Controllers
             return q;
         }
 
-        public ActionResult Index()
+        public ActionResult Index(int? empresaId, string ordem)
         {
-            return View(GetQuery().ToList());
+            var q = GetQuery().Where(a => a.Status == StatusAtivo.Ativo);
+
+            if (empresaId.HasValue)
+                q = q.Where(a => a.EmpresaId == empresaId);
+
+            switch (ordem)
+            {
+                case "antigo":
+                    q = q.OrderBy(a => a.Id);
+                    break;
+                case "empresa":
+                    q = q.OrderBy(a => a.Empresa.Nome).ThenByDescending(a => a.Id);
+                    break;
+                default:
+                    q = q.OrderByDescending(a => a.Id);
+                    break;
+            }
+
+            ViewBag.Empresas = db.Empresas.ToList();
+            ViewBag.EmpresaFiltro = empresaId;
+            ViewBag.OrdemAtual = ordem ?? "recente";
+            return View(q.ToList());
         }
 
         public ActionResult Detalhes(int id)
