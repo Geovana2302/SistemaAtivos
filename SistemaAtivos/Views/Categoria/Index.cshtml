@@ -1,0 +1,56 @@
+@model IEnumerable<SistemaAtivos.Models.Categoria>
+@{
+    ViewBag.Title = "Categorias";
+    var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
+}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Categorias</h4>
+        <p class="page-sub">@Model.Count() categoria(s)</p>
+    </div>
+    @Html.ActionLink("+ Nova categoria", "Create", null, new { @class = "btn-purple" })
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state"><p>Nenhuma categoria cadastrada.</p></div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    @if (isAdmin) { <th>Empresa</th> }
+                    <th>Ativos</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cat in Model)
+                {
+                    <tr>
+                        <td style="font-weight:500">@cat.Nome</td>
+                        <td>@(cat.Descricao ?? "—")</td>
+                        @if (isAdmin) { <td>@(cat.Empresa?.Nome ?? "—")</td> }
+                        <td>@cat.Ativos.Count</td>
+                        <td>
+                            <div style="display:flex;gap:4px">
+                                @Html.ActionLink("?", "Edit", new { id = cat.Id }, new { @class = "btn-xs-outline" })
+                                @using (Html.BeginForm("Delete", "Categoria", new { id = cat.Id }, FormMethod.Post, new { style = "display:inline" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-xs-danger"
+                                            onclick="return confirm('Excluir categoria @cat.Nome?')">?</button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

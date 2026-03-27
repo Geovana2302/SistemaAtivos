@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title — Sistema de Ativos</title>
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/Site.css" />
+</head>
+<body>
+
+@if (Session["UsuarioId"] != null)
+{
+    var tipo = Session["UsuarioTipo"]?.ToString();
+    var nome = Session["UsuarioNome"]?.ToString();
+    var empId = Session["EmpresaId"];
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <div class="brand-logo">A</div>
+            <span class="brand-name">Sistema Ativos</span>
+        </div>
+        <div class="navbar-links">
+            @if (tipo == "Admin")
+            {
+                @Html.ActionLink("Empresas", "Dashboard", "Admin", null, new { @class = "nav-link" })
+                @Html.ActionLink("Ativos", "Index", "Ativo", null, new { @class = "nav-link" })
+                @Html.ActionLink("Manutenções", "Index", "Manutencao", null, new { @class = "nav-link" })
+            }
+            else
+            {
+                @Html.ActionLink("Minha Empresa", "Empresa", "Admin", new { id = empId }, new { @class = "nav-link" })
+                @Html.ActionLink("Ativos", "Index", "Ativo", null, new { @class = "nav-link" })
+                @Html.ActionLink("Manutenções", "Index", "Manutencao", null, new { @class = "nav-link" })
+            }
+        </div>
+        <div class="navbar-user">
+            <span class="user-name">@nome</span>
+            <span class="user-badge @(tipo == "Admin" ? "badge-admin" : "badge-cliente")">@tipo</span>
+            @Html.ActionLink("Sair", "Logout", "Account", null, new { @class = "btn-logout" })
+        </div>
+    </nav>
+}
+
+<div class="@(Session["UsuarioId"] != null ? "main-content" : "")">
+    @if (TempData["Sucesso"] != null)
+    {
+        <div class="alert-custom alert-success-custom">@TempData["Sucesso"]</div>
+    }
+    @if (TempData["Erro"] != null)
+    {
+        <div class="alert-custom alert-danger-custom">@TempData["Erro"]</div>
+    }
+    @RenderBody()
+</div>
+
+<script src="~/Scripts/jquery-3.6.0.min.js"></script>
+<script src="~/Scripts/bootstrap.bundle.min.js"></script>
+@RenderSection("scripts", required: false)
+</body>
+</html>

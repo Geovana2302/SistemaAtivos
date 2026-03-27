@@ -1,0 +1,80 @@
+@model SistemaAtivos.Models.Ativo
+@{
+    ViewBag.Title = Model.Nome;
+}
+
+<nav class="breadcrumb-custom">
+    @if (Model.EmpresaId.HasValue)
+    {
+        @Html.ActionLink(Model.Empresa?.Nome ?? "Empresa", "Empresa", "Admin", new { id = Model.EmpresaId }, null)
+        <span> / </span>
+    }
+    <span>@Model.Nome</span>
+</nav>
+
+<div class="detail-card">
+    <div class="detail-header">
+        <div>
+            <h5 class="page-title" style="margin:0">@Model.Nome</h5>
+            <p class="page-sub">@Model.Marca @Model.Modelo</p>
+        </div>
+        <span class="status-badge status-@Model.Status.ToString().ToLower()">@Model.Status</span>
+    </div>
+
+    <div class="detail-grid">
+        <div class="detail-item"><span class="detail-label">Número de Série</span><span class="detail-value">@(Model.NumeroSerie ?? "—")</span></div>
+        <div class="detail-item"><span class="detail-label">Categoria</span><span class="detail-value">@(Model.Categoria?.Nome ?? "—")</span></div>
+        <div class="detail-item"><span class="detail-label">Responsável</span><span class="detail-value">@(Model.Colaborador?.Nome ?? "—")</span></div>
+        <div class="detail-item"><span class="detail-label">Data de Aquisição</span><span class="detail-value">@(Model.DataAquisicao?.ToString("dd/MM/yyyy") ?? "—")</span></div>
+        <div class="detail-item"><span class="detail-label">Valor</span><span class="detail-value">@(Model.Valor.HasValue ? Model.Valor.Value.ToString("C2") : "—")</span></div>
+        <div class="detail-item"><span class="detail-label">Empresa</span><span class="detail-value">@(Model.Empresa?.Nome ?? "—")</span></div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Observacoes))
+    {
+        <div class="detail-obs">
+            <span class="detail-label">Observações</span>
+            <p>@Model.Observacoes</p>
+        </div>
+    }
+
+    <div class="detail-qr">
+        <p class="detail-label" style="margin-bottom:8px">QR Code deste ativo</p>
+        <img src="@Url.Action("QrCode", "Ativo", new { id = Model.Id })"
+             alt="QR Code @Model.Nome"
+             style="width:150px;height:150px;border:1px solid #E5E4E0;border-radius:8px;padding:8px" />
+        <p style="font-size:11px;color:#aaa;margin-top:4px">/Ativo/Detalhes/@Model.Id</p>
+    </div>
+
+    <div class="detail-actions">
+        @Html.ActionLink("? Editar", "Edit", "Ativo", new { id = Model.Id }, new { @class = "btn-purple" })
+        @Html.ActionLink("+ Manutenção", "Create", "Manutencao", new { ativoId = Model.Id }, new { @class = "btn-outline-sm" })
+        @if (Model.EmpresaId.HasValue)
+        {
+            @Html.ActionLink("? Voltar", "Empresa", "Admin", new { id = Model.EmpresaId }, new { @class = "btn-cancel" })
+        }
+    </div>
+</div>
+
+@if (Model.Manutencoes != null && Model.Manutencoes.Any())
+{
+    <h6 class="section-title" style="margin-top:1.5rem">Histórico de manutenções</h6>
+    <div class="accordion-custom">
+        @foreach (var man in Model.Manutencoes.OrderByDescending(m => m.Data))
+        {
+            <div class="acc-item">
+                <div class="acc-left" style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                        <span class="acc-label">@man.Data.ToString("dd/MM/yyyy")</span>
+                        <span class="acc-badge" style="margin-left:6px">@man.Tipo</span>
+                    </div>
+                    <span class="acc-label" style="font-size:12px;font-weight:400">@man.Descricao</span>
+                    @if (man.Custo.HasValue)
+                    {
+                        <span style="font-size:12px;color:#534AB7">@man.Custo.Value.ToString("C2")</span>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}

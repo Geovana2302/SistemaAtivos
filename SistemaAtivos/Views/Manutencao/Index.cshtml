@@ -1,0 +1,59 @@
+@model IEnumerable<SistemaAtivos.Models.Manutencao>
+@{
+    ViewBag.Title = "Manutenções";
+    var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
+}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Manutenções</h4>
+        <p class="page-sub">@Model.Count() registro(s)</p>
+    </div>
+    @Html.ActionLink("+ Nova manutenção", "Create", null, new { @class = "btn-purple" })
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state"><p>Nenhuma manutenção registrada.</p></div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Ativo</th>
+                    <th>Tipo</th>
+                    <th>Descrição</th>
+                    <th>Custo</th>
+                    @if (isAdmin) { <th>Empresa</th> }
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var man in Model)
+                {
+                    <tr>
+                        <td>@man.Data.ToString("dd/MM/yyyy")</td>
+                        <td style="font-weight:500">@(man.Ativo?.Nome ?? "—")</td>
+                        <td>
+                            <span class="acc-badge">@man.Tipo</span>
+                        </td>
+                        <td>@man.Descricao</td>
+                        <td>@(man.Custo.HasValue ? man.Custo.Value.ToString("C2") : "—")</td>
+                        @if (isAdmin) { <td>@(man.Empresa?.Nome ?? "—")</td> }
+                        <td>
+                            @using (Html.BeginForm("Delete", "Manutencao", new { id = man.Id }, FormMethod.Post, new { style = "display:inline" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn-xs-danger"
+                                        onclick="return confirm('Excluir este registro de manutenção?')">?</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

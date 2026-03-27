@@ -1,0 +1,40 @@
+@model SistemaAtivos.Models.Categoria
+@{
+    ViewBag.Title = "Editar Categoria";
+    var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
+}
+
+<div class="page-header">
+    <h4 class="page-title">Editar Categoria</h4>
+</div>
+
+<div class="form-card">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Id)
+        @Html.ValidationSummary(true, "", new { @class = "alert-custom alert-danger-custom" })
+
+        <div class="field-group">
+            @Html.LabelFor(m => m.Nome, new { @class = "field-label" })
+            @Html.TextBoxFor(m => m.Nome, new { @class = "field-input" })
+            @Html.ValidationMessageFor(m => m.Nome, "", new { @class = "field-error" })
+        </div>
+        <div class="field-group">
+            @Html.LabelFor(m => m.Descricao, new { @class = "field-label" })
+            @Html.TextAreaFor(m => m.Descricao, new { @class = "field-input", rows = "3" })
+        </div>
+        @if (isAdmin)
+        {
+            <div class="field-group">
+                <label class="field-label">Empresa</label>
+                @Html.DropDownList("EmpresaId", (SelectList)ViewBag.EmpresaId, "— Selecione —", new { @class = "field-input" })
+            </div>
+        }
+
+        <div class="form-actions">
+            @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn-cancel" })
+            <button type="submit" class="btn-purple">Salvar alterações</button>
+        </div>
+    }
+</div>

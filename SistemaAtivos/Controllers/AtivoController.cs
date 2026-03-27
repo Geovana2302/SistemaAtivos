@@ -1,0 +1,151 @@
+using System.Data.Entity;
+using System.Linq;
+using System.Web.Mvc;
+using SistemaAtivos.Filters;
+using SistemaAtivos.Models;
+
+namespace SistemaAtivos.Controllers
+{
+    [EmpresaAuthorize]
+    public class AtivoController : Controller
+    {
+        private AtivosContext db = new AtivosContext();
+
+        private bool IsAdmin() => Session["UsuarioTipo"]?.ToString() == "Admin";
+        private int? GetEmpresaId() => Session["EmpresaId"] as int?;
+
+        private IQueryable<Ativo> GetQuery()
+        {
+            var q = db.Ativos
+                .Include(a => a.Categoria)
+                .Include(a => a.Colaborador)
+                .Include(a => a.Empresa)
+                .AsQueryable();
+            if (!IsAdmin())
+                q = q.Where(a => a.EmpresaId == GetEmpresaId());
+            return q;
+        }
+
+        public ActionResult Index()
+        {
+            return View(GetQuery().ToList());
+        }
+
+        public ActionResult Detalhes(int id)
+        {
+            var ativo = GetQuery()
+                .Include(a => a.Manutencoes)
+                .FirstOrDefault(a => a.Id == id);
+            if (ativo == null) return HttpNotFound();
+            return View(ativo);
+        }
+
+        public ActionResult QrCode(int id)
+        {
+            var ativo = GetQuery().FirstOrDefault(a => a.Id == id);
+            if (ativo == null) return HttpNotFound();
+
+            var url = Url.Action("Detalhes", "Ativo", new { id }, Request.Url.Scheme);
+            using (var qrGenerator = new QRCoder.QRCodeGenerator())
+            {
+                var qrData = qrGenerator.CreateQrCode(url, QRCoder.QRCodeGenerator.ECCLevel.Q);
+                var qrCode = new QRCoder.PngByteQRCode(qrData);
+                byte[] bytes = qrCode.GetGraphic(6);
+                return File(bytes, "image/png");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult Create()
+        {
+            PopularDropdowns();
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(Ativo ativo)
+        {
+            if (!IsAdmin()) ativo.EmpresaId = GetEmpresaId();
+            if (ModelState.IsValid)
+            {
+                db.Ativos.Add(ativo);
+                db.SaveChanges();
+                TempData["Sucesso"] = "Ativo cadastrado com sucesso.";
+                if (ativo.EmpresaId.HasValue)
+                    return RedirectToAction("Empresa", "Admin", new { id = ativo.EmpresaId });
+                return RedirectToAction("Index");
+            }
+            PopularDropdowns(ativo);
+            return View(ativo);
+        }
+
+        [HttpGet]
+        public ActionResult Edit(int id)
+        {
+            var ativo = GetQuery().FirstOrDefault(a => a.Id == id);
+            if (ativo == null) return HttpNotFound();
+            PopularDropdowns(ativo);
+            return View(ativo);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(Ativo ativo)
+        {
+            if (!IsAdmin()) ativo.EmpresaId = GetEmpresaId();
+            if (ModelState.IsValid)
+            {
+                db.Entry(ativo).State = EntityState.Modified;
+                db.SaveChanges();
+                TempData["Sucesso"] = "Ativo atualizado.";
+                if (ativo.EmpresaId.HasValue)
+                    return RedirectToAction("Empresa", "Admin", new { id = ativo.EmpresaId });
+                return RedirectToAction("Index");
+            }
+            PopularDropdowns(ativo);
+            return View(ativo);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id)
+        {
+            var ativo = GetQuery().FirstOrDefault(a => a.Id == id);
+            if (ativo == null) return HttpNotFound();
+            var empId = ativo.EmpresaId;
+
+            var mans = db.Manutencoes.Where(m => m.AtivoId == id).ToList();
+            db.Manutencoes.RemoveRange(mans);
+            db.Ativos.Remove(ativo);
+            db.SaveChanges();
+
+            TempData["Sucesso"] = "Ativo excluído.";
+            if (empId.HasValue) return RedirectToAction("Empresa", "Admin", new { id = empId });
+            return RedirectToAction("Index");
+        }
+
+        private void PopularDropdowns(Ativo ativo = null)
+        {
+            var empId = IsAdmin() ? ativo?.EmpresaId : GetEmpresaId();
+            var cats = empId.HasValue
+                ? db.Categorias.Where(c => c.EmpresaId == empId).ToList()
+                : db.Categorias.ToList();
+            var cols = empId.HasValue
+                ? db.Colaboradores.Where(c => c.EmpresaId == empId).ToList()
+                : db.Colaboradores.ToList();
+
+            ViewBag.CategoriaId  = new SelectList(cats, "Id", "Nome", ativo?.CategoriaId);
+            ViewBag.ColaboradorId = new SelectList(cols, "Id", "Nome", ativo?.ColaboradorId);
+            ViewBag.EmpresaId    = IsAdmin()
+                ? new SelectList(db.Empresas, "Id", "Nome", ativo?.EmpresaId)
+                : new SelectList(db.Empresas.Where(e => e.Id == GetEmpresaId()), "Id", "Nome", GetEmpresaId());
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
+}

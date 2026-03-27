@@ -1,0 +1,144 @@
+@model SistemaAtivos.Models.Empresa
+@{
+    ViewBag.Title = "Nova Empresa";
+}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Nova Empresa</h4>
+        <p class="page-sub">Preencha os dados para criar uma nova empresa</p>
+    </div>
+    @Html.ActionLink("? Voltar", "Dashboard", "Admin", null, new { @class = "btn-outline-sm" })
+</div>
+
+<div class="form-container">
+    @using (Html.BeginForm("CreateEmpresa", "Admin", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-section">
+            <div class="field-group">
+                <label class="field-label">Nome da empresa *</label>
+                @Html.TextBoxFor(m => m.Nome, new { @class = "field-input", placeholder = "Ex: TechNova", required = "required" })
+                @Html.ValidationMessageFor(m => m.Nome, "", new { @class = "field-error" })
+            </div>
+
+            <div class="field-group">
+                <label class="field-label">Cor da marca</label>
+                @Html.TextBoxFor(m => m.Cor, new { @type = "color", @class = "field-input field-color", @value = "#534AB7" })
+                <small class="field-hint">Escolha uma cor para identificar a empresa</small>
+            </div>
+
+            <div class="field-group">
+                <label class="field-label">E-mail do usuário cliente</label>
+                <input name="emailCliente" type="email" class="field-input" placeholder="cliente@empresa.com" />
+                <small class="field-hint">Este usuário receberá a senha inicial: <strong>123456</strong></small>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            @Html.ActionLink("Cancelar", "Dashboard", "Admin", null, new { @class = "btn-cancel" })
+            <button type="submit" class="btn-purple">Criar Empresa</button>
+        </div>
+    }
+</div>
+
+<style>
+    .form-container {
+        max-width: 500px;
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+    }
+
+    .field-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .field-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .field-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        font-family: inherit;
+    }
+
+    .field-input:focus {
+        outline: none;
+        border-color: #534AB7;
+        box-shadow: 0 0 0 3px rgba(83, 74, 183, 0.1);
+    }
+
+    .field-color {
+        height: 40px;
+        cursor: pointer;
+        padding: 4px;
+    }
+
+    .field-hint {
+        display: block;
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        color: #666;
+    }
+
+    .field-error {
+        display: block;
+        margin-top: 0.5rem;
+        color: #d32f2f;
+        font-size: 0.875rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+    }
+
+    .btn-cancel {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: #f0f0f0;
+        color: #333;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background 0.2s;
+    }
+
+    .btn-cancel:hover {
+        background: #e0e0e0;
+    }
+
+    .btn-purple {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: #534AB7;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.2s;
+    }
+
+    .btn-purple:hover {
+        background: #3d3580;
+    }
+</style>

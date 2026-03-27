@@ -1,0 +1,90 @@
+@model IEnumerable<SistemaAtivos.Models.Empresa>
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Empresas</h4>
+        <p class="page-sub">@Model.Count() empresa(s) cadastrada(s)</p>
+    </div>
+    @Html.ActionLink("+", "CreateEmpresa", "Admin", null, new { @class = "btn-purple btn-icon", title = "Nova empresa" })
+</div>
+
+<div class="empresa-grid">
+    @foreach (var emp in Model)
+    {
+        <div class="empresa-card">
+            <div class="empresa-banner" style="background:@emp.Cor"></div>
+            <div class="empresa-body">
+                <div class="empresa-initials" style="background:@emp.Cor">
+                    @(emp.Nome.Length >= 2 ? emp.Nome.Substring(0, 2).ToUpper() : emp.Nome.ToUpper())
+                </div>
+                <p class="empresa-name">@emp.Nome</p>
+                <p class="empresa-count">
+                    @emp.Ativos.Count ativo(s) &middot; @emp.Categorias.Count categoria(s)
+                </p>
+            </div>
+            <div class="empresa-footer">
+                @Html.ActionLink("Abrir", "Empresa", "Admin", new { id = emp.Id }, new { @class = "btn-sm-outline" })
+                <button class="btn-sm-outline" data-toggle="modal" data-target="#modalEditar-@emp.Id">Editar</button>
+                <button class="btn-sm-danger" data-toggle="modal" data-target="#modalExcluir-@emp.Id">Excluir</button>
+            </div>
+        </div>
+
+        <!-- Modal Editar -->
+        <div class="modal fade" id="modalEditar-@emp.Id" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content modal-custom">
+                    <div class="modal-body">
+                        <h5 class="modal-title-custom">Editar empresa</h5>
+                        @using (Html.BeginForm("EditEmpresa", "Admin", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="Id" value="@emp.Id" />
+                            <div class="field-group">
+                                <label class="field-label">Nome</label>
+                                <input name="Nome" class="field-input" value="@emp.Nome" />
+                            </div>
+                            <div class="field-group">
+                                <label class="field-label">Cor</label>
+                                <input name="Cor" type="color" class="field-input field-color" value="@emp.Cor" />
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn-cancel" data-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn-purple">Salvar</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Excluir -->
+        <div class="modal fade" id="modalExcluir-@emp.Id" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content modal-custom">
+                    <div class="modal-body">
+                        <h5 class="modal-title-custom">Excluir empresa</h5>
+                        <p class="modal-sub-custom">
+                            Esta ação removerá <strong>@emp.Nome</strong> e todos os dados vinculados permanentemente.
+                        </p>
+                        @using (Html.BeginForm("DeleteEmpresa", "Admin", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@emp.Id" />
+                            <div class="field-group">
+                                <label class="field-label">Confirme sua senha de admin</label>
+                                <input name="senhaAdmin" type="password" class="field-input" placeholder="••••••••" />
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn-cancel" data-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn-danger">Confirmar exclusão</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

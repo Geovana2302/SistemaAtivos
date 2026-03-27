@@ -1,0 +1,51 @@
+@model SistemaAtivos.Models.Colaborador
+@{
+    ViewBag.Title = "Novo Colaborador";
+    var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
+}
+
+<div class="page-header">
+    <h4 class="page-title">Novo Colaborador</h4>
+</div>
+
+<div class="form-card">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "alert-custom alert-danger-custom" })
+
+        <div class="form-row-2">
+            <div class="field-group">
+                @Html.LabelFor(m => m.Nome, new { @class = "field-label" })
+                @Html.TextBoxFor(m => m.Nome, new { @class = "field-input" })
+                @Html.ValidationMessageFor(m => m.Nome, "", new { @class = "field-error" })
+            </div>
+            <div class="field-group">
+                @Html.LabelFor(m => m.Cargo, new { @class = "field-label" })
+                @Html.TextBoxFor(m => m.Cargo, new { @class = "field-input", placeholder = "Ex: Analista de TI" })
+            </div>
+        </div>
+        <div class="form-row-2">
+            <div class="field-group">
+                @Html.LabelFor(m => m.Email, new { @class = "field-label" })
+                @Html.TextBoxFor(m => m.Email, new { @class = "field-input", type = "email" })
+            </div>
+            <div class="field-group">
+                @Html.LabelFor(m => m.Telefone, new { @class = "field-label" })
+                @Html.TextBoxFor(m => m.Telefone, new { @class = "field-input", placeholder = "(11) 99999-9999" })
+            </div>
+        </div>
+        @if (isAdmin)
+        {
+            <div class="field-group">
+                <label class="field-label">Empresa</label>
+                @Html.DropDownList("EmpresaId", (SelectList)ViewBag.EmpresaId, "— Selecione —", new { @class = "field-input" })
+            </div>
+        }
+
+        <div class="form-actions">
+            @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn-cancel" })
+            <button type="submit" class="btn-purple">Cadastrar colaborador</button>
+        </div>
+    }
+</div>

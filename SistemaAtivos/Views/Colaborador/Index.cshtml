@@ -1,0 +1,58 @@
+@model IEnumerable<SistemaAtivos.Models.Colaborador>
+@{
+    ViewBag.Title = "Colaboradores";
+    var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
+}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Colaboradores</h4>
+        <p class="page-sub">@Model.Count() colaborador(es)</p>
+    </div>
+    @Html.ActionLink("+ Novo colaborador", "Create", null, new { @class = "btn-purple" })
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state"><p>Nenhum colaborador cadastrado.</p></div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Cargo</th>
+                    <th>E-mail</th>
+                    <th>Telefone</th>
+                    @if (isAdmin) { <th>Empresa</th> }
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var col in Model)
+                {
+                    <tr>
+                        <td style="font-weight:500">@col.Nome</td>
+                        <td>@(col.Cargo ?? "—")</td>
+                        <td>@(col.Email ?? "—")</td>
+                        <td>@(col.Telefone ?? "—")</td>
+                        @if (isAdmin) { <td>@(col.Empresa?.Nome ?? "—")</td> }
+                        <td>
+                            <div style="display:flex;gap:4px">
+                                @Html.ActionLink("?", "Edit", new { id = col.Id }, new { @class = "btn-xs-outline" })
+                                @using (Html.BeginForm("Delete", "Colaborador", new { id = col.Id }, FormMethod.Post, new { style = "display:inline" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-xs-danger"
+                                            onclick="return confirm('Excluir colaborador @col.Nome?')">?</button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

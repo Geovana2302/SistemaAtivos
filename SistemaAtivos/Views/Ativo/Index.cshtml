@@ -1,0 +1,63 @@
+@model IEnumerable<SistemaAtivos.Models.Ativo>
+@{
+    ViewBag.Title = "Ativos";
+    var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
+}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Ativos</h4>
+        <p class="page-sub">@Model.Count() ativo(s) cadastrado(s)</p>
+    </div>
+    @Html.ActionLink("+ Novo ativo", "Create", "Ativo", null, new { @class = "btn-purple" })
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state"><p>Nenhum ativo cadastrado.</p></div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Responsável</th>
+                    @if (isAdmin) { <th>Empresa</th> }
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ativo in Model)
+                {
+                    <tr>
+                        <td>
+                            <p style="font-weight:500;margin:0">@ativo.Nome</p>
+                            <p style="font-size:11px;color:#888;margin:0">@ativo.NumeroSerie</p>
+                        </td>
+                        <td>@(ativo.Categoria?.Nome ?? "—")</td>
+                        <td>@(ativo.Colaborador?.Nome ?? "—")</td>
+                        @if (isAdmin) { <td>@(ativo.Empresa?.Nome ?? "—")</td> }
+                        <td><span class="status-badge status-@ativo.Status.ToString().ToLower()">@ativo.Status</span></td>
+                        <td>
+                            <div style="display:flex;gap:4px">
+                                @Html.ActionLink("Ver", "Detalhes", new { id = ativo.Id }, new { @class = "btn-xs-outline" })
+                                @Html.ActionLink("?", "Edit", new { id = ativo.Id }, new { @class = "btn-xs-outline" })
+                                <a href="@Url.Action("QrCode", new { id = ativo.Id })" target="_blank" class="btn-xs-outline">QR</a>
+                                @using (Html.BeginForm("Delete", "Ativo", new { id = ativo.Id }, FormMethod.Post, new { style = "display:inline" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-xs-danger"
+                                            onclick="return confirm('Excluir @ativo.Nome?')">?</button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
