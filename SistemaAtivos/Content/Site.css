@@ -2,7 +2,14 @@
    SISTEMA ATIVOS — Site.css
    ============================================= */
 
-*, *::before, *::after { box-sizing: border-box; }
+*, *::before, *::after {
+    box-sizing: border-box;
+    cursor: default !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+}
 
 body {
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -10,7 +17,25 @@ body {
     color: #222;
     background: #F5F4F2;
     margin: 0;
+    cursor: default !important;
 }
+
+input:not([type="button"]):not([type="submit"]):not([type="color"]):not([type="checkbox"]):not([type="radio"]),
+textarea {
+    cursor: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+}
+input[type="color"], input[type="submit"], input[type="button"],
+input[type="checkbox"], input[type="radio"],
+button, select, a, label[for],
+.btn-purple, .btn-cancel, .btn-danger, .btn-login,
+.btn-outline-sm, .btn-xs-outline, .btn-xs-danger,
+.btn-sm-outline, .btn-sm-danger, .btn-logout,
+.acc-header, .acc-action, .empresa-card-nova,
+.field-color { cursor: pointer !important; }
 
 /* ---- NAVBAR ---- */
 .navbar {
