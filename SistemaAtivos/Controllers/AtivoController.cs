@@ -56,10 +56,15 @@ namespace SistemaAtivos.Controllers
         }
 
         [HttpGet]
-        public ActionResult Create()
+        public ActionResult Create(int? categoriaId, int? empresaId)
         {
-            PopularDropdowns();
-            return View();
+            var ativo = new Ativo();
+            if (categoriaId.HasValue) ativo.CategoriaId = categoriaId;
+            if (empresaId.HasValue) ativo.EmpresaId = empresaId;
+            else if (!IsAdmin()) ativo.EmpresaId = GetEmpresaId();
+            PopularDropdowns(ativo);
+            ViewBag.EmpresaPreSelecionada = empresaId.HasValue || !IsAdmin();
+            return View(ativo);
         }
 
         [HttpPost]

@@ -28,12 +28,19 @@ namespace SistemaAtivos.Controllers
         }
 
         [HttpGet]
-        public ActionResult Create()
+        public ActionResult Create(int? empresaId)
         {
+            var cat = new Categoria();
+            if (empresaId.HasValue)
+                cat.EmpresaId = empresaId;
+            else if (!IsAdmin())
+                cat.EmpresaId = GetEmpresaId();
+
             ViewBag.EmpresaId = IsAdmin()
-                ? new SelectList(db.Empresas, "Id", "Nome")
-                : new SelectList(db.Empresas.Where(e => e.Id == GetEmpresaId()), "Id", "Nome");
-            return View();
+                ? new SelectList(db.Empresas, "Id", "Nome", cat.EmpresaId)
+                : new SelectList(db.Empresas.Where(e => e.Id == GetEmpresaId()), "Id", "Nome", GetEmpresaId());
+            ViewBag.EmpresaPreSelecionada = empresaId.HasValue || !IsAdmin();
+            return View(cat);
         }
 
         [HttpPost]

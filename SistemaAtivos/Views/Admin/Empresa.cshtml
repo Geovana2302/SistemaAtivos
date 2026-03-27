@@ -5,7 +5,8 @@
 }
 
 <nav class="breadcrumb-custom">
-    @if (isAdmin) { @Html.ActionLink("Empresas", "Dashboard", "Admin") <span> / </span> }
+    @if (isAdmin)
+    {@Html.ActionLink("Empresas", "Dashboard", "Admin") <span> / </span>}
     <span>@Model.Nome</span>
 </nav>
 
@@ -17,95 +18,122 @@
         <h5 class="page-title" style="margin:0">@Model.Nome</h5>
         <p class="page-sub" style="margin:0">
             @{ var usr = Model.Usuarios.FirstOrDefault(); }
-            @if (usr != null) { <text>@usr.Email &middot; @usr.Tipo</text> }
+            @if (usr != null)
+            {<text>@usr.Email</text>}
         </p>
     </div>
 </div>
 
 <div class="stats-row">
-    <div class="stat-card"><p class="stat-label">Ativos</p><p class="stat-value">@Model.Ativos.Count</p></div>
+    <div class="stat-card"><p class="stat-label">Ativos</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.Ativo)</p></div>
     <div class="stat-card"><p class="stat-label">Categorias</p><p class="stat-value">@Model.Categorias.Count</p></div>
-    <div class="stat-card"><p class="stat-label">Colaboradores</p><p class="stat-value">@Model.Colaboradores.Count</p></div>
-    <div class="stat-card"><p class="stat-label">Manutenções</p><p class="stat-value">@Model.Manutencoes.Count</p></div>
+    <div class="stat-card"><p class="stat-label">Em Manutencao</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.EmManutencao)</p></div>
+    <div class="stat-card"><p class="stat-label">Inativos</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.Inativo)</p></div>
 </div>
 
 <div class="section-header">
-    <p class="section-title">Categorias e ativos</p>
-    <div style="display:flex;gap:6px">
-        @Html.ActionLink("+ Ativo", "Create", "Ativo", null, new { @class = "btn-outline-sm" })
-        @Html.ActionLink("+ Categoria", "Create", "Categoria", null, new { @class = "btn-outline-sm" })
-        @Html.ActionLink("+ Colaborador", "Create", "Colaborador", null, new { @class = "btn-outline-sm" })
-    </div>
+    <p class="section-title">Categorias</p>
+    @Html.ActionLink("+ Categoria", "Create", "Categoria", new { empresaId = Model.Id }, new { @class = "btn-outline-sm" })
 </div>
 
 @if (!Model.Categorias.Any())
 {
     <div class="empty-state">
         <p>Nenhuma categoria cadastrada ainda.</p>
-        @Html.ActionLink("Criar primeira categoria", "Create", "Categoria", null, new { @class = "btn-purple" })
+        @Html.ActionLink("Criar primeira categoria", "Create", "Categoria", new { empresaId = Model.Id }, new { @class = "btn-purple" })
     </div>
 }
 else
 {
-    <div class="accordion-custom" id="accordion">
-        @foreach (var cat in Model.Categorias)
-        {
-            var ativos = Model.Ativos.Where(a => a.CategoriaId == cat.Id).ToList();
-            var collapseId = "cat-" + cat.Id;
-            <div class="acc-item">
-                <div class="acc-header" data-toggle="collapse" data-target="#@collapseId" aria-expanded="true">
-                    <div class="acc-left">
-                        <span class="acc-dot" style="background:@Model.Cor"></span>
-                        <span class="acc-label">@cat.Nome</span>
-                        <span class="acc-badge">@ativos.Count ativo(s)</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px">
-                        @Html.ActionLink("?", "Edit", "Categoria", new { id = cat.Id }, new { @class = "acc-action", title = "Editar categoria" })
-                        @using (Html.BeginForm("Delete", "Categoria", new { id = cat.Id }, FormMethod.Post, new { style = "display:inline" }))
-                        {
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="acc-action acc-action-danger"
-                                    onclick="return confirm('Excluir categoria @cat.Nome?')" title="Excluir">?</button>
-                        }
-                        <span class="acc-chevron">&#8964;</span>
-                    </div>
+    foreach (var cat in Model.Categorias)
+    {
+        var ativos = Model.Ativos.Where(a => a.CategoriaId == cat.Id).ToList();
+        var collapseId = "cat-" + cat.Id;
+        <div class="acc-card">
+            <div class="acc-header-custom" data-acc-target="@collapseId">
+                <div class="acc-left">
+                    <span class="acc-dot" style="background:@Model.Cor"></span>
+                    <span class="acc-label">@cat.Nome</span>
+                    <span class="acc-badge">@ativos.Count</span>
                 </div>
-                <div id="@collapseId" class="collapse show">
-                    <div class="acc-body">
-                        @if (!ativos.Any())
-                        {
-                            <p class="acc-empty">Nenhum ativo nesta categoria.</p>
-                        }
-                        else
-                        {
-                            foreach (var ativo in ativos)
-                            {
-                                <div class="ativo-row">
-                                    <div>
-                                        <p class="ativo-name">@ativo.Nome</p>
-                                        <p class="ativo-meta">
-                                            @if (!string.IsNullOrEmpty(ativo.NumeroSerie)) { <text>SN: @ativo.NumeroSerie &middot; </text> }
-                                            @ativo.Status
-                                            @if (ativo.Colaborador != null) { <text> &middot; @ativo.Colaborador.Nome</text> }
-                                        </p>
-                                    </div>
-                                    <div style="display:flex;gap:4px;align-items:center">
-                                        @Html.ActionLink("Detalhes", "Detalhes", "Ativo", new { id = ativo.Id }, new { @class = "btn-xs-outline" })
-                                        @Html.ActionLink("?", "Edit", "Ativo", new { id = ativo.Id }, new { @class = "btn-xs-outline", title = "Editar" })
-                                        <a href="@Url.Action("QrCode", "Ativo", new { id = ativo.Id })" target="_blank" class="btn-xs-outline" title="QR Code">QR</a>
-                                        @using (Html.BeginForm("Delete", "Ativo", new { id = ativo.Id }, FormMethod.Post, new { style = "display:inline" }))
-                                        {
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn-xs-danger"
-                                                    onclick="return confirm('Excluir ativo @ativo.Nome?')" title="Excluir">?</button>
-                                        }
-                                    </div>
-                                </div>
-                            }
-                        }
+                <div style="display:flex;align-items:center;gap:6px" onclick="event.stopPropagation()">
+                    @Html.ActionLink("+", "Create", "Ativo", new { categoriaId = cat.Id, empresaId = Model.Id }, new { @class = "acc-action", title = "Adicionar ativo" })
+                    <div class="dropdown" style="display:inline-block">
+                        <button type="button" class="acc-action" data-toggle="dropdown" title="Opcoes">...</button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li>@Html.ActionLink("Editar categoria", "Edit", "Categoria", new { id = cat.Id }, null)</li>
+                            <li>
+                                @using (Html.BeginForm("Delete", "Categoria", new { id = cat.Id }, FormMethod.Post))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-delete-btn"
+                                            onclick="return confirm('Excluir esta categoria e todos seus ativos?')">
+                                        Excluir categoria
+                                    </button>
+                                }
+                            </li>
+                        </ul>
                     </div>
+                    <span class="acc-chevron-custom">&#9660;</span>
                 </div>
             </div>
-        }
-    </div>
+            <div id="@collapseId" class="acc-body-custom">
+                @if (!ativos.Any())
+                {
+                    <p class="acc-empty">Nenhum ativo nesta categoria.</p>
+                }
+                else
+                {
+                    foreach (var ativo in ativos)
+                    {
+                        <div class="ativo-row">
+                            <div>
+                                <p class="ativo-name">@ativo.Nome</p>
+                                <p class="ativo-meta">
+                                    @if (!string.IsNullOrEmpty(ativo.NumeroSerie))
+                                    {<text>SN: @ativo.NumeroSerie &middot; </text>}
+                                    <span class="status-badge status-@ativo.Status.ToString().ToLower()">@ativo.Status</span>
+                                    @if (ativo.Colaborador != null)
+                                    {<text> &middot; @ativo.Colaborador.Nome</text>}
+                                </p>
+                            </div>
+                            <div style="display:flex;gap:4px;align-items:center">
+                                @Html.ActionLink("Detalhes", "Detalhes", "Ativo", new { id = ativo.Id }, new { @class = "btn-xs-outline" })
+                                <div class="dropdown" style="display:inline-block">
+                                    <button type="button" class="btn-xs-outline" data-toggle="dropdown">...</button>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li>@Html.ActionLink("Editar", "Edit", "Ativo", new { id = ativo.Id }, null)</li>
+                                        <li>
+                                            @using (Html.BeginForm("Delete", "Ativo", new { id = ativo.Id }, FormMethod.Post))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="dropdown-delete-btn"
+                                                        onclick="return confirm('Excluir este ativo?')">
+                                                    Excluir
+                                                </button>
+                                            }
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+}
+
+@section scripts {
+    <script>
+        $(document).on('click', '.acc-header-custom', function (e) {
+            if ($(e.target).closest('.dropdown, a, button, form').length) return;
+            var id = $(this).data('acc-target');
+            var body = $('#' + id);
+            var chevron = $(this).find('.acc-chevron-custom');
+            body.slideToggle(200, function () {
+                chevron.html(body.is(':visible') ? '&#9660;' : '&#9654;');
+            });
+        });
+    </script>
 }

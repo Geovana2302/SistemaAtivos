@@ -25,11 +25,15 @@
             @Html.TextAreaFor(m => m.Descricao, new { @class = "field-input", rows = "3", placeholder = "Descrição da categoria (opcional)" })
         </div>
 
-        if (isAdmin)
+        if (isAdmin && ViewBag.EmpresaPreSelecionada == true)
+        {
+            @Html.HiddenFor(m => m.EmpresaId)
+        }
+        else if (isAdmin)
         {
             <div class="field-group">
                 <label class="field-label">Empresa</label>
-                @Html.DropDownList("EmpresaId", (SelectList)ViewBag.EmpresaId, "— Selecione —", new { @class = "field-input" })
+                @Html.DropDownList("EmpresaId", (SelectList)ViewBag.EmpresaId, "-- Selecione --", new { @class = "field-input" })
             </div>
         }
 
