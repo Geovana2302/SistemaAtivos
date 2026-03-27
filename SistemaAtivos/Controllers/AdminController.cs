@@ -38,7 +38,13 @@ namespace SistemaAtivos.Controllers
         public ActionResult CreateEmpresa(Empresa empresa, string emailCliente)
         {
             if (!IsAdmin()) return new HttpUnauthorizedResult();
-            
+
+            if (db.Empresas.Count() >= 25)
+            {
+                TempData["Erro"] = "Limite de 25 empresas atingido.";
+                return RedirectToAction("Dashboard");
+            }
+
             if (!ModelState.IsValid || string.IsNullOrWhiteSpace(empresa.Nome))
             {
                 TempData["Erro"] = "Nome da empresa é obrigatório.";
@@ -72,15 +78,33 @@ namespace SistemaAtivos.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditEmpresa(Empresa empresa)
+        public ActionResult EditEmpresa(int Id, string Nome, string Cor, string senhaAdmin)
         {
             if (!IsAdmin()) return new HttpUnauthorizedResult();
-            if (ModelState.IsValid)
+
+            var adminId = (int)Session["UsuarioId"];
+            var admin = db.Usuarios.Find(adminId);
+
+            if (admin == null || !BCrypt.Net.BCrypt.Verify(senhaAdmin, admin.Senha))
             {
-                db.Entry(empresa).State = EntityState.Modified;
-                db.SaveChanges();
-                TempData["Sucesso"] = "Empresa atualizada.";
+                TempData["Erro"] = "Senha incorreta. Edição cancelada.";
+                return RedirectToAction("Dashboard");
             }
+
+            var empresa = db.Empresas.Find(Id);
+            if (empresa == null) return HttpNotFound();
+
+            if (string.IsNullOrWhiteSpace(Nome))
+            {
+                TempData["Erro"] = "Nome da empresa é obrigatório.";
+                return RedirectToAction("Dashboard");
+            }
+
+            empresa.Nome = Nome;
+            empresa.Cor = string.IsNullOrWhiteSpace(Cor) ? "#534AB7" : Cor;
+            db.SaveChanges();
+
+            TempData["Sucesso"] = "Empresa atualizada com sucesso.";
             return RedirectToAction("Dashboard");
         }
 

@@ -192,7 +192,6 @@
     <Content Include="Scripts\jquery-3.6.0.slim.min.map" />
     <Content Include="Scripts\jquery-3.6.0.min.map" />
     <Content Include="SistemaAtivos\App.config" />
-    <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Admin\Empresa.cshtml" />
     <Content Include="Views\Ativo\Index.cshtml" />
@@ -207,8 +206,9 @@
     <Content Include="Views\Colaborador\Create.cshtml" />
     <Content Include="Views\Colaborador\Edit.cshtml" />
     <Content Include="Views\Admin\CreateEmpresa.cshtml" />
-    <Content Include="Views\Admin\Dashboard.cshtml" />
     <Content Include="Views\Categoria\Create.cshtml" />
+    <Content Include="Views\Admin\Dashboard.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

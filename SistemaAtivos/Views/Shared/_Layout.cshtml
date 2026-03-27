@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewBag.Title — Sistema de Ativos</title>
+    <title>@ViewBag.Title ï¿½ Sistema de Ativos</title>
     <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
     <link rel="stylesheet" href="~/Content/Site.css" />
 </head>
@@ -24,13 +24,13 @@
             {
                 @Html.ActionLink("Empresas", "Dashboard", "Admin", null, new { @class = "nav-link" })
                 @Html.ActionLink("Ativos", "Index", "Ativo", null, new { @class = "nav-link" })
-                @Html.ActionLink("Manutenções", "Index", "Manutencao", null, new { @class = "nav-link" })
+                @Html.ActionLink("Manutenï¿½ï¿½es", "Index", "Manutencao", null, new { @class = "nav-link" })
             }
             else
             {
                 @Html.ActionLink("Minha Empresa", "Empresa", "Admin", new { id = empId }, new { @class = "nav-link" })
                 @Html.ActionLink("Ativos", "Index", "Ativo", null, new { @class = "nav-link" })
-                @Html.ActionLink("Manutenções", "Index", "Manutencao", null, new { @class = "nav-link" })
+                @Html.ActionLink("Manutenï¿½ï¿½es", "Index", "Manutencao", null, new { @class = "nav-link" })
             }
         </div>
         <div class="navbar-user">
@@ -54,7 +54,7 @@
 </div>
 
 <script src="~/Scripts/jquery-3.6.0.min.js"></script>
-<script src="~/Scripts/bootstrap.bundle.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
 @RenderSection("scripts", required: false)
 </body>
 </html>

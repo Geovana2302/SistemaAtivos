@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login — Sistema de Ativos</title>
+    <title>Login - Sistema de Ativos</title>
     <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
     <link rel="stylesheet" href="~/Content/Site.css" />
     <style>
@@ -19,7 +19,7 @@
         <div class="login-card">
             <div class="login-logo">A</div>
             <h4 class="login-title">Bem-vindo</h4>
-            <p class="login-sub">Sistema de gestão de ativos</p>
+            <p class="login-sub">Sistema de gestao de ativos</p>
 
             @if (ViewBag.Erro != null)
             {
@@ -31,18 +31,15 @@
                 @Html.AntiForgeryToken()
                 <div class="field-group">
                     <label class="field-label">E-mail</label>
-                    <input name="email" type="email" class="field-input" placeholder="admin@sistema.com" autocomplete="email" />
+                    <input name="email" type="email" class="field-input" placeholder="Insira seu e-mail" autocomplete="email" />
                 </div>
                 <div class="field-group">
                     <label class="field-label">Senha</label>
-                    <input name="senha" type="password" class="field-input" placeholder="••••••••" autocomplete="current-password" />
+                    <input name="senha" type="password" class="field-input" placeholder="Insira sua senha" autocomplete="current-password" />
                 </div>
                 <button type="submit" class="btn-login">Entrar</button>
             }
 
-            <p style="text-align:center;font-size:11px;color:#aaa;margin-top:1.5rem">
-                Login padrão: admin@sistema.com / admin123
-            </p>
         </div>
     </div>
 </body>
