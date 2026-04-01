@@ -12,11 +12,12 @@ namespace SistemaAtivos.Models
         [StringLength(100)]
         public string Nome { get; set; }
 
-        [StringLength(200)]
-        [EmailAddress]
+        [StringLength(100, ErrorMessage = "Email deve ter no máximo 100 caracteres")]
+        [EmailAddress(ErrorMessage = "Email inválido")]
         public string Email { get; set; }
 
-        [StringLength(20)]
+        [StringLength(15, MinimumLength = 14, ErrorMessage = "Telefone deve estar no formato (99) 9999-9999 ou (99) 99999-9999")]
+        [RegularExpression(@"^\(\d{2}\)\s\d{4,5}-\d{4}$", ErrorMessage = "Telefone deve estar no formato (99) 9999-9999 ou (99) 99999-9999")]
         public string Telefone { get; set; }
 
         [StringLength(100)]

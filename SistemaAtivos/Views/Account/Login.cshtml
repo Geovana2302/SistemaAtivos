@@ -18,12 +18,12 @@
     <div class="login-wrap">
         <div class="login-card">
             <div class="login-logo">A</div>
-            <h4 class="login-title">Bem-vindo</h4>
-            <p class="login-sub">Sistema de gestao de ativos</p>
+            <h4 class="login-title">Bem-vindo de volta</h4>
+            <p class="login-sub">Acesse o sistema de gestao de ativos</p>
 
             @if (ViewBag.Erro != null)
             {
-                <div class="alert-custom alert-danger-custom" style="margin-bottom:1rem">@ViewBag.Erro</div>
+                <div class="alert-custom alert-danger-custom" style="margin-bottom:1.25rem">@ViewBag.Erro</div>
             }
 
             @using (Html.BeginForm("Login", "Account", FormMethod.Post))
@@ -31,15 +31,18 @@
                 @Html.AntiForgeryToken()
                 <div class="field-group">
                     <label class="field-label">E-mail</label>
-                    <input name="email" type="email" class="field-input" placeholder="Insira seu e-mail" autocomplete="email" />
+                    <input name="email" type="email" class="field-input" placeholder="Digite seu e-mail" autocomplete="email" />
                 </div>
                 <div class="field-group">
                     <label class="field-label">Senha</label>
-                    <input name="senha" type="password" class="field-input" placeholder="Insira sua senha" autocomplete="current-password" />
+                    <input name="senha" type="password" class="field-input" placeholder="Digite sua senha" autocomplete="current-password" />
                 </div>
                 <button type="submit" class="btn-login">Entrar</button>
             }
 
+            <p style="text-align:center; font-size:12px; color:#aaa; margin-top:1.5rem; margin-bottom:0;">
+                &copy; @DateTime.Now.Year Sistema de Ativos
+            </p>
         </div>
     </div>
 </body>

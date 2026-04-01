@@ -95,6 +95,14 @@ namespace SistemaAtivos.Controllers
             var cat = GetQuery().FirstOrDefault(c => c.Id == id);
             if (cat == null) return HttpNotFound();
             var empId = cat.EmpresaId;
+
+            if (db.Ativos.Any(a => a.CategoriaId == id))
+            {
+                TempData["Erro"] = "Não é possível excluir esta categoria pois existem ativos vinculados a ela.";
+                if (empId.HasValue) return RedirectToAction("Empresa", "Admin", new { id = empId });
+                return RedirectToAction("Index");
+            }
+
             db.Categorias.Remove(cat);
             db.SaveChanges();
             TempData["Sucesso"] = "Categoria excluída.";

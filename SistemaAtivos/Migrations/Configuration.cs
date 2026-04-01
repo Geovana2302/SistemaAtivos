@@ -10,6 +10,7 @@ namespace SistemaAtivos.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
             ContextKey = "SistemaAtivos.Models.AtivosContext";
         }
 

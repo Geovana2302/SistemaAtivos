@@ -1,11 +1,11 @@
 @model SistemaAtivos.Models.Colaborador
 @{
-    ViewBag.Title = "Editar Colaborador";
+    ViewBag.Title = "Editar Responsavel";
     var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
 }
 
 <div class="page-header">
-    <h4 class="page-title">Editar Colaborador</h4>
+    <h4 class="page-title">Editar Responsavel</h4>
 </div>
 
 <div class="form-card">
@@ -29,14 +29,16 @@
         <div class="form-row-2">
             <div class="field-group">
                 @Html.LabelFor(m => m.Email, new { @class = "field-label" })
-                @Html.TextBoxFor(m => m.Email, new { @class = "field-input", type = "email" })
+                @Html.TextBoxFor(m => m.Email, new { @class = "field-input", type = "email", maxlength = "100" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "field-error" })
             </div>
             <div class="field-group">
                 @Html.LabelFor(m => m.Telefone, new { @class = "field-label" })
-                @Html.TextBoxFor(m => m.Telefone, new { @class = "field-input" })
+                @Html.TextBoxFor(m => m.Telefone, new { @class = "field-input", id = "Telefone", maxlength = "15" })
+                @Html.ValidationMessageFor(m => m.Telefone, "", new { @class = "field-error" })
             </div>
         </div>
-        @if (isAdmin)
+        if (isAdmin)
         {
             <div class="field-group">
                 <label class="field-label">Empresa</label>
@@ -50,3 +52,23 @@
         </div>
     }
 </div>
+
+@section scripts {
+    <script>
+        $(function () {
+            $('#Telefone').on('input', function () {
+                var v = $(this).val().replace(/\D/g, '').substring(0, 11);
+                if (v.length > 6) {
+                    var ddd = v.substring(0, 2);
+                    var parte1 = v.substring(2, v.length - 4);
+                    var parte2 = v.substring(v.length - 4);
+                    $(this).val('(' + ddd + ') ' + parte1 + '-' + parte2);
+                } else if (v.length > 2) {
+                    $(this).val('(' + v.substring(0, 2) + ') ' + v.substring(2));
+                } else if (v.length > 0) {
+                    $(this).val('(' + v);
+                }
+            });
+        });
+    </script>
+}

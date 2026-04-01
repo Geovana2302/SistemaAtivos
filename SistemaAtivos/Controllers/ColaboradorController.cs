@@ -28,8 +28,17 @@ namespace SistemaAtivos.Controllers
         }
 
         [HttpGet]
-        public ActionResult Create()
+        public ActionResult Create(int? empresaId)
         {
+            if (empresaId.HasValue)
+            {
+                ViewBag.EmpresaId = IsAdmin()
+                    ? new SelectList(db.Empresas, "Id", "Nome", empresaId)
+                    : new SelectList(db.Empresas.Where(e => e.Id == GetEmpresaId()), "Id", "Nome", empresaId);
+                ViewBag.EmpresaPreSelecionada = true;
+                var col = new Colaborador { EmpresaId = empresaId };
+                return View(col);
+            }
             ViewBag.EmpresaId = IsAdmin()
                 ? new SelectList(db.Empresas, "Id", "Nome")
                 : new SelectList(db.Empresas.Where(e => e.Id == GetEmpresaId()), "Id", "Nome");
@@ -88,6 +97,14 @@ namespace SistemaAtivos.Controllers
             var col = GetQuery().FirstOrDefault(c => c.Id == id);
             if (col == null) return HttpNotFound();
             var empId = col.EmpresaId;
+
+            if (db.Ativos.Any(a => a.ColaboradorId == id))
+            {
+                TempData["Erro"] = "Não é possível excluir este colaborador pois existem ativos vinculados a ele.";
+                if (empId.HasValue) return RedirectToAction("Empresa", "Admin", new { id = empId });
+                return RedirectToAction("Index");
+            }
+
             db.Colaboradores.Remove(col);
             db.SaveChanges();
             TempData["Sucesso"] = "Colaborador excluído.";

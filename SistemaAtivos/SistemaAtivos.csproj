@@ -149,6 +149,7 @@
     <Compile Include="Models\Colaborador.cs" />
     <Compile Include="Models\Empresa.cs" />
     <Compile Include="Models\Manutencao.cs" />
+    <Compile Include="Models\Responsavel.cs" />
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -209,6 +210,7 @@
     <Content Include="Views\Admin\Dashboard.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Admin\Empresa.cshtml" />
+    <Content Include="Views\Ativo\Inativos.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

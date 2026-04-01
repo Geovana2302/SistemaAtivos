@@ -25,9 +25,37 @@ namespace SistemaAtivos.Controllers
             return q;
         }
 
-        public ActionResult Index()
+        public ActionResult Index(int? empresaId, string ordem)
         {
-            return View(GetQuery().OrderByDescending(m => m.Data).ToList());
+            var q = db.Ativos
+                .Include(a => a.Categoria)
+                .Include(a => a.Colaborador)
+                .Include(a => a.Empresa)
+                .Where(a => a.Status == StatusAtivo.EmManutencao);
+
+            if (!IsAdmin())
+                q = q.Where(a => a.EmpresaId == GetEmpresaId());
+
+            if (empresaId.HasValue)
+                q = q.Where(a => a.EmpresaId == empresaId);
+
+            switch (ordem)
+            {
+                case "antigo":
+                    q = q.OrderBy(a => a.Id);
+                    break;
+                case "empresa":
+                    q = q.OrderBy(a => a.Empresa.Nome).ThenByDescending(a => a.Id);
+                    break;
+                default:
+                    q = q.OrderByDescending(a => a.Id);
+                    break;
+            }
+
+            ViewBag.Empresas = db.Empresas.ToList();
+            ViewBag.EmpresaFiltro = empresaId;
+            ViewBag.OrdemAtual = ordem ?? "recente";
+            return View(q.ToList());
         }
 
         [HttpGet]

@@ -39,13 +39,22 @@ else
                         <td>@cat.Ativos.Count</td>
                         <td>
                             <div style="display:flex;gap:4px">
-                                @Html.ActionLink("?", "Edit", new { id = cat.Id }, new { @class = "btn-xs-outline" })
-                                @using (Html.BeginForm("Delete", "Categoria", new { id = cat.Id }, FormMethod.Post, new { style = "display:inline" }))
-                                {
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn-xs-danger"
-                                            onclick="return confirm('Excluir categoria @cat.Nome?')">?</button>
-                                }
+                                <div class="dropdown" style="display:inline-block">
+                                    <button type="button" class="btn-xs-outline" data-toggle="dropdown">&#8942;</button>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li>@Html.ActionLink("Editar", "Edit", new { id = cat.Id }, null)</li>
+                                        <li>
+                                            @using (Html.BeginForm("Delete", "Categoria", new { id = cat.Id }, FormMethod.Post))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="dropdown-delete-btn"
+                                                        onclick="return confirm('Excluir categoria @cat.Nome?')">
+                                                    Excluir
+                                                </button>
+                                            }
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </td>
                     </tr>

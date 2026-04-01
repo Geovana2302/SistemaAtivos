@@ -24,7 +24,7 @@
             @Html.LabelFor(m => m.Descricao, new { @class = "field-label" })
             @Html.TextAreaFor(m => m.Descricao, new { @class = "field-input", rows = "3" })
         </div>
-        @if (isAdmin)
+        if (isAdmin)
         {
             <div class="field-group">
                 <label class="field-label">Empresa</label>

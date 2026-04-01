@@ -29,6 +29,7 @@
     <div class="stat-card"><p class="stat-label">Ativos</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.Ativo)</p></div>
     <div class="stat-card"><p class="stat-label">Em Manutencao</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.EmManutencao)</p></div>
     <div class="stat-card"><p class="stat-label">Inativos</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.Inativo)</p></div>
+    <div class="stat-card"><p class="stat-label">Responsaveis</p><p class="stat-value">@Model.Colaboradores.Count</p></div>
 </div>
 
 <div class="section-header">
@@ -56,7 +57,7 @@ else
                     <span class="acc-label">@cat.Nome</span>
                     <span class="acc-badge">@ativos.Count</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:6px" onclick="event.stopPropagation()">
+                <div style="display:flex;align-items:center;gap:6px">
                     @Html.ActionLink("+", "Create", "Ativo", new { categoriaId = cat.Id, empresaId = Model.Id }, new { @class = "acc-action", title = "Adicionar ativo" })
                     <div class="dropdown" style="display:inline-block">
                         <button type="button" class="acc-action" data-toggle="dropdown" title="Opcoes">&#8942;</button>
@@ -123,6 +124,96 @@ else
         </div>
     }
 }
+
+<div style="margin-top:1.5rem">
+    <div class="section-header">
+        <p class="section-title">Responsaveis</p>
+        @Html.ActionLink("+ Responsavel", "Create", "Colaborador", new { empresaId = Model.Id }, new { @class = "btn-outline-sm" })
+    </div>
+
+    @if (!Model.Colaboradores.Any())
+    {
+        <div class="empty-state">
+            <p>Nenhum responsavel cadastrado ainda.</p>
+            @Html.ActionLink("Criar primeiro responsavel", "Create", "Colaborador", new { empresaId = Model.Id }, new { @class = "btn-purple" })
+        </div>
+    }
+    else
+    {
+        foreach (var col in Model.Colaboradores)
+        {
+            var ativosCol = Model.Ativos.Where(a => a.ColaboradorId == col.Id).ToList();
+            var colCollapseId = "resp-" + col.Id;
+            <div class="acc-card">
+                <div class="acc-header-custom" data-acc-target="@colCollapseId">
+                    <div class="acc-left">
+                        <span class="acc-dot" style="background:@Model.Cor"></span>
+                        <span class="acc-label">@col.Nome</span>
+                        @if (!string.IsNullOrEmpty(col.Cargo))
+                        {
+                            <span style="font-size:11px;color:#888">@col.Cargo</span>
+                        }
+                        <span class="acc-badge">@ativosCol.Count ativo(s)</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                        <div class="dropdown" style="display:inline-block">
+                            <button type="button" class="acc-action" data-toggle="dropdown" title="Opcoes">&#8942;</button>
+                            <ul class="dropdown-menu dropdown-menu-right">
+                                <li>@Html.ActionLink("Editar", "Edit", "Colaborador", new { id = col.Id }, null)</li>
+                                <li>
+                                    @using (Html.BeginForm("Delete", "Colaborador", new { id = col.Id }, FormMethod.Post))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="dropdown-delete-btn"
+                                                onclick="return confirm('Excluir este responsavel?')">
+                                            Excluir
+                                        </button>
+                                    }
+                                </li>
+                            </ul>
+                        </div>
+                        <span class="acc-chevron-custom">&#9660;</span>
+                    </div>
+                </div>
+                <div id="@colCollapseId" class="acc-body-custom">
+                    @if (!string.IsNullOrEmpty(col.Email) || !string.IsNullOrEmpty(col.Telefone))
+                    {
+                        <p style="font-size:11px;color:#888;margin:0 0 6px">
+                            @if (!string.IsNullOrEmpty(col.Email)){<text>@col.Email</text>}
+                            @if (!string.IsNullOrEmpty(col.Email) && !string.IsNullOrEmpty(col.Telefone)){<text> &middot; </text>}
+                            @if (!string.IsNullOrEmpty(col.Telefone)){<text>@col.Telefone</text>}
+                        </p>
+                    }
+                    @if (!ativosCol.Any())
+                    {
+                        <p class="acc-empty">Nenhum ativo sob responsabilidade.</p>
+                    }
+                    else
+                    {
+                        foreach (var ativo in ativosCol)
+                        {
+                            <div class="ativo-row">
+                                <div>
+                                    <p class="ativo-name">@ativo.Nome</p>
+                                    <p class="ativo-meta">
+                                        @if (!string.IsNullOrEmpty(ativo.NumeroSerie))
+                                        {<text>SN: @ativo.NumeroSerie &middot; </text>}
+                                        <span class="status-badge status-@ativo.Status.ToString().ToLower()">@ativo.Status</span>
+                                        @if (ativo.Categoria != null)
+                                        {<text> &middot; @ativo.Categoria.Nome</text>}
+                                    </p>
+                                </div>
+                                <div style="display:flex;gap:4px;align-items:center">
+                                    @Html.ActionLink("Detalhes", "Detalhes", "Ativo", new { id = ativo.Id }, new { @class = "btn-xs-outline" })
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
 
 @section scripts {
     <script>

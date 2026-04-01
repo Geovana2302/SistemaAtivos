@@ -16,13 +16,13 @@
 
         <div class="field-group">
             @Html.LabelFor(m => m.Nome, new { @class = "field-label" })
-            @Html.TextBoxFor(m => m.Nome, new { @class = "field-input", placeholder = "Ex: Computadores, Móveis..." })
+            @Html.TextBoxFor(m => m.Nome, new { @class = "field-input", placeholder = "Ex: Computadores, Moveis..." })
             @Html.ValidationMessageFor(m => m.Nome, "", new { @class = "field-error" })
         </div>
 
         <div class="field-group">
             @Html.LabelFor(m => m.Descricao, new { @class = "field-label" })
-            @Html.TextAreaFor(m => m.Descricao, new { @class = "field-input", rows = "3", placeholder = "Descrição da categoria (opcional)" })
+            @Html.TextAreaFor(m => m.Descricao, new { @class = "field-input", rows = "3", placeholder = "Descricao da categoria (opcional)" })
         </div>
 
         if (isAdmin && ViewBag.EmpresaPreSelecionada == true)

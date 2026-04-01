@@ -1,0 +1,112 @@
+@model IEnumerable<SistemaAtivos.Models.Ativo>
+@{
+    ViewBag.Title = "Inativos";
+    var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
+    var empresas = ViewBag.Empresas as List<SistemaAtivos.Models.Empresa>;
+    var empresaFiltro = ViewBag.EmpresaFiltro as int?;
+    var ordemAtual = ViewBag.OrdemAtual as string ?? "recente";
+}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Inativos</h4>
+        <p class="page-sub">@Model.Count() ativo(s) com status Inativo</p>
+    </div>
+</div>
+
+<div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+    <span style="font-size:12px;color:#888">Filtrar:</span>
+    <a href="@Url.Action("Inativos", new { ordem = ordemAtual })"
+       class="filter-chip @(empresaFiltro == null ? "filter-chip-active" : "")">Todas</a>
+    @if (isAdmin && empresas != null)
+    {
+        foreach (var emp in empresas)
+        {
+            <a href="@Url.Action("Inativos", new { empresaId = emp.Id, ordem = ordemAtual })"
+               class="filter-chip @(empresaFiltro == emp.Id ? "filter-chip-active" : "")"
+               style="@(empresaFiltro == emp.Id ? "background:" + emp.Cor + ";color:#fff;border-color:" + emp.Cor : "")">
+                <span class="filter-dot" style="background:@emp.Cor"></span>@emp.Nome
+            </a>
+        }
+    }
+    <span style="font-size:12px;color:#888;margin-left:12px">Ordenar:</span>
+    <a href="@Url.Action("Inativos", new { empresaId = empresaFiltro, ordem = "recente" })"
+       class="filter-chip @(ordemAtual == "recente" ? "filter-chip-active" : "")">Mais recente</a>
+    <a href="@Url.Action("Inativos", new { empresaId = empresaFiltro, ordem = "antigo" })"
+       class="filter-chip @(ordemAtual == "antigo" ? "filter-chip-active" : "")">Mais antigo</a>
+    @if (isAdmin)
+    {
+        <a href="@Url.Action("Inativos", new { empresaId = empresaFiltro, ordem = "empresa" })"
+           class="filter-chip @(ordemAtual == "empresa" ? "filter-chip-active" : "")">Por empresa</a>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state"><p>Nenhum ativo inativo encontrado.</p></div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    @if (isAdmin)
+                    {
+                        <th>Empresa</th>
+}
+                    <th>Status</th>
+                    <th>Acoes</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ativo in Model)
+                {
+                    <tr>
+                        <td>
+                            <p style="font-weight:500;margin:0">@ativo.Nome</p>
+                            <p style="font-size:11px;color:#888;margin:0">@ativo.NumeroSerie</p>
+                        </td>
+                        <td>@(ativo.Categoria?.Nome ?? "-")</td>
+                        @if (isAdmin)
+                        {
+                            <td>
+                                @if (ativo.Empresa != null)
+                                {
+                                    <span class="filter-dot" style="background:@ativo.Empresa.Cor"></span>
+                                    @ativo.Empresa.Nome
+                                }
+                                else
+                                { <text>-</text>}
+                            </td>
+                        }
+                        <td><span class="status-badge status-inativo">Inativo</span></td>
+                        <td>
+                            <div style="display:flex;gap:4px">
+                                @Html.ActionLink("Ver", "Detalhes", new { id = ativo.Id }, new { @class = "btn-xs-outline" })
+                                <div class="dropdown" style="display:inline-block">
+                                    <button type="button" class="btn-xs-outline" data-toggle="dropdown">&#8942;</button>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li>@Html.ActionLink("Editar", "Edit", new { id = ativo.Id }, null)</li>
+                                        <li>
+                                            @using (Html.BeginForm("Delete", "Ativo", new { id = ativo.Id }, FormMethod.Post))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="dropdown-delete-btn"
+                                                        onclick="return confirm('Excluir este ativo?')">
+                                                    Excluir
+                                                </button>
+                                            }
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
