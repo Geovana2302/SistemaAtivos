@@ -1,3 +1,4 @@
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -95,12 +96,19 @@ namespace SistemaAtivos.Controllers
             if (!IsAdmin()) ativo.EmpresaId = GetEmpresaId();
             if (ModelState.IsValid)
             {
-                db.Ativos.Add(ativo);
-                db.SaveChanges();
-                TempData["Sucesso"] = "Ativo cadastrado com sucesso.";
-                if (ativo.EmpresaId.HasValue)
-                    return RedirectToAction("Empresa", "Admin", new { id = ativo.EmpresaId });
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Ativos.Add(ativo);
+                    db.SaveChanges();
+                    TempData["Sucesso"] = "Ativo cadastrado com sucesso.";
+                    if (ativo.EmpresaId.HasValue)
+                        return RedirectToAction("Empresa", "Admin", new { id = ativo.EmpresaId });
+                    return RedirectToAction("Index");
+                }
+                catch (Exception)
+                {
+                    TempData["Erro"] = "Erro ao cadastrar ativo. Tente novamente.";
+                }
             }
             PopularDropdowns(ativo);
             return View(ativo);
@@ -122,12 +130,19 @@ namespace SistemaAtivos.Controllers
             if (!IsAdmin()) ativo.EmpresaId = GetEmpresaId();
             if (ModelState.IsValid)
             {
-                db.Entry(ativo).State = EntityState.Modified;
-                db.SaveChanges();
-                TempData["Sucesso"] = "Ativo atualizado.";
-                if (ativo.EmpresaId.HasValue)
-                    return RedirectToAction("Empresa", "Admin", new { id = ativo.EmpresaId });
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Entry(ativo).State = EntityState.Modified;
+                    db.SaveChanges();
+                    TempData["Sucesso"] = "Ativo atualizado.";
+                    if (ativo.EmpresaId.HasValue)
+                        return RedirectToAction("Empresa", "Admin", new { id = ativo.EmpresaId });
+                    return RedirectToAction("Index");
+                }
+                catch (Exception)
+                {
+                    TempData["Erro"] = "Erro ao atualizar ativo. Tente novamente.";
+                }
             }
             PopularDropdowns(ativo);
             return View(ativo);
@@ -141,12 +156,18 @@ namespace SistemaAtivos.Controllers
             if (ativo == null) return HttpNotFound();
             var empId = ativo.EmpresaId;
 
-            var mans = db.Manutencoes.Where(m => m.AtivoId == id).ToList();
-            db.Manutencoes.RemoveRange(mans);
-            db.Ativos.Remove(ativo);
-            db.SaveChanges();
-
-            TempData["Sucesso"] = "Ativo excluído.";
+            try
+            {
+                var mans = db.Manutencoes.Where(m => m.AtivoId == id).ToList();
+                db.Manutencoes.RemoveRange(mans);
+                db.Ativos.Remove(ativo);
+                db.SaveChanges();
+                TempData["Sucesso"] = "Ativo excluído.";
+            }
+            catch (Exception)
+            {
+                TempData["Erro"] = "Erro ao excluir ativo. Tente novamente.";
+            }
             if (empId.HasValue) return RedirectToAction("Empresa", "Admin", new { id = empId });
             return RedirectToAction("Index");
         }

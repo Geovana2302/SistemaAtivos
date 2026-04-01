@@ -1,3 +1,4 @@
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -56,23 +57,30 @@ namespace SistemaAtivos.Controllers
                 empresa.Cor = "#534AB7";
             }
 
-            db.Empresas.Add(empresa);
-            db.SaveChanges();
-
-            if (!string.IsNullOrWhiteSpace(emailCliente))
+            try
             {
-                var usuario = new Usuario
-                {
-                    Nome = empresa.Nome,
-                    Email = emailCliente,
-                    Senha = BCrypt.Net.BCrypt.HashPassword("123456"),
-                    Tipo = TipoUsuario.Cliente,
-                    EmpresaId = empresa.Id
-                };
-                db.Usuarios.Add(usuario);
+                db.Empresas.Add(empresa);
                 db.SaveChanges();
+
+                if (!string.IsNullOrWhiteSpace(emailCliente))
+                {
+                    var usuario = new Usuario
+                    {
+                        Nome = empresa.Nome,
+                        Email = emailCliente,
+                        Senha = BCrypt.Net.BCrypt.HashPassword("123456"),
+                        Tipo = TipoUsuario.Cliente,
+                        EmpresaId = empresa.Id
+                    };
+                    db.Usuarios.Add(usuario);
+                    db.SaveChanges();
+                }
+                TempData["Sucesso"] = $"Empresa \"{empresa.Nome}\" criada com sucesso! Senha inicial do cliente: 123456";
             }
-            TempData["Sucesso"] = $"Empresa \"{empresa.Nome}\" criada com sucesso! Senha inicial do cliente: 123456";
+            catch (Exception)
+            {
+                TempData["Erro"] = "Erro ao criar empresa. Tente novamente.";
+            }
             return RedirectToAction("Dashboard");
         }
 
@@ -102,9 +110,16 @@ namespace SistemaAtivos.Controllers
 
             empresa.Nome = Nome;
             empresa.Cor = string.IsNullOrWhiteSpace(Cor) ? "#534AB7" : Cor;
-            db.SaveChanges();
 
-            TempData["Sucesso"] = "Empresa atualizada com sucesso.";
+            try
+            {
+                db.SaveChanges();
+                TempData["Sucesso"] = "Empresa atualizada com sucesso.";
+            }
+            catch (Exception)
+            {
+                TempData["Erro"] = "Erro ao atualizar empresa. Tente novamente.";
+            }
             return RedirectToAction("Dashboard");
         }
 
@@ -126,25 +141,32 @@ namespace SistemaAtivos.Controllers
             var empresa = db.Empresas.Find(id);
             if (empresa == null) return HttpNotFound();
 
-            var manutencoes = db.Manutencoes.Where(m => m.EmpresaId == id).ToList();
-            db.Manutencoes.RemoveRange(manutencoes);
+            try
+            {
+                var manutencoes = db.Manutencoes.Where(m => m.EmpresaId == id).ToList();
+                db.Manutencoes.RemoveRange(manutencoes);
 
-            var ativos = db.Ativos.Where(a => a.EmpresaId == id).ToList();
-            db.Ativos.RemoveRange(ativos);
+                var ativos = db.Ativos.Where(a => a.EmpresaId == id).ToList();
+                db.Ativos.RemoveRange(ativos);
 
-            var categorias = db.Categorias.Where(c => c.EmpresaId == id).ToList();
-            db.Categorias.RemoveRange(categorias);
+                var categorias = db.Categorias.Where(c => c.EmpresaId == id).ToList();
+                db.Categorias.RemoveRange(categorias);
 
-            var colaboradores = db.Colaboradores.Where(c => c.EmpresaId == id).ToList();
-            db.Colaboradores.RemoveRange(colaboradores);
+                var colaboradores = db.Colaboradores.Where(c => c.EmpresaId == id).ToList();
+                db.Colaboradores.RemoveRange(colaboradores);
 
-            var usuarios = db.Usuarios.Where(u => u.EmpresaId == id).ToList();
-            db.Usuarios.RemoveRange(usuarios);
+                var usuarios = db.Usuarios.Where(u => u.EmpresaId == id).ToList();
+                db.Usuarios.RemoveRange(usuarios);
 
-            db.Empresas.Remove(empresa);
-            db.SaveChanges();
+                db.Empresas.Remove(empresa);
+                db.SaveChanges();
 
-            TempData["Sucesso"] = $"Empresa \"{empresa.Nome}\" excluída com sucesso.";
+                TempData["Sucesso"] = $"Empresa \"{empresa.Nome}\" excluída com sucesso.";
+            }
+            catch (Exception)
+            {
+                TempData["Erro"] = "Erro ao excluir empresa. Tente novamente.";
+            }
             return RedirectToAction("Dashboard");
         }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -52,12 +53,19 @@ namespace SistemaAtivos.Controllers
             if (!IsAdmin()) colaborador.EmpresaId = GetEmpresaId();
             if (ModelState.IsValid)
             {
-                db.Colaboradores.Add(colaborador);
-                db.SaveChanges();
-                TempData["Sucesso"] = "Colaborador cadastrado.";
-                if (colaborador.EmpresaId.HasValue)
-                    return RedirectToAction("Empresa", "Admin", new { id = colaborador.EmpresaId });
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Colaboradores.Add(colaborador);
+                    db.SaveChanges();
+                    TempData["Sucesso"] = "Colaborador cadastrado.";
+                    if (colaborador.EmpresaId.HasValue)
+                        return RedirectToAction("Empresa", "Admin", new { id = colaborador.EmpresaId });
+                    return RedirectToAction("Index");
+                }
+                catch (Exception)
+                {
+                    TempData["Erro"] = "Erro ao cadastrar colaborador. Tente novamente.";
+                }
             }
             ViewBag.EmpresaId = new SelectList(db.Empresas, "Id", "Nome", colaborador.EmpresaId);
             return View(colaborador);
@@ -79,12 +87,19 @@ namespace SistemaAtivos.Controllers
             if (!IsAdmin()) colaborador.EmpresaId = GetEmpresaId();
             if (ModelState.IsValid)
             {
-                db.Entry(colaborador).State = EntityState.Modified;
-                db.SaveChanges();
-                TempData["Sucesso"] = "Colaborador atualizado.";
-                if (colaborador.EmpresaId.HasValue)
-                    return RedirectToAction("Empresa", "Admin", new { id = colaborador.EmpresaId });
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Entry(colaborador).State = EntityState.Modified;
+                    db.SaveChanges();
+                    TempData["Sucesso"] = "Colaborador atualizado.";
+                    if (colaborador.EmpresaId.HasValue)
+                        return RedirectToAction("Empresa", "Admin", new { id = colaborador.EmpresaId });
+                    return RedirectToAction("Index");
+                }
+                catch (Exception)
+                {
+                    TempData["Erro"] = "Erro ao atualizar colaborador. Tente novamente.";
+                }
             }
             ViewBag.EmpresaId = new SelectList(db.Empresas, "Id", "Nome", colaborador.EmpresaId);
             return View(colaborador);
@@ -105,9 +120,16 @@ namespace SistemaAtivos.Controllers
                 return RedirectToAction("Index");
             }
 
-            db.Colaboradores.Remove(col);
-            db.SaveChanges();
-            TempData["Sucesso"] = "Colaborador excluído.";
+            try
+            {
+                db.Colaboradores.Remove(col);
+                db.SaveChanges();
+                TempData["Sucesso"] = "Colaborador excluído.";
+            }
+            catch (Exception)
+            {
+                TempData["Erro"] = "Erro ao excluir colaborador. Tente novamente.";
+            }
             if (empId.HasValue) return RedirectToAction("Empresa", "Admin", new { id = empId });
             return RedirectToAction("Index");
         }

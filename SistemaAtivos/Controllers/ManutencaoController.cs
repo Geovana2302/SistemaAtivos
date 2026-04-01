@@ -1,3 +1,4 @@
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -74,10 +75,17 @@ namespace SistemaAtivos.Controllers
             if (!IsAdmin()) manutencao.EmpresaId = GetEmpresaId();
             if (ModelState.IsValid)
             {
-                db.Manutencoes.Add(manutencao);
-                db.SaveChanges();
-                TempData["Sucesso"] = "Manutenção registrada.";
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Manutencoes.Add(manutencao);
+                    db.SaveChanges();
+                    TempData["Sucesso"] = "Manutenção registrada.";
+                    return RedirectToAction("Index");
+                }
+                catch (Exception)
+                {
+                    TempData["Erro"] = "Erro ao registrar manutenção. Tente novamente.";
+                }
             }
             PopularDropdowns(manutencao);
             return View(manutencao);
@@ -89,9 +97,16 @@ namespace SistemaAtivos.Controllers
         {
             var man = GetQuery().FirstOrDefault(m => m.Id == id);
             if (man == null) return HttpNotFound();
-            db.Manutencoes.Remove(man);
-            db.SaveChanges();
-            TempData["Sucesso"] = "Manutenção excluída.";
+            try
+            {
+                db.Manutencoes.Remove(man);
+                db.SaveChanges();
+                TempData["Sucesso"] = "Manutenção excluída.";
+            }
+            catch (Exception)
+            {
+                TempData["Erro"] = "Erro ao excluir manutenção. Tente novamente.";
+            }
             return RedirectToAction("Index");
         }
 

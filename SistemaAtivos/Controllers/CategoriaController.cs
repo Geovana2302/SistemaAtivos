@@ -1,3 +1,4 @@
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -50,12 +51,19 @@ namespace SistemaAtivos.Controllers
             if (!IsAdmin()) categoria.EmpresaId = GetEmpresaId();
             if (ModelState.IsValid)
             {
-                db.Categorias.Add(categoria);
-                db.SaveChanges();
-                TempData["Sucesso"] = "Categoria criada com sucesso.";
-                if (categoria.EmpresaId.HasValue)
-                    return RedirectToAction("Empresa", "Admin", new { id = categoria.EmpresaId });
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Categorias.Add(categoria);
+                    db.SaveChanges();
+                    TempData["Sucesso"] = "Categoria criada com sucesso.";
+                    if (categoria.EmpresaId.HasValue)
+                        return RedirectToAction("Empresa", "Admin", new { id = categoria.EmpresaId });
+                    return RedirectToAction("Index");
+                }
+                catch (Exception)
+                {
+                    TempData["Erro"] = "Erro ao criar categoria. Tente novamente.";
+                }
             }
             ViewBag.EmpresaId = new SelectList(db.Empresas, "Id", "Nome", categoria.EmpresaId);
             return View(categoria);
@@ -77,12 +85,19 @@ namespace SistemaAtivos.Controllers
             if (!IsAdmin()) categoria.EmpresaId = GetEmpresaId();
             if (ModelState.IsValid)
             {
-                db.Entry(categoria).State = EntityState.Modified;
-                db.SaveChanges();
-                TempData["Sucesso"] = "Categoria atualizada.";
-                if (categoria.EmpresaId.HasValue)
-                    return RedirectToAction("Empresa", "Admin", new { id = categoria.EmpresaId });
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Entry(categoria).State = EntityState.Modified;
+                    db.SaveChanges();
+                    TempData["Sucesso"] = "Categoria atualizada.";
+                    if (categoria.EmpresaId.HasValue)
+                        return RedirectToAction("Empresa", "Admin", new { id = categoria.EmpresaId });
+                    return RedirectToAction("Index");
+                }
+                catch (Exception)
+                {
+                    TempData["Erro"] = "Erro ao atualizar categoria. Tente novamente.";
+                }
             }
             ViewBag.EmpresaId = new SelectList(db.Empresas, "Id", "Nome", categoria.EmpresaId);
             return View(categoria);
@@ -103,9 +118,16 @@ namespace SistemaAtivos.Controllers
                 return RedirectToAction("Index");
             }
 
-            db.Categorias.Remove(cat);
-            db.SaveChanges();
-            TempData["Sucesso"] = "Categoria excluída.";
+            try
+            {
+                db.Categorias.Remove(cat);
+                db.SaveChanges();
+                TempData["Sucesso"] = "Categoria excluída.";
+            }
+            catch (Exception)
+            {
+                TempData["Erro"] = "Erro ao excluir categoria. Tente novamente.";
+            }
             if (empId.HasValue) return RedirectToAction("Empresa", "Admin", new { id = empId });
             return RedirectToAction("Index");
         }
