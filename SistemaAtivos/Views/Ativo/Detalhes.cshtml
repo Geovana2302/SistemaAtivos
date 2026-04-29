@@ -58,23 +58,73 @@
 
 @if (Model.Manutencoes != null && Model.Manutencoes.Any())
 {
-    <h6 class="section-title" style="margin-top:1.5rem">Histórico de manutenções</h6>
-    <div class="accordion-custom">
-        @foreach (var man in Model.Manutencoes.OrderByDescending(m => m.Data))
-        {
-            <div class="acc-item">
-                <div class="acc-left" style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
-                    <div>
-                        <span class="acc-label">@man.Data.ToString("dd/MM/yyyy")</span>
-                        <span class="acc-badge" style="margin-left:6px">@man.Tipo</span>
-                    </div>
-                    <span class="acc-label" style="font-size:12px;font-weight:400">@man.Descricao</span>
-                    @if (man.Custo.HasValue)
-                    {
-                        <span style="font-size:12px;color:#534AB7">@man.Custo.Value.ToString("C2")</span>
-                    }
-                </div>
-            </div>
-        }
+    <h6 class="section-title" style="margin-top:1.5rem">Histórico de manutenções (@Model.Manutencoes.Count())</h6>
+    <div class="table-wrap">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Descrição</th>
+                    <th>Status</th>
+                    <th>Custo</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var man in Model.Manutencoes.OrderByDescending(m => m.Data))
+                {
+                    <tr>
+                        <td style="white-space:nowrap">
+                            <strong>@man.Data.ToString("dd/MM/yyyy")</strong>
+                        </td>
+                        <td>
+                            <span class="acc-badge">@man.Tipo</span>
+                        </td>
+                        <td>
+                            <p style="margin:0;font-size:13px">@man.Descricao</p>
+                            @if (!string.IsNullOrEmpty(man.Fornecedor))
+                            {
+                                <p style="margin:0;font-size:11px;color:#888">@man.Fornecedor</p>
+                            }
+                        </td>
+                        <td>
+                            <span class="status-badge status-@man.Status.ToString().ToLower()">@man.Status</span>
+                        </td>
+                        <td style="white-space:nowrap">
+                            @if (man.Custo.HasValue)
+                            {
+                                <span style="font-weight:500;color:#534AB7">@man.Custo.Value.ToString("C2")</span>
+                            }
+                            else if (man.ValorOrcamento.HasValue)
+                            {
+                                <span style="font-size:12px;color:#888">Orç: @man.ValorOrcamento.Value.ToString("C2")</span>
+                            }
+                            else
+                            {
+                                <span style="color:#ccc">—</span>
+                            }
+                        </td>
+                        <td>
+                            <div style="display:flex;gap:4px">
+                                @Html.ActionLink("Editar", "Edit", "Manutencao", new { id = man.Id }, new { @class = "btn-xs-outline" })
+                                @using (Html.BeginForm("Delete", "Manutencao", new { id = man.Id }, FormMethod.Post, new { style = "display:inline" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-xs-outline" onclick="return confirm('Deseja realmente excluir esta manutenção?')" style="color:#d9534f;border-color:#d9534f">Excluir</button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="empty-state" style="margin-top:1.5rem">
+        <p>Nenhuma manutenção registrada para este ativo.</p>
+        @Html.ActionLink("+ Registrar Manutenção", "Create", "Manutencao", new { ativoId = Model.Id }, new { @class = "btn-purple", style = "margin-top:8px" })
     </div>
 }

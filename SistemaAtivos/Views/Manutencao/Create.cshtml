@@ -1,0 +1,158 @@
+﻿@model SistemaAtivos.Models.Manutencao
+@{
+    ViewBag.Title = "Registrar Manutenção";
+    var isAdmin = Session["UsuarioTipo"] != null && Session["UsuarioTipo"].ToString() == "Admin";
+}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Registrar Manutenção</h4>
+        <p class="page-sub">Cadastre um novo registro de manutenção</p>
+    </div>
+</div>
+
+<div class="form-card">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "alert-custom alert-danger-custom" })
+        @Html.HiddenFor(m => m.EmpresaId, new { id = "hdnEmpresaId" })
+
+        <div class="form-row-2">
+            <div class="field-group">
+                @Html.LabelFor(m => m.AtivoId, "Ativo / Equipamento", new { @class = "field-label" })
+                @Html.DropDownList("AtivoId", (SelectList)ViewBag.AtivoId, "-- Selecione --", new { @class = "field-input", id = "ddlAtivo" })
+                @Html.ValidationMessageFor(m => m.AtivoId, "", new { @class = "field-error" })
+            </div>
+            <div class="field-group">
+                @Html.LabelFor(m => m.Data, new { @class = "field-label" })
+                @Html.TextBoxFor(m => m.Data, "{0:yyyy-MM-dd}", new { @class = "field-input", type = "date" })
+                @Html.ValidationMessageFor(m => m.Data, "", new { @class = "field-error" })
+            </div>
+        </div>
+
+        if (!isAdmin)
+        {
+            <div class="alert-custom alert-info-custom" style="margin-bottom: 1rem;">
+                <strong>Info:</strong> A empresa será preenchida automaticamente ao selecionar o ativo.
+            </div>
+        }
+
+        <div class="field-group">
+            @Html.LabelFor(m => m.Descricao, "Descrição / Relato", new { @class = "field-label" })
+            @Html.TextAreaFor(m => m.Descricao, new { @class = "field-input", rows = "4", placeholder = "Descreva o problema relatado pelo usuário" })
+            @Html.ValidationMessageFor(m => m.Descricao, "", new { @class = "field-error" })
+        </div>
+
+        <div class="form-row-2">
+            <div class="field-group">
+                @Html.LabelFor(m => m.Tipo, new { @class = "field-label" })
+                @Html.EnumDropDownListFor(m => m.Tipo, new { @class = "field-input" })
+            </div>
+            <div class="field-group">
+                @Html.LabelFor(m => m.Custo, new { @class = "field-label" })
+                @Html.TextBoxFor(m => m.Custo, new { @class = "field-input money-mask", placeholder = "R$ 0,00" })
+            </div>
+        </div>
+
+        <div class="form-row-2">
+            <div class="field-group">
+                @Html.LabelFor(m => m.Fornecedor, new { @class = "field-label" })
+                @Html.TextBoxFor(m => m.Fornecedor, new { @class = "field-input", placeholder = "Fornecedor / Técnico" })
+                @Html.ValidationMessageFor(m => m.Fornecedor, "", new { @class = "field-error" })
+            </div>
+            <div class="field-group">
+                @Html.LabelFor(m => m.ProximaManutencao, new { @class = "field-label" })
+                @Html.TextBoxFor(m => m.ProximaManutencao, "{0:yyyy-MM-dd}", new { @class = "field-input", type = "date" })
+            </div>
+        </div>
+
+        if (isAdmin)
+        {
+            <hr style="margin: 1.5rem 0; border-color: #E5E4E0;" />
+            <h6 style="margin-bottom: 1rem; color: #534AB7; font-weight: 600;">
+                <i style="margin-right: 4px;">🔧</i> Área Técnica (Admin)
+            </h6>
+
+            <div class="form-row-2">
+                <div class="field-group">
+                    @Html.LabelFor(m => m.Status, new { @class = "field-label" })
+                    @Html.EnumDropDownListFor(m => m.Status, new { @class = "field-input" })
+                </div>
+                <div class="field-group">
+                    @Html.LabelFor(m => m.ValorOrcamento, "Valor do Orçamento", new { @class = "field-label" })
+                    @Html.TextBoxFor(m => m.ValorOrcamento, new { @class = "field-input money-mask", placeholder = "R$ 0,00" })
+                </div>
+            </div>
+
+            <div class="field-group">
+                @Html.LabelFor(m => m.DiagnosticoTecnico, new { @class = "field-label" })
+                @Html.TextAreaFor(m => m.DiagnosticoTecnico, new { @class = "field-input", rows = "3", placeholder = "Diagnóstico técnico / Observações" })
+            </div>
+
+            <div class="field-group">
+                <label class="field-label">Empresa <span style="color: #888; font-size: 12px;">(Preenchido automaticamente)</span></label>
+                @Html.DropDownList("EmpresaId", (SelectList)ViewBag.EmpresaId, "-- Selecione --", new { @class = "field-input", id = "ddlEmpresa", disabled = "disabled" })
+            </div>
+        }
+
+        <div class="form-actions">
+            @if (Model?.AtivoId != null)
+            {
+                @Html.ActionLink("Cancelar", "Detalhes", "Ativo", new { id = Model.AtivoId }, new { @class = "btn-cancel" })
+            }
+            else
+            {
+                @Html.ActionLink("Cancelar", "Index", "Manutencao", null, new { @class = "btn-cancel" })
+            }
+            <button type="submit" class="btn-purple">
+                <span style="margin-right: 4px;">💾</span> Salvar manutenção
+            </button>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Máscara de moeda brasileira
+            $('.money-mask').mask('#.##0,00', { reverse: true });
+
+            // Dados dos ativos com suas empresas (preenchido pelo servidor)
+            var ativosData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+                ViewBag.Ativos ?? new List<object>()
+            ));
+
+            // Ao selecionar um ativo, preencher a empresa automaticamente
+            $('#ddlAtivo').change(function () {
+                var ativoId = $(this).val();
+                if (ativoId) {
+                    var ativo = ativosData.find(function(a) { return a.Id == ativoId; });
+                    if (ativo && ativo.EmpresaId) {
+                        $('#hdnEmpresaId').val(ativo.EmpresaId);
+                        @if (isAdmin)
+                        {
+                            <text>
+                            $('#ddlEmpresa').val(ativo.EmpresaId);
+                            </text>
+                        }
+                    }
+                } else {
+                    $('#hdnEmpresaId').val('');
+                    @if (isAdmin)
+                    {
+                        <text>
+                        $('#ddlEmpresa').val('');
+                        </text>
+                    }
+                }
+            });
+
+            // Trigger inicial se já houver ativo selecionado
+            if ($('#ddlAtivo').val()) {
+                $('#ddlAtivo').trigger('change');
+            }
+        });
+    </script>
+}

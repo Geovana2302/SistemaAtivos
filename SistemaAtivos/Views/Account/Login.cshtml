@@ -1,49 +1,45 @@
 @{
+    ViewBag.Title = "Login - Sistema de Ativos";
     Layout = null;
 }
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - Sistema de Ativos</title>
-    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/Content/Site.css" />
-    <style>
-        html, body { height: 100%; margin: 0; }
-        body { background: #F5F4F2; display: flex; align-items: center; justify-content: center; font-family: system-ui, sans-serif; }
-    </style>
-</head>
-<body>
-    <div class="login-wrap">
-        <div class="login-card">
-            <div class="login-logo">A</div>
-            <h4 class="login-title">Bem-vindo de volta</h4>
-            <p class="login-sub">Acesse o sistema de gestao de ativos</p>
 
-            @if (ViewBag.Erro != null)
-            {
-                <div class="alert-custom alert-danger-custom" style="margin-bottom:1.25rem">@ViewBag.Erro</div>
-            }
-
-            @using (Html.BeginForm("Login", "Account", FormMethod.Post))
-            {
-                @Html.AntiForgeryToken()
-                <div class="field-group">
-                    <label class="field-label">E-mail</label>
-                    <input name="email" type="email" class="field-input" placeholder="Digite seu e-mail" autocomplete="email" />
+<div class="container mt-5">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5">
+            <div class="card shadow border-0 rounded-lg">
+                <div class="card-header bg-danger text-white text-center py-3">
+                    <h3 class="fw-bold mb-0"><i class="bi bi-box-seam me-2"></i>Sistema de Ativos</h3>
                 </div>
-                <div class="field-group">
-                    <label class="field-label">Senha</label>
-                    <input name="senha" type="password" class="field-input" placeholder="Digite sua senha" autocomplete="current-password" />
-                </div>
-                <button type="submit" class="btn-login">Entrar</button>
-            }
+                <div class="card-body p-5">
 
-            <p style="text-align:center; font-size:12px; color:#aaa; margin-top:1.5rem; margin-bottom:0;">
-                &copy; @DateTime.Now.Year Sistema de Ativos
-            </p>
+                    @if (ViewBag.Erro != null)
+                    {
+                        <div class="alert alert-warning text-center fw-bold">
+                            <i class="bi bi-exclamation-triangle-fill"></i> @ViewBag.Erro
+                        </div>
+                    }
+
+                    @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-floating mb-3">
+                            <input class="form-control" id="email" name="email" type="email" placeholder="nome@exemplo.com" required />
+                            <label for="email">E-mail</label>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <input class="form-control" id="senha" name="senha" type="password" placeholder="Sua senha" required />
+                            <label for="senha">Senha</label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger btn-lg fw-bold">Entrar no Sistema</button>
+                        </div>
+                    }
+
+                </div>
+            </div>
         </div>
     </div>
-</body>
-</html>
+</div>

@@ -1,0 +1,404 @@
+@model IEnumerable<SistemaAtivos.Models.Manutencao>
+@{
+    ViewBag.Title = "Quadro Tecnico - Manutencoes";
+    var empresas = ViewBag.Empresas as List<SistemaAtivos.Models.Empresa>;
+    var empresaFiltro = ViewBag.EmpresaFiltro as int?;
+}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-title">&#128295; Quadro Tecnico de Manutencoes</h4>
+        <p class="page-sub">Gerenciamento de chamados em tempo real</p>
+    </div>
+    <div style="margin-left:auto">
+        @Html.ActionLink("Historico", "Historico", null, new { @class = "btn-outline-sm" })
+        @Html.ActionLink("+ Novo Chamado", "Create", null, new { @class = "btn-purple" })
+    </div>
+</div>
+
+@if (TempData["Sucesso"] != null)
+{
+    <div class="alert-custom alert-success-custom">
+        @TempData["Sucesso"]
+    </div>
+}
+@if (TempData["Erro"] != null)
+{
+    <div class="alert-custom alert-danger-custom">
+        @TempData["Erro"]
+    </div>
+}
+
+<div style="display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center">
+    <span style="font-size:12px;color:#888">Filtrar por empresa:</span>
+    <a href="@Url.Action("QuadroTecnico")" class="filter-chip @(empresaFiltro == null ? "filter-chip-active" : "")">Todas</a>
+    @if (empresas != null)
+    {
+        foreach (var emp in empresas)
+        {
+            <a href="@Url.Action("QuadroTecnico", new { empresaId = emp.Id })"
+               class="filter-chip @(empresaFiltro == emp.Id ? "filter-chip-active" : "")"
+               style="@(empresaFiltro == emp.Id ? "background:" + emp.Cor + ";color:#fff;border-color:" + emp.Cor : "")">
+                <span class="filter-dot" style="background:@emp.Cor"></span>@emp.Nome
+            </a>
+        }
+    }
+</div>
+
+<div class="kanban-board">
+    @{
+        var abertos = Model.Where(m => m.Status == SistemaAtivos.Models.StatusManutencao.Aberto).ToList();
+        var emOrcamento = Model.Where(m => m.Status == SistemaAtivos.Models.StatusManutencao.EmOrcamento).ToList();
+        var aguardando = Model.Where(m => m.Status == SistemaAtivos.Models.StatusManutencao.AguardandoAprovacao).ToList();
+        var aprovados = Model.Where(m => m.Status == SistemaAtivos.Models.StatusManutencao.Aprovado).ToList();
+        var emConserto = Model.Where(m => m.Status == SistemaAtivos.Models.StatusManutencao.EmConserto).ToList();
+    }
+
+    <div class="kanban-column" data-status="@((int)SistemaAtivos.Models.StatusManutencao.Aberto)">
+        <div class="kanban-header" style="background:#f8d7da;color:#721c24">
+            <h6>Aberto</h6>
+            <span class="badge-count">@abertos.Count()</span>
+        </div>
+        <div class="kanban-body" data-status="@((int)SistemaAtivos.Models.StatusManutencao.Aberto)">
+            @foreach (var man in abertos)
+            {
+                @Html.Partial("_ManutencaoCard", man)
+            }
+        </div>
+    </div>
+
+    <div class="kanban-column" data-status="@((int)SistemaAtivos.Models.StatusManutencao.EmOrcamento)">
+        <div class="kanban-header" style="background:#fff3cd;color:#856404">
+            <h6>Em Orcamento</h6>
+            <span class="badge-count">@emOrcamento.Count()</span>
+        </div>
+        <div class="kanban-body" data-status="@((int)SistemaAtivos.Models.StatusManutencao.EmOrcamento)">
+            @foreach (var man in emOrcamento)
+            {
+                @Html.Partial("_ManutencaoCard", man)
+            }
+        </div>
+    </div>
+
+    <div class="kanban-column" data-status="@((int)SistemaAtivos.Models.StatusManutencao.AguardandoAprovacao)">
+        <div class="kanban-header" style="background:#d1ecf1;color:#0c5460">
+            <h6>Aguardando Aprovacao</h6>
+            <span class="badge-count">@aguardando.Count()</span>
+        </div>
+        <div class="kanban-body" data-status="@((int)SistemaAtivos.Models.StatusManutencao.AguardandoAprovacao)">
+            @foreach (var man in aguardando)
+            {
+                @Html.Partial("_ManutencaoCard", man)
+            }
+        </div>
+    </div>
+
+    <div class="kanban-column" data-status="@((int)SistemaAtivos.Models.StatusManutencao.Aprovado)">
+        <div class="kanban-header" style="background:#d4edda;color:#155724">
+            <h6>Aprovado</h6>
+            <span class="badge-count">@aprovados.Count()</span>
+        </div>
+        <div class="kanban-body" data-status="@((int)SistemaAtivos.Models.StatusManutencao.Aprovado)">
+            @foreach (var man in aprovados)
+            {
+                @Html.Partial("_ManutencaoCard", man)
+            }
+        </div>
+    </div>
+
+    <div class="kanban-column" data-status="@((int)SistemaAtivos.Models.StatusManutencao.EmConserto)">
+        <div class="kanban-header" style="background:#cce5ff;color:#004085">
+            <h6>Em Conserto</h6>
+            <span class="badge-count">@emConserto.Count()</span>
+        </div>
+        <div class="kanban-body" data-status="@((int)SistemaAtivos.Models.StatusManutencao.EmConserto)">
+            @foreach (var man in emConserto)
+            {
+                @Html.Partial("_ManutencaoCard", man)
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .kanban-board {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .kanban-column {
+        background: #f8f9fa;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: box-shadow 0.2s;
+    }
+
+    .kanban-column.drag-over {
+        box-shadow: 0 0 0 2px #534AB7;
+    }
+
+    .kanban-header {
+        padding: 0.75rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid rgba(0,0,0,0.1);
+    }
+
+    .kanban-header h6 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .badge-count {
+        background: rgba(0,0,0,0.1);
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .kanban-body {
+        padding: 0.5rem;
+        min-height: 400px;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .kanban-card {
+        background: white;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        cursor: grab;
+        transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    }
+
+    .kanban-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .kanban-card.dragging {
+        opacity: 0.5;
+        cursor: grabbing;
+    }
+
+    .card-empresa {
+        padding: 0.5rem;
+        color: white;
+        font-size: 11px;
+        font-weight: 600;
+        text-align: center;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .card-content {
+        padding: 0.75rem;
+    }
+
+    .card-title {
+        margin: 0 0 0.5rem 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .card-description {
+        margin: 0 0 0.5rem 0;
+        font-size: 12px;
+        color: #666;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .card-valor {
+        font-size: 13px;
+        color: #534AB7;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        color: #888;
+        padding-top: 0.5rem;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .card-tempo {
+        font-weight: 500;
+    }
+
+    .card-tipo {
+        background: #e9ecef;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 4px;
+        padding: 0.5rem;
+        border-top: 1px solid #f0f0f0;
+        background: #f8f9fa;
+    }
+
+    .btn-card-action {
+        flex: 1;
+        padding: 0.25rem;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 16px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-card-action:hover {
+        background: #534AB7;
+        border-color: #534AB7;
+        color: #fff;
+        transform: scale(1.05);
+    }
+
+    .card-info {
+        flex: 1;
+        text-align: center;
+        font-size: 16px;
+    }
+
+    .drop-placeholder {
+        border: 2px dashed #534AB7;
+        border-radius: 8px;
+        min-height: 60px;
+        margin-bottom: 0.5rem;
+        background: rgba(83, 74, 183, 0.05);
+    }
+
+    @@media (max-width: 1400px) {
+        .kanban-board {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .kanban-board {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Drag and Drop
+        (function () {
+            var draggedCard = null;
+            var antiForgeryToken = '@Html.AntiForgeryToken()'.match(/value="([^"]+)"/)[1];
+
+            document.querySelectorAll('.kanban-card').forEach(function (card) {
+                card.addEventListener('dragstart', function (e) {
+                    draggedCard = this;
+                    this.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', this.dataset.id);
+                });
+
+                card.addEventListener('dragend', function () {
+                    this.classList.remove('dragging');
+                    draggedCard = null;
+                    document.querySelectorAll('.kanban-column').forEach(function (col) {
+                        col.classList.remove('drag-over');
+                    });
+                    document.querySelectorAll('.drop-placeholder').forEach(function (p) {
+                        p.remove();
+                    });
+                });
+            });
+
+            document.querySelectorAll('.kanban-body').forEach(function (body) {
+                body.addEventListener('dragover', function (e) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    this.closest('.kanban-column').classList.add('drag-over');
+
+                    if (!this.querySelector('.drop-placeholder')) {
+                        var placeholder = document.createElement('div');
+                        placeholder.className = 'drop-placeholder';
+                        this.appendChild(placeholder);
+                    }
+                });
+
+                body.addEventListener('dragleave', function (e) {
+                    if (!this.contains(e.relatedTarget)) {
+                        this.closest('.kanban-column').classList.remove('drag-over');
+                        var ph = this.querySelector('.drop-placeholder');
+                        if (ph) ph.remove();
+                    }
+                });
+
+                body.addEventListener('drop', function (e) {
+                    e.preventDefault();
+                    this.closest('.kanban-column').classList.remove('drag-over');
+                    var ph = this.querySelector('.drop-placeholder');
+                    if (ph) ph.remove();
+
+                    if (!draggedCard) return;
+
+                    var novoStatus = this.dataset.status;
+                    var cardId = draggedCard.dataset.id;
+                    var statusAtual = draggedCard.dataset.status;
+
+                    if (novoStatus === statusAtual) return;
+
+                    // Mover visualmente
+                    this.appendChild(draggedCard);
+                    draggedCard.dataset.status = novoStatus;
+
+                    // Enviar para o servidor
+                    var formData = new FormData();
+                    formData.append('id', cardId);
+                    formData.append('novoStatus', novoStatus);
+                    formData.append('__RequestVerificationToken', antiForgeryToken);
+
+                    fetch('@Url.Action("MoverStatus", "Manutencao")', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    }).then(function (response) {
+                        if (response.ok) {
+                            window.location.reload();
+                        } else {
+                            alert('Erro ao mover o chamado. Tente novamente.');
+                            window.location.reload();
+                        }
+                    }).catch(function () {
+                        alert('Erro de conexao. Tente novamente.');
+                        window.location.reload();
+                    });
+                });
+            });
+        })();
+
+        function abrirModal(id) {
+            window.location.href = '@Url.Action("Edit", "Manutencao")/' + id;
+        }
+
+        function abrirModalOrcamento(id) {
+            var url = '@Url.Action("Orcamento", "Manutencao")/' + id;
+            window.open(url, '_blank', 'width=600,height=600');
+        }
+    </script>
+}

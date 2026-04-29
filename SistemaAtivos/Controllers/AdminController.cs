@@ -7,6 +7,13 @@ using SistemaAtivos.Models;
 
 namespace SistemaAtivos.Controllers
 {
+    // =====================================================================
+    // REQUISITO 1 - [EmpresaAuthorize] protege todo o controller
+    // REQUISITO 4 - LOGICA OPERACIONAL: Dashboard com queries complexas,
+    //   CreateEmpresa com limite de 25 + criacao automatica de usuario,
+    //   DeleteEmpresa com exclusao em cascata de 5 entidades relacionadas
+    // REQUISITO 5 - ESTABILIDADE: try-catch em todas as operacoes criticas
+    // =====================================================================
     [EmpresaAuthorize]
     public class AdminController : Controller
     {
@@ -34,12 +41,17 @@ namespace SistemaAtivos.Controllers
             return View();
         }
 
+        // REQUISITO 4 - LOGICA OPERACIONAL (Action complexa)
+        // Verifica limite de 25 empresas, cria empresa e usuario cliente
+        // automaticamente com senha hash BCrypt
+        // REQUISITO 5 - try-catch para tratamento de excecoes
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CreateEmpresa(Empresa empresa, string emailCliente)
         {
             if (!IsAdmin()) return new HttpUnauthorizedResult();
 
+            // REQUISITO 4 - Regra de negocio: limite maximo de empresas
             if (db.Empresas.Count() >= 25)
             {
                 TempData["Erro"] = "Limite de 25 empresas atingido.";
@@ -123,6 +135,11 @@ namespace SistemaAtivos.Controllers
             return RedirectToAction("Dashboard");
         }
 
+        // REQUISITO 4 - LOGICA OPERACIONAL (Action complexa)
+        // Exclusao em cascata: remove Manutencoes, Ativos, Categorias,
+        // Colaboradores e Usuarios vinculados antes de excluir a Empresa.
+        // Exige confirmacao com senha do admin para seguranca.
+        // REQUISITO 5 - try-catch para tratamento de excecoes
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteEmpresa(int id, string senhaAdmin)
@@ -170,6 +187,10 @@ namespace SistemaAtivos.Controllers
             return RedirectToAction("Dashboard");
         }
 
+        // REQUISITO 2 - MOVIMENTACAO DE DADOS
+        // Carrega a Empresa com todas as entidades relacionadas usando Include:
+        // Ativos (com Categoria e Colaborador), Categorias, Colaboradores, Usuarios, Manutencoes
+        // REQUISITO 4 - Query complexa com multiplos Include aninhados
         public ActionResult Empresa(int id)
         {
             if (!IsAdmin() && GetEmpresaId() != id)

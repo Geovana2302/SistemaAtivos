@@ -208,9 +208,9 @@ namespace SistemaAtivos.Controllers
                 ? db.Colaboradores.Where(c => c.EmpresaId == empId).ToList()
                 : db.Colaboradores.ToList();
 
-            ViewBag.CategoriaId  = new SelectList(cats, "Id", "Nome", ativo?.CategoriaId);
-            ViewBag.ColaboradorId = new SelectList(cols, "Id", "Nome", ativo?.ColaboradorId);
-            ViewBag.EmpresaId    = IsAdmin()
+            ViewBag.Categorias  = new SelectList(cats, "Id", "Nome", ativo?.CategoriaId);
+            ViewBag.Colaboradores = new SelectList(cols, "Id", "Nome", ativo?.ColaboradorId);
+            ViewBag.EmpresaSelectList    = IsAdmin()
                 ? new SelectList(db.Empresas, "Id", "Nome", ativo?.EmpresaId)
                 : new SelectList(db.Empresas.Where(e => e.Id == GetEmpresaId()), "Id", "Nome", GetEmpresaId());
         }

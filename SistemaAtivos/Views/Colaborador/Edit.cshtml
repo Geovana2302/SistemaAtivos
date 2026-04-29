@@ -13,7 +13,7 @@
     {
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.Id)
-        @Html.ValidationSummary(true, "", new { @class = "alert-custom alert-danger-custom" })
+        @Html.ValidationSummary(true, "Por favor, corrija os campos indicados abaixo.", new { @class = "alert-custom alert-danger-custom" })
 
         <div class="form-row-2">
             <div class="field-group">
@@ -42,7 +42,8 @@
         {
             <div class="field-group">
                 <label class="field-label">Empresa</label>
-                @Html.DropDownList("EmpresaId", (SelectList)ViewBag.EmpresaId, "— Selecione —", new { @class = "field-input" })
+                @Html.DropDownList("EmpresaId", (SelectList)ViewBag.Empresas, "— Selecione —", new { @class = "field-input" })
+                @Html.ValidationMessageFor(m => m.EmpresaId, null, new { @class = "field-error" })
             </div>
         }
 

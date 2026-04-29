@@ -37,7 +37,7 @@ namespace SistemaAtivos.Controllers
             else if (!IsAdmin())
                 cat.EmpresaId = GetEmpresaId();
 
-            ViewBag.EmpresaId = IsAdmin()
+            ViewBag.Empresas = IsAdmin()
                 ? new SelectList(db.Empresas, "Id", "Nome", cat.EmpresaId)
                 : new SelectList(db.Empresas.Where(e => e.Id == GetEmpresaId()), "Id", "Nome", GetEmpresaId());
             ViewBag.EmpresaPreSelecionada = empresaId.HasValue || !IsAdmin();
@@ -65,7 +65,7 @@ namespace SistemaAtivos.Controllers
                     TempData["Erro"] = "Erro ao criar categoria. Tente novamente.";
                 }
             }
-            ViewBag.EmpresaId = new SelectList(db.Empresas, "Id", "Nome", categoria.EmpresaId);
+            ViewBag.Empresas = new SelectList(db.Empresas, "Id", "Nome", categoria.EmpresaId);
             return View(categoria);
         }
 
@@ -74,7 +74,7 @@ namespace SistemaAtivos.Controllers
         {
             var cat = GetQuery().FirstOrDefault(c => c.Id == id);
             if (cat == null) return HttpNotFound();
-            ViewBag.EmpresaId = new SelectList(db.Empresas, "Id", "Nome", cat.EmpresaId);
+            ViewBag.Empresas = new SelectList(db.Empresas, "Id", "Nome", cat.EmpresaId);
             return View(cat);
         }
 
@@ -99,7 +99,7 @@ namespace SistemaAtivos.Controllers
                     TempData["Erro"] = "Erro ao atualizar categoria. Tente novamente.";
                 }
             }
-            ViewBag.EmpresaId = new SelectList(db.Empresas, "Id", "Nome", categoria.EmpresaId);
+            ViewBag.Empresas = new SelectList(db.Empresas, "Id", "Nome", categoria.EmpresaId);
             return View(categoria);
         }
 

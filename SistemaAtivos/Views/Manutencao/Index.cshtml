@@ -1,49 +1,31 @@
-@model IEnumerable<SistemaAtivos.Models.Ativo>
+﻿@model IEnumerable<SistemaAtivos.Models.Manutencao>
 @{
-    ViewBag.Title = "Manutencoes";
-    var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
-    var empresas = ViewBag.Empresas as List<SistemaAtivos.Models.Empresa>;
-    var empresaFiltro = ViewBag.EmpresaFiltro as int?;
-    var ordemAtual = ViewBag.OrdemAtual as string ?? "recente";
+    ViewBag.Title = "Minhas Manutenções";
 }
 
 <div class="page-header">
     <div>
-        <h4 class="page-title">Em Manutencao</h4>
-        <p class="page-sub">@Model.Count() ativo(s) em manutencao</p>
+        <h4 class="page-title">Minhas Manutenções</h4>
+        <p class="page-sub">Acompanhe o status dos seus equipamentos</p>
+    </div>
+    <div style="margin-left:auto">
+        @Html.ActionLink("+ Solicitar Manutenção", "Create", null, new { @class = "btn-purple" })
     </div>
 </div>
 
-<div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
-    <span style="font-size:12px;color:#888">Filtrar:</span>
-    <a href="@Url.Action("Index", new { ordem = ordemAtual })"
-       class="filter-chip @(empresaFiltro == null ? "filter-chip-active" : "")">Todas</a>
-    @if (isAdmin && empresas != null)
-    {
-        foreach (var emp in empresas)
-        {
-            <a href="@Url.Action("Index", new { empresaId = emp.Id, ordem = ordemAtual })"
-               class="filter-chip @(empresaFiltro == emp.Id ? "filter-chip-active" : "")"
-               style="@(empresaFiltro == emp.Id ? "background:" + emp.Cor + ";color:#fff;border-color:" + emp.Cor : "")">
-                <span class="filter-dot" style="background:@emp.Cor"></span>@emp.Nome
-            </a>
-        }
-    }
-    <span style="font-size:12px;color:#888;margin-left:12px">Ordenar:</span>
-    <a href="@Url.Action("Index", new { empresaId = empresaFiltro, ordem = "recente" })"
-       class="filter-chip @(ordemAtual == "recente" ? "filter-chip-active" : "")">Mais recente</a>
-    <a href="@Url.Action("Index", new { empresaId = empresaFiltro, ordem = "antigo" })"
-       class="filter-chip @(ordemAtual == "antigo" ? "filter-chip-active" : "")">Mais antigo</a>
-    @if (isAdmin)
-    {
-        <a href="@Url.Action("Index", new { empresaId = empresaFiltro, ordem = "empresa" })"
-           class="filter-chip @(ordemAtual == "empresa" ? "filter-chip-active" : "")">Por empresa</a>
-    }
-</div>
+@if (TempData["Sucesso"] != null)
+{
+    <div class="alert-custom alert-success-custom">
+        @TempData["Sucesso"]
+    </div>
+}
 
 @if (!Model.Any())
 {
-    <div class="empty-state"><p>Nenhum ativo em manutencao encontrado.</p></div>
+    <div class="empty-state">
+        <p>Nenhuma manutenção registrada ainda.</p>
+        @Html.ActionLink("+ Solicitar Manutenção", "Create", null, new { @class = "btn-purple", style = "margin-top:1rem" })
+    </div>
 }
 else
 {
@@ -51,48 +33,88 @@ else
         <table class="table-custom">
             <thead>
                 <tr>
-                    <th>Nome</th>
-                    <th>Categoria</th>
-                    @if (isAdmin)
-                    {
-                        <th>Empresa</th>
-}
+                    <th>Ativo</th>
+                    <th>Descrição</th>
                     <th>Status</th>
-                    <th>Acoes</th>
+                    <th>Orçamento</th>
+                    <th>Data</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var ativo in Model)
+                @foreach (var man in Model)
                 {
                     <tr>
                         <td>
-                            <p style="font-weight:500;margin:0">@ativo.Nome</p>
-                            <p style="font-size:11px;color:#888;margin:0">@ativo.NumeroSerie</p>
+                            <p style="font-weight:500;margin:0">@man.Ativo?.Nome</p>
+                            <p style="font-size:11px;color:#888;margin:0">@man.Tipo</p>
                         </td>
-                        <td>@(ativo.Categoria?.Nome ?? "-")</td>
-                        @if (isAdmin)
-                        {
-                            <td>
-                                @if (ativo.Empresa != null)
-                                {
-                                    <span class="filter-dot" style="background:@ativo.Empresa.Cor"></span>
-                                    @ativo.Empresa.Nome
-                                }
-                                else
-                                { <text>-</text>}
-                            </td>
-                        }
-                        <td><span class="status-badge status-emmanutencao">EmManutencao</span></td>
                         <td>
-                            <div style="display:flex;gap:4px">
-                                @Html.ActionLink("Ver", "Detalhes", "Ativo", new { id = ativo.Id }, new { @class = "btn-xs-outline" })
-                                <div class="dropdown" style="display:inline-block">
-                                    <button type="button" class="btn-xs-outline" data-toggle="dropdown">&#8942;</button>
-                                    <ul class="dropdown-menu dropdown-menu-right">
-                                        <li>@Html.ActionLink("Editar", "Edit", "Ativo", new { id = ativo.Id }, null)</li>
-                                    </ul>
-                                </div>
-                            </div>
+                            <p style="margin:0;font-size:13px">@man.Descricao</p>
+                            @if (!string.IsNullOrEmpty(man.DiagnosticoTecnico))
+                            {
+                                <details style="margin-top:4px">
+                                    <summary style="cursor:pointer;font-size:11px;color:#534AB7">Ver diagnóstico</summary>
+                                    <p style="font-size:12px;color:#666;margin:4px 0 0 0">@man.DiagnosticoTecnico</p>
+                                </details>
+                            }
+                        </td>
+                        <td>
+                            @switch (man.Status)
+                            {
+                                case SistemaAtivos.Models.StatusManutencao.Aberto:
+                                    <span class="status-badge" style="background:#f8d7da;color:#721c24">🆕 Aberto</span>
+                                    break;
+                                case SistemaAtivos.Models.StatusManutencao.EmOrcamento:
+                                    <span class="status-badge" style="background:#fff3cd;color:#856404">💰 Em Orçamento</span>
+                                    break;
+                                case SistemaAtivos.Models.StatusManutencao.AguardandoAprovacao:
+                                    <span class="status-badge" style="background:#d1ecf1;color:#0c5460">⏳ Aguarde Aprovação</span>
+                                    break;
+                                case SistemaAtivos.Models.StatusManutencao.Aprovado:
+                                    <span class="status-badge" style="background:#d4edda;color:#155724">✅ Aprovado</span>
+                                    break;
+                                case SistemaAtivos.Models.StatusManutencao.EmConserto:
+                                    <span class="status-badge" style="background:#cce5ff;color:#004085">🔧 Em Conserto</span>
+                                    break;
+                                case SistemaAtivos.Models.StatusManutencao.Concluido:
+                                    <span class="status-badge" style="background:#e2e3e5;color:#383d41">✔ Concluído</span>
+                                    break;
+                                default:
+                                    <span class="status-badge">@man.Status</span>
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            @if (man.ValorOrcamento.HasValue)
+                            {
+                                <strong style="color:#534AB7">@man.ValorOrcamento.Value.ToString("C2")</strong>
+                            }
+                            else
+                            {
+                                <span style="color:#ccc">Aguardando</span>
+                            }
+                        </td>
+                        <td style="white-space:nowrap">
+                            <span style="font-size:13px">@man.Data.ToString("dd/MM/yyyy")</span>
+                            <br />
+                            <span style="font-size:11px;color:#888">@man.TempoEsperaFormatado</span>
+                        </td>
+                        <td>
+                            @if (man.Status == SistemaAtivos.Models.StatusManutencao.AguardandoAprovacao)
+                            {
+                                using (Html.BeginForm("Aprovar", "Manutencao", new { id = man.Id }, FormMethod.Post, new { style = "display:inline" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-purple" style="font-size:12px;padding:6px 12px" onclick="return confirm('Confirma a aprovação do orçamento de @man.ValorOrcamento?.ToString("C2")?')">
+                                        ✅ Aprovar
+                                    </button>
+                                }
+                            }
+                            else
+                            {
+                                @Html.ActionLink("Ver detalhes", "Detalhes", "Ativo", new { id = man.AtivoId }, new { @class = "btn-xs-outline" })
+                            }
                         </td>
                     </tr>
                 }

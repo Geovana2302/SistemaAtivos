@@ -1,0 +1,165 @@
+@model IEnumerable<SistemaAtivos.Models.Manutencao>
+@{
+    ViewBag.Title = "Historico de Manutencoes";
+    var empresas = ViewBag.Empresas as List<SistemaAtivos.Models.Empresa>;
+    var empresaFiltro = ViewBag.EmpresaFiltro as int?;
+    var dataInicio = ViewBag.DataInicio as DateTime?;
+    var dataFim = ViewBag.DataFim as DateTime?;
+    var totalFaturamento = (decimal)(ViewBag.TotalFaturamento ?? 0m);
+}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Historico de Manutencoes</h4>
+        <p class="page-sub">Relatorio de manutencoes concluidas</p>
+    </div>
+    <div style="margin-left:auto">
+        @Html.ActionLink("Voltar ao Quadro", "QuadroTecnico", null, new { @class = "btn-outline-sm" })
+    </div>
+</div>
+
+@if (TempData["Sucesso"] != null)
+{
+    <div class="alert-custom alert-success-custom">@TempData["Sucesso"]</div>
+}
+@if (TempData["Erro"] != null)
+{
+    <div class="alert-custom alert-danger-custom">@TempData["Erro"]</div>
+}
+
+<div class="form-card" style="margin-bottom:1.5rem">
+    <h6 style="margin-bottom:1rem;font-weight:600;color:#534AB7">Filtros</h6>
+    @using (Html.BeginForm("Historico", "Manutencao", FormMethod.Get))
+    {
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+            <div class="field-group" style="flex:1;min-width:180px">
+                <label class="field-label">Empresa</label>
+                <select name="empresaId" class="field-input">
+                    <option value="">Todas</option>
+                    @if (empresas != null)
+                    {
+                        foreach (var emp in empresas)
+                        {
+                            <option value="@emp.Id" @(empresaFiltro == emp.Id ? "selected" : "")>@emp.Nome</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="field-group" style="flex:1;min-width:150px">
+                <label class="field-label">Data Inicio</label>
+                <input type="date" name="dataInicio" class="field-input" value="@(dataInicio.HasValue ? dataInicio.Value.ToString("yyyy-MM-dd") : "")" />
+            </div>
+            <div class="field-group" style="flex:1;min-width:150px">
+                <label class="field-label">Data Fim</label>
+                <input type="date" name="dataFim" class="field-input" value="@(dataFim.HasValue ? dataFim.Value.ToString("yyyy-MM-dd") : "")" />
+            </div>
+            <div>
+                <button type="submit" class="btn-purple" style="padding:10px 20px">Filtrar</button>
+                <a href="@Url.Action("Historico")" class="btn-cancel" style="padding:10px 20px;margin-left:4px">Limpar</a>
+            </div>
+        </div>
+    }
+</div>
+
+<div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap">
+    <div class="form-card" style="flex:1;min-width:200px;text-align:center;padding:1.5rem">
+        <p style="font-size:12px;color:#888;margin:0 0 4px 0">Total de Registros</p>
+        <h3 style="margin:0;color:#2c3e50">@Model.Count()</h3>
+    </div>
+    <div class="form-card" style="flex:1;min-width:200px;text-align:center;padding:1.5rem">
+        <p style="font-size:12px;color:#888;margin:0 0 4px 0">Faturamento Total</p>
+        <h3 style="margin:0;color:#534AB7">@totalFaturamento.ToString("C2")</h3>
+    </div>
+    <div class="form-card" style="flex:1;min-width:200px;text-align:center;padding:1.5rem">
+        <p style="font-size:12px;color:#888;margin:0 0 4px 0">Tempo Medio (dias)</p>
+        <h3 style="margin:0;color:#2c3e50">
+            @if (Model.Any())
+            {
+                @Math.Round(Model.Average(m => m.DiasEmAberto), 1)
+            }
+            else
+            {
+                <text>0</text>
+            }
+        </h3>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <p>Nenhuma manutencao concluida encontrada com os filtros selecionados.</p>
+    </div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Empresa</th>
+                    <th>Ativo</th>
+                    <th>Descricao</th>
+                    <th>Tipo</th>
+                    <th>Orcamento</th>
+                    <th>Abertura</th>
+                    <th>Conclusao</th>
+                    <th>Dias</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var man in Model)
+                {
+                    <tr>
+                        <td>
+                            @if (man.Empresa != null)
+                            {
+                                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:@man.Empresa.Cor;margin-right:4px"></span>
+                                @man.Empresa.Nome
+                            }
+                            else
+                            {
+                                <span style="color:#ccc">-</span>
+                            }
+                        </td>
+                        <td>
+                            <strong>@(man.Ativo != null ? man.Ativo.Nome : "-")</strong>
+                        </td>
+                        <td>
+                            <p style="margin:0;font-size:13px;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="@man.Descricao">
+                                @man.Descricao
+                            </p>
+                            @if (!string.IsNullOrEmpty(man.DiagnosticoTecnico))
+                            {
+                                <details style="margin-top:4px">
+                                    <summary style="cursor:pointer;font-size:11px;color:#534AB7">Ver diagnostico</summary>
+                                    <p style="font-size:12px;color:#666;margin:4px 0 0 0">@man.DiagnosticoTecnico</p>
+                                </details>
+                            }
+                        </td>
+                        <td><span class="card-tipo">@man.Tipo</span></td>
+                        <td>
+                            @if (man.ValorOrcamento.HasValue)
+                            {
+                                <strong style="color:#534AB7">@man.ValorOrcamento.Value.ToString("C2")</strong>
+                            }
+                            else
+                            {
+                                <span style="color:#ccc">-</span>
+                            }
+                        </td>
+                        <td style="white-space:nowrap;font-size:13px">@man.Data.ToString("dd/MM/yyyy")</td>
+                        <td style="white-space:nowrap;font-size:13px">
+                            @(man.DataConclusao.HasValue ? man.DataConclusao.Value.ToString("dd/MM/yyyy") : "-")
+                        </td>
+                        <td style="text-align:center">
+                            <span style="background:#e9ecef;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:600">
+                                @man.DiasEmAberto
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

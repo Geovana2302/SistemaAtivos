@@ -143,6 +143,11 @@
     <Compile Include="Controllers\ColaboradorController.cs" />
     <Compile Include="Controllers\ManutencaoController.cs" />
     <Compile Include="Filters\EmpresaAuthorizeAttribute.cs" />
+    <Compile Include="Helpers\CriptoHelper.cs" />
+    <Compile Include="Migrations\202604182038542_AddManutencaoServiceFields.cs" />
+    <Compile Include="Migrations\202604182038542_AddManutencaoServiceFields.Designer.cs">
+      <DependentUpon>202604182038542_AddManutencaoServiceFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Ativo.cs" />
     <Compile Include="Models\AtivosContext.cs" />
     <Compile Include="Models\Categoria.cs" />
@@ -156,6 +161,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\202400001_AdicionarMultiEmpresa.cs" />
+    <Compile Include="Services\ManutencaoService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -196,7 +202,6 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Ativo\Index.cshtml" />
     <Content Include="Views\Manutencao\Index.cshtml" />
-    <Content Include="Views\Manutencao\Create.cshtml" />
     <Content Include="Views\Ativo\Create.cshtml" />
     <Content Include="Views\Ativo\Edit.cshtml" />
     <Content Include="Views\Ativo\Detalhes.cshtml" />
@@ -211,6 +216,12 @@
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Admin\Empresa.cshtml" />
     <Content Include="Views\Ativo\Inativos.cshtml" />
+    <Content Include="Views\Manutencao\Create.cshtml" />
+    <Content Include="Views\Manutencao\Edit.cshtml" />
+    <Content Include="Views\Manutencao\_ManutencaoCard.cshtml" />
+    <Content Include="Views\Manutencao\QuadroTecnico.cshtml" />
+    <Content Include="Views\Manutencao\Historico.cshtml" />
+    <Content Include="Views\Manutencao\_OrcamentoModal.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -224,6 +235,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Create\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202604182038542_AddManutencaoServiceFields.resx">
+      <DependentUpon>202604182038542_AddManutencaoServiceFields.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != '' AND Exists('$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets')" />

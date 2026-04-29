@@ -1,0 +1,62 @@
+@model SistemaAtivos.Models.Manutencao
+
+<div class="kanban-card" draggable="true" data-id="@Model.Id" data-status="@((int)Model.Status)" onclick="abrirModal(@Model.Id)">
+    <div class="card-empresa" style="background:@(Model.Empresa != null ? Model.Empresa.Cor : "#ccc")">
+        @(Model.Empresa != null ? Model.Empresa.Nome : "Sem Empresa")
+    </div>
+    
+    <div class="card-content">
+        <h6 class="card-title">@(Model.Ativo != null ? Model.Ativo.Nome : "Sem Ativo")</h6>
+        <p class="card-description">@Model.Descricao</p>
+        
+        @if (Model.ValorOrcamento.HasValue)
+        {
+            <div class="card-valor">
+                <strong>Orcamento:</strong> @Model.ValorOrcamento.Value.ToString("C2")
+            </div>
+        }
+        
+        <div class="card-footer">
+            <span class="card-tempo" title="Aberto ha @Model.DiasEmAberto dia(s)">
+                &#9200; @Model.TempoEsperaFormatado
+            </span>
+            <span class="card-tipo">@Model.Tipo</span>
+        </div>
+    </div>
+    
+    <div class="card-actions">
+        @using (Html.BeginForm("MoverStatus", "Manutencao", FormMethod.Post, new { style = "display:inline" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("id", Model.Id)
+            
+            switch (Model.Status)
+            {
+                case SistemaAtivos.Models.StatusManutencao.Aberto:
+                    @Html.Hidden("novoStatus", (int)SistemaAtivos.Models.StatusManutencao.EmOrcamento)
+                    <button type="submit" class="btn-card-action" title="Mover para Em Orcamento" onclick="event.stopPropagation()">&#9654;</button>
+                    break;
+                    
+                case SistemaAtivos.Models.StatusManutencao.EmOrcamento:
+                    <button type="button" class="btn-card-action" onclick="event.stopPropagation(); abrirModalOrcamento(@Model.Id)" title="Enviar Orcamento">&#128176;</button>
+                    break;
+                    
+                case SistemaAtivos.Models.StatusManutencao.AguardandoAprovacao:
+                    <span class="card-info" title="Aguardando cliente">&#8987;</span>
+                    break;
+                    
+                case SistemaAtivos.Models.StatusManutencao.Aprovado:
+                    @Html.Hidden("novoStatus", (int)SistemaAtivos.Models.StatusManutencao.EmConserto)
+                    <button type="submit" class="btn-card-action" title="Iniciar Conserto" onclick="event.stopPropagation()">&#128295;</button>
+                    break;
+                    
+                case SistemaAtivos.Models.StatusManutencao.EmConserto:
+                    @Html.Hidden("novoStatus", (int)SistemaAtivos.Models.StatusManutencao.Concluido)
+                    <button type="submit" class="btn-card-action" title="Concluir" onclick="event.stopPropagation()">&#10004;</button>
+                    break;
+            }
+        }
+        
+        <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn-card-action" title="Editar" onclick="event.stopPropagation()">&#9998;</a>
+    </div>
+</div>

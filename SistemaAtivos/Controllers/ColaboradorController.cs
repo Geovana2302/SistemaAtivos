@@ -33,14 +33,14 @@ namespace SistemaAtivos.Controllers
         {
             if (empresaId.HasValue)
             {
-                ViewBag.EmpresaId = IsAdmin()
+                ViewBag.Empresas = IsAdmin()
                     ? new SelectList(db.Empresas, "Id", "Nome", empresaId)
                     : new SelectList(db.Empresas.Where(e => e.Id == GetEmpresaId()), "Id", "Nome", empresaId);
                 ViewBag.EmpresaPreSelecionada = true;
                 var col = new Colaborador { EmpresaId = empresaId };
                 return View(col);
             }
-            ViewBag.EmpresaId = IsAdmin()
+            ViewBag.Empresas = IsAdmin()
                 ? new SelectList(db.Empresas, "Id", "Nome")
                 : new SelectList(db.Empresas.Where(e => e.Id == GetEmpresaId()), "Id", "Nome");
             return View();
@@ -51,6 +51,8 @@ namespace SistemaAtivos.Controllers
         public ActionResult Create(Colaborador colaborador)
         {
             if (!IsAdmin()) colaborador.EmpresaId = GetEmpresaId();
+            if (!colaborador.EmpresaId.HasValue)
+                ModelState.AddModelError("EmpresaId", "Empresa é obrigatória.");
             if (ModelState.IsValid)
             {
                 try
@@ -67,7 +69,7 @@ namespace SistemaAtivos.Controllers
                     TempData["Erro"] = "Erro ao cadastrar colaborador. Tente novamente.";
                 }
             }
-            ViewBag.EmpresaId = new SelectList(db.Empresas, "Id", "Nome", colaborador.EmpresaId);
+            ViewBag.Empresas = new SelectList(db.Empresas, "Id", "Nome", colaborador.EmpresaId);
             return View(colaborador);
         }
 
@@ -76,7 +78,7 @@ namespace SistemaAtivos.Controllers
         {
             var col = GetQuery().FirstOrDefault(c => c.Id == id);
             if (col == null) return HttpNotFound();
-            ViewBag.EmpresaId = new SelectList(db.Empresas, "Id", "Nome", col.EmpresaId);
+            ViewBag.Empresas = new SelectList(db.Empresas, "Id", "Nome", col.EmpresaId);
             return View(col);
         }
 
@@ -85,6 +87,8 @@ namespace SistemaAtivos.Controllers
         public ActionResult Edit(Colaborador colaborador)
         {
             if (!IsAdmin()) colaborador.EmpresaId = GetEmpresaId();
+            if (!colaborador.EmpresaId.HasValue)
+                ModelState.AddModelError("EmpresaId", "Empresa é obrigatória.");
             if (ModelState.IsValid)
             {
                 try
@@ -101,7 +105,7 @@ namespace SistemaAtivos.Controllers
                     TempData["Erro"] = "Erro ao atualizar colaborador. Tente novamente.";
                 }
             }
-            ViewBag.EmpresaId = new SelectList(db.Empresas, "Id", "Nome", colaborador.EmpresaId);
+            ViewBag.Empresas = new SelectList(db.Empresas, "Id", "Nome", colaborador.EmpresaId);
             return View(colaborador);
         }
 
