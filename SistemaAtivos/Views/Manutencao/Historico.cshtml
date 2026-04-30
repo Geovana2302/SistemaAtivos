@@ -1,6 +1,6 @@
 @model IEnumerable<SistemaAtivos.Models.Manutencao>
 @{
-    ViewBag.Title = "Histórico de Manutenções";
+    ViewBag.Title = "Hist&oacute;rico de Manuten&ccedil;&otilde;es";
     var empresas = ViewBag.Empresas as List<SistemaAtivos.Models.Empresa>;
     var empresaFiltro = ViewBag.EmpresaFiltro as int?;
     var dataInicio = ViewBag.DataInicio as DateTime?;
@@ -10,8 +10,8 @@
 
 <div class="page-header">
     <div>
-        <h4 class="page-title">Histórico de Manutenções</h4>
-        <p class="page-sub">Relatório de manutenções concluídas</p>
+        <h4 class="page-title">Hist&oacute;rico de Manuten&ccedil;&otilde;es</h4>
+        <p class="page-sub">Relat&oacute;rio de manutenç&otilde;es conclu&iacute;das</p>
     </div>
     <div style="margin-left:auto">
         @Html.ActionLink("Voltar ao Quadro", "QuadroTecnico", null, new { @class = "btn-outline-sm" })
@@ -88,7 +88,7 @@
 @if (!Model.Any())
 {
     <div class="empty-state">
-        <p>Nenhuma manutenção concluída encontrada com os filtros selecionados.</p>
+        <p>Nenhuma manutenção conclu&iacute;da encontrada com os filtros selecionados.</p>
     </div>
 }
 else
@@ -99,11 +99,11 @@ else
                 <tr>
                     <th>Empresa</th>
                     <th>Ativo</th>
-                    <th>Descrição</th>
+                    <th>Descri&ccedil;&atilde;o</th>
                     <th>Tipo</th>
-                    <th>Orçamento</th>
+                    <th>Or&ccedil;amento</th>
                     <th>Abertura</th>
-                    <th>Conclusão</th>
+                    <th>Conclus&atilde;o</th>
                     <th>Dias</th>
                 </tr>
             </thead>
@@ -132,7 +132,7 @@ else
                             @if (!string.IsNullOrEmpty(man.DiagnosticoTecnico))
                             {
                                 <details style="margin-top:4px">
-                                    <summary style="cursor:pointer;font-size:11px;color:#534AB7">Ver diagnóstico</summary>
+                                    <summary style="cursor:pointer;font-size:11px;color:#534AB7">Ver diagn&oacute;stico</summary>
                                     <p style="font-size:12px;color:#666;margin:4px 0 0 0">@man.DiagnosticoTecnico</p>
                                 </details>
                             }
