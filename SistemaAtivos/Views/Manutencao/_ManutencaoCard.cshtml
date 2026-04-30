@@ -12,7 +12,7 @@
         @if (Model.ValorOrcamento.HasValue)
         {
             <div class="card-valor">
-                <strong>Orcamento:</strong> @Model.ValorOrcamento.Value.ToString("C2")
+                <strong>Orçamento:</strong> @Model.ValorOrcamento.Value.ToString("C2")
             </div>
         }
         
@@ -34,7 +34,7 @@
             {
                 case SistemaAtivos.Models.StatusManutencao.Aberto:
                     @Html.Hidden("novoStatus", (int)SistemaAtivos.Models.StatusManutencao.EmOrcamento)
-                    <button type="submit" class="btn-card-action" title="Mover para Em Orcamento" onclick="event.stopPropagation()">&#9654;</button>
+                    <button type="submit" class="btn-card-action" title="Mover para Em Orçamento" onclick="event.stopPropagation()">&#9654;</button>
                     break;
                     
                 case SistemaAtivos.Models.StatusManutencao.EmOrcamento:

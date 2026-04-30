@@ -6,7 +6,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Orcamento - @(Model.Ativo != null ? Model.Ativo.Nome : "Manutencao")</title>
+    <title>Orçamento - @(Model.Ativo != null ? Model.Ativo.Nome : "Manutenção")</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -27,8 +27,8 @@
 </head>
 <body>
     <div class="modal-header">
-        <h5>Enviar Orcamento</h5>
-        <p>@(Model.Ativo != null ? Model.Ativo.Nome : "Manutencao") - @(Model.Empresa != null ? Model.Empresa.Nome : "")</p>
+        <h5>Enviar Orçamento</h5>
+        <p>@(Model.Ativo != null ? Model.Ativo.Nome : "Manutenção") - @(Model.Empresa != null ? Model.Empresa.Nome : "")</p>
     </div>
 
     <div class="info-box">
@@ -41,21 +41,21 @@
         @Html.AntiForgeryToken()
 
         <div class="field-group">
-            <label class="field-label">Valor do Orcamento (R$)</label>
+            <label class="field-label">Valor do Orçamento (R$)</label>
             <input type="text" name="valorOrcamento" class="field-input" placeholder="0,00" required />
         </div>
 
         <div class="field-group">
-            <label class="field-label">Diagnostico Tecnico</label>
-            <textarea name="diagnosticoTecnico" class="field-input" rows="4" placeholder="Descreva o diagnostico e o que sera feito..." required></textarea>
+            <label class="field-label">Diagnóstico Técnico</label>
+            <textarea name="diagnosticoTecnico" class="field-input" rows="4" placeholder="Descreva o diagnóstico e o que será feito..." required></textarea>
         </div>
 
         <div class="field-group">
-            <label class="field-label">Observacao Interna (opcional)</label>
-            <textarea name="observacaoInterna" class="field-input" rows="2" placeholder="Observacoes internas..."></textarea>
+            <label class="field-label">Observação Interna (opcional)</label>
+            <textarea name="observacaoInterna" class="field-input" rows="2" placeholder="Observações internas..."></textarea>
         </div>
 
-        <button type="submit" class="btn-purple">Enviar Orcamento ao Cliente</button>
+        <button type="submit" class="btn-purple">Enviar Orçamento ao Cliente</button>
     }
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>

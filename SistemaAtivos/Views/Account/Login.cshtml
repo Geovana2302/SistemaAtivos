@@ -3,43 +3,152 @@
     Layout = null;
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-5">
-            <div class="card shadow border-0 rounded-lg">
-                <div class="card-header bg-danger text-white text-center py-3">
-                    <h3 class="fw-bold mb-0"><i class="bi bi-box-seam me-2"></i>Sistema de Ativos</h3>
-                </div>
-                <div class="card-body p-5">
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/Site.css" />
+    <style>
+        .login-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 1.5rem 0;
+            color: #bbb;
+            font-size: 12px;
+        }
+        .login-divider::before,
+        .login-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #E5E4E0;
+        }
+        .login-footer {
+            text-align: center;
+            margin-top: 1.75rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid #F0EFE8;
+            font-size: 12px;
+            color: #aaa;
+        }
+        .login-field-icon {
+            position: relative;
+        }
+        .login-field-icon .field-input {
+            padding-left: 38px;
+        }
+        .login-field-icon .icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 15px;
+            pointer-events: none;
+        }
+        .login-error {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #FCEBEB;
+            border: 1px solid #F7C1C1;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #A32D2D;
+            margin-bottom: 1.5rem;
+        }
+        .login-error svg {
+            flex-shrink: 0;
+        }
+        .login-version {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #EEEDFE;
+            color: #534AB7;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin: 0 auto 1.25rem;
+        }
+    </style>
+</head>
+<body>
 
-                    @if (ViewBag.Erro != null)
-                    {
-                        <div class="alert alert-warning text-center fw-bold">
-                            <i class="bi bi-exclamation-triangle-fill"></i> @ViewBag.Erro
-                        </div>
-                    }
+<div class="login-wrap">
+    <div class="login-card">
 
-                    @using (Html.BeginForm("Login", "Account", FormMethod.Post))
-                    {
-                        @Html.AntiForgeryToken()
+        <div class="login-logo">A</div>
 
-                        <div class="form-floating mb-3">
-                            <input class="form-control" id="email" name="email" type="email" placeholder="nome@exemplo.com" required />
-                            <label for="email">E-mail</label>
-                        </div>
+        <div style="text-align:center">
+            <span class="login-version">
+                <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                    <circle cx="4" cy="4" r="4" fill="#534AB7"/>
+                </svg>
+                Gestão de Ativos
+            </span>
+        </div>
 
-                        <div class="form-floating mb-4">
-                            <input class="form-control" id="senha" name="senha" type="password" placeholder="Sua senha" required />
-                            <label for="senha">Senha</label>
-                        </div>
+        <h1 class="login-title">Bem-vindo de volta</h1>
+        <p class="login-sub">Acesse com suas credenciais para continuar</p>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-danger btn-lg fw-bold">Entrar no Sistema</button>
-                        </div>
-                    }
+        @if (ViewBag.Erro != null)
+        {
+            <div class="login-error">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="8" r="7" stroke="#A32D2D" stroke-width="1.5"/>
+                    <path d="M8 5v3.5M8 10.5v.5" stroke="#A32D2D" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                @ViewBag.Erro
+            </div>
+        }
 
+        @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="field-group">
+                <label class="field-label" for="email">E-mail</label>
+                <div class="login-field-icon">
+                    <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    <input class="field-input" id="email" name="email" type="email"
+                           placeholder="nome@empresa.com" autocomplete="email" required />
                 </div>
             </div>
+
+            <div class="field-group">
+                <label class="field-label" for="senha">Senha</label>
+                <div class="login-field-icon">
+                    <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <input class="field-input" id="senha" name="senha" type="password"
+                           placeholder="Digite sua senha" autocomplete="current-password" required />
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login" style="margin-top:1rem">
+                Entrar no Sistema
+            </button>
+        }
+
+        <div class="login-footer">
+            Sistema de Gestão de Ativos &nbsp;&copy;&nbsp; .NET Framework 4.8
         </div>
+
     </div>
 </div>
+
+<script src="~/Scripts/jquery-3.6.0.min.js"></script>
+</body>
+</html>

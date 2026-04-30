@@ -1,11 +1,11 @@
 @model SistemaAtivos.Models.Colaborador
 @{
-    ViewBag.Title = "Editar Responsavel";
+    ViewBag.Title = "Editar Responsável";
     var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
 }
 
 <div class="page-header">
-    <h4 class="page-title">Editar Responsavel</h4>
+    <h4 class="page-title">Editar Responsável</h4>
 </div>
 
 <div class="form-card">
@@ -42,7 +42,7 @@
         {
             <div class="field-group">
                 <label class="field-label">Empresa</label>
-                @Html.DropDownList("EmpresaId", (SelectList)ViewBag.Empresas, "— Selecione —", new { @class = "field-input" })
+                @Html.DropDownList("EmpresaId", (SelectList)ViewBag.Empresas, "-- Selecione --", new { @class = "field-input" })
                 @Html.ValidationMessageFor(m => m.EmpresaId, null, new { @class = "field-error" })
             </div>
         }

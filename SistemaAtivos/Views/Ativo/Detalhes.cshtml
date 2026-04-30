@@ -22,18 +22,18 @@
     </div>
 
     <div class="detail-grid">
-        <div class="detail-item"><span class="detail-label">Número de Série</span><span class="detail-value">@(Model.NumeroSerie ?? "—")</span></div>
+        <div class="detail-item"><span class="detail-label">Número de Série</span><span class="detail-value">@(Model.NumeroSerie ?? "-")</span></div>
         <div class="detail-item"><span class="detail-label">Categoria</span><span class="detail-value">@(Model.Categoria?.Nome ?? "—")</span></div>
-        <div class="detail-item"><span class="detail-label">Responsável</span><span class="detail-value">@(Model.Colaborador?.Nome ?? "—")</span></div>
-        <div class="detail-item"><span class="detail-label">Data de Aquisição</span><span class="detail-value">@(Model.DataAquisicao?.ToString("dd/MM/yyyy") ?? "—")</span></div>
-        <div class="detail-item"><span class="detail-label">Valor</span><span class="detail-value">@(Model.Valor.HasValue ? Model.Valor.Value.ToString("C2") : "—")</span></div>
-        <div class="detail-item"><span class="detail-label">Empresa</span><span class="detail-value">@(Model.Empresa?.Nome ?? "—")</span></div>
+        <div class="detail-item"><span class="detail-label">Responsável</span><span class="detail-value">@(Model.Colaborador?.Nome ?? "-")</span></div>
+        <div class="detail-item"><span class="detail-label">Data de Aquisição</span><span class="detail-value">@(Model.DataAquisicao?.ToString("dd/MM/yyyy") ?? "-")</span></div>
+        <div class="detail-item"><span class="detail-label">Valor</span><span class="detail-value">@(Model.Valor.HasValue ? Model.Valor.Value.ToString("C2") : "-")</span></div>
+        <div class="detail-item"><span class="detail-label">Empresa</span><span class="detail-value">@(Model.Empresa?.Nome ?? "-")</span></div>
     </div>
 
     @if (!string.IsNullOrEmpty(Model.Observacoes))
     {
         <div class="detail-obs">
-            <span class="detail-label">Observações</span>
+        <span class="detail-label">Observações</span>
             <p>@Model.Observacoes</p>
         </div>
     }
@@ -98,11 +98,11 @@
                             }
                             else if (man.ValorOrcamento.HasValue)
                             {
-                                <span style="font-size:12px;color:#888">Orç: @man.ValorOrcamento.Value.ToString("C2")</span>
+                            <span style="font-size:12px;color:#888">Orç: @man.ValorOrcamento.Value.ToString("C2")</span>
                             }
                             else
                             {
-                                <span style="color:#ccc">—</span>
+                                <span style="color:#ccc">-</span>
                             }
                         </td>
                         <td>

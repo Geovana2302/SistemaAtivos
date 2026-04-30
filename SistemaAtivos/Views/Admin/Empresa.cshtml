@@ -29,7 +29,7 @@
     <div class="stat-card"><p class="stat-label">Ativos</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.Ativo)</p></div>
     <div class="stat-card"><p class="stat-label">Em Manutencao</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.EmManutencao)</p></div>
     <div class="stat-card"><p class="stat-label">Inativos</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.Inativo)</p></div>
-    <div class="stat-card"><p class="stat-label">Responsaveis</p><p class="stat-value">@Model.Colaboradores.Count</p></div>
+    <div class="stat-card"><p class="stat-label">Responsáveis</p><p class="stat-value">@Model.Colaboradores.Count</p></div>
 </div>
 
 <div class="section-header">
@@ -60,7 +60,7 @@ else
                 <div style="display:flex;align-items:center;gap:6px">
                     @Html.ActionLink("+", "Create", "Ativo", new { categoriaId = cat.Id, empresaId = Model.Id }, new { @class = "acc-action", title = "Adicionar ativo" })
                     <div class="dropdown" style="display:inline-block">
-                        <button type="button" class="acc-action" data-toggle="dropdown" title="Opcoes">&#8942;</button>
+                        <button type="button" class="acc-action" data-toggle="dropdown" title="Opções">&#8942;</button>
                         <ul class="dropdown-menu dropdown-menu-right">
                             <li>@Html.ActionLink("Editar categoria", "Edit", "Categoria", new { id = cat.Id }, null)</li>
                             <li>
@@ -127,15 +127,15 @@ else
 
 <div style="margin-top:1.5rem">
     <div class="section-header">
-        <p class="section-title">Responsaveis</p>
-        @Html.ActionLink("+ Responsavel", "Create", "Colaborador", new { empresaId = Model.Id }, new { @class = "btn-outline-sm" })
+        <p class="section-title">Responsáveis</p>
+        @Html.ActionLink("+ Responsável", "Create", "Colaborador", new { empresaId = Model.Id }, new { @class = "btn-outline-sm" })
     </div>
 
     @if (!Model.Colaboradores.Any())
     {
         <div class="empty-state">
-            <p>Nenhum responsavel cadastrado ainda.</p>
-            @Html.ActionLink("Criar primeiro responsavel", "Create", "Colaborador", new { empresaId = Model.Id }, new { @class = "btn-purple" })
+        <p>Nenhum responsável cadastrado ainda.</p>
+            @Html.ActionLink("Criar primeiro responsável", "Create", "Colaborador", new { empresaId = Model.Id }, new { @class = "btn-purple" })
         </div>
     }
     else
@@ -157,7 +157,7 @@ else
                     </div>
                     <div style="display:flex;align-items:center;gap:6px">
                         <div class="dropdown" style="display:inline-block">
-                            <button type="button" class="acc-action" data-toggle="dropdown" title="Opcoes">&#8942;</button>
+                            <button type="button" class="acc-action" data-toggle="dropdown" title="Opções">&#8942;</button>
                             <ul class="dropdown-menu dropdown-menu-right">
                                 <li>@Html.ActionLink("Editar", "Edit", "Colaborador", new { id = col.Id }, null)</li>
                                 <li>
@@ -165,7 +165,7 @@ else
                                     {
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="dropdown-delete-btn"
-                                                onclick="return confirm('Excluir este responsavel?')">
+                                        onclick="return confirm('Excluir este responsável?')">
                                             Excluir
                                         </button>
                                     }

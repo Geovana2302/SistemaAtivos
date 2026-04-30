@@ -1,6 +1,6 @@
 @model IEnumerable<SistemaAtivos.Models.Manutencao>
 @{
-    ViewBag.Title = "Historico de Manutencoes";
+    ViewBag.Title = "Histórico de Manutenções";
     var empresas = ViewBag.Empresas as List<SistemaAtivos.Models.Empresa>;
     var empresaFiltro = ViewBag.EmpresaFiltro as int?;
     var dataInicio = ViewBag.DataInicio as DateTime?;
@@ -10,8 +10,8 @@
 
 <div class="page-header">
     <div>
-        <h4 class="page-title">Historico de Manutencoes</h4>
-        <p class="page-sub">Relatorio de manutencoes concluidas</p>
+        <h4 class="page-title">Histórico de Manutenções</h4>
+        <p class="page-sub">Relatório de manutenções concluídas</p>
     </div>
     <div style="margin-left:auto">
         @Html.ActionLink("Voltar ao Quadro", "QuadroTecnico", null, new { @class = "btn-outline-sm" })
@@ -46,7 +46,7 @@
                 </select>
             </div>
             <div class="field-group" style="flex:1;min-width:150px">
-                <label class="field-label">Data Inicio</label>
+                <label class="field-label">Data Início</label>
                 <input type="date" name="dataInicio" class="field-input" value="@(dataInicio.HasValue ? dataInicio.Value.ToString("yyyy-MM-dd") : "")" />
             </div>
             <div class="field-group" style="flex:1;min-width:150px">
@@ -71,7 +71,7 @@
         <h3 style="margin:0;color:#534AB7">@totalFaturamento.ToString("C2")</h3>
     </div>
     <div class="form-card" style="flex:1;min-width:200px;text-align:center;padding:1.5rem">
-        <p style="font-size:12px;color:#888;margin:0 0 4px 0">Tempo Medio (dias)</p>
+        <p style="font-size:12px;color:#888;margin:0 0 4px 0">Tempo Médio (dias)</p>
         <h3 style="margin:0;color:#2c3e50">
             @if (Model.Any())
             {
@@ -88,7 +88,7 @@
 @if (!Model.Any())
 {
     <div class="empty-state">
-        <p>Nenhuma manutencao concluida encontrada com os filtros selecionados.</p>
+        <p>Nenhuma manutenção concluída encontrada com os filtros selecionados.</p>
     </div>
 }
 else
@@ -99,11 +99,11 @@ else
                 <tr>
                     <th>Empresa</th>
                     <th>Ativo</th>
-                    <th>Descricao</th>
+                    <th>Descrição</th>
                     <th>Tipo</th>
-                    <th>Orcamento</th>
+                    <th>Orçamento</th>
                     <th>Abertura</th>
-                    <th>Conclusao</th>
+                    <th>Conclusão</th>
                     <th>Dias</th>
                 </tr>
             </thead>
@@ -132,7 +132,7 @@ else
                             @if (!string.IsNullOrEmpty(man.DiagnosticoTecnico))
                             {
                                 <details style="margin-top:4px">
-                                    <summary style="cursor:pointer;font-size:11px;color:#534AB7">Ver diagnostico</summary>
+                                    <summary style="cursor:pointer;font-size:11px;color:#534AB7">Ver diagnóstico</summary>
                                     <p style="font-size:12px;color:#666;margin:4px 0 0 0">@man.DiagnosticoTecnico</p>
                                 </details>
                             }

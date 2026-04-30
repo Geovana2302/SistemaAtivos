@@ -1,12 +1,12 @@
 @model SistemaAtivos.Models.Manutencao
 @{
-    ViewBag.Title = "Editar Manutencao";
+    ViewBag.Title = "Editar Manutenção";
     var isAdmin = Session["UsuarioTipo"] != null && Session["UsuarioTipo"].ToString() == "Admin";
 }
 
 <div class="page-header">
     <div>
-        <h4 class="page-title">Editar Manutencao</h4>
+        <h4 class="page-title">Editar Manutenção</h4>
     </div>
 </div>
 
@@ -32,8 +32,8 @@
         </div>
 
         <div class="field-group">
-            @Html.LabelFor(m => m.Descricao, "Descricao / Relato", new { @class = "field-label" })
-            @Html.TextAreaFor(m => m.Descricao, new { @class = "field-input", rows = "4", placeholder = "Descreva o problema relatado pelo usuario" })
+            @Html.LabelFor(m => m.Descricao, "Descrição / Relato", new { @class = "field-label" })
+            @Html.TextAreaFor(m => m.Descricao, new { @class = "field-input", rows = "4", placeholder = "Descreva o problema relatado pelo usuário" })
             @Html.ValidationMessageFor(m => m.Descricao, "", new { @class = "field-error" })
         </div>
 
@@ -44,7 +44,7 @@
             </div>
             <div class="field-group">
                 @Html.LabelFor(m => m.Fornecedor, new { @class = "field-label" })
-                @Html.TextBoxFor(m => m.Fornecedor, new { @class = "field-input", placeholder = "Fornecedor / Tecnico" })
+                @Html.TextBoxFor(m => m.Fornecedor, new { @class = "field-input", placeholder = "Fornecedor / Técnico" })
             </div>
         </div>
 
@@ -67,14 +67,14 @@
                     @Html.EnumDropDownListFor(m => m.Status, new { @class = "field-input" })
                 </div>
                 <div class="field-group">
-                    @Html.LabelFor(m => m.ValorOrcamento, "Valor do Orcamento", new { @class = "field-label" })
+                    @Html.LabelFor(m => m.ValorOrcamento, "Valor do Orçamento", new { @class = "field-label" })
                     @Html.TextBoxFor(m => m.ValorOrcamento, new { @class = "field-input money-mask", placeholder = "R$ 0,00" })
                 </div>
             </div>
 
             <div class="field-group">
                 @Html.LabelFor(m => m.DiagnosticoTecnico, new { @class = "field-label" })
-                @Html.TextAreaFor(m => m.DiagnosticoTecnico, new { @class = "field-input", rows = "3", placeholder = "Diagnostico tecnico / Observacoes" })
+                @Html.TextAreaFor(m => m.DiagnosticoTecnico, new { @class = "field-input", rows = "3", placeholder = "Diagnóstico técnico / Observações" })
             </div>
 
             <div class="field-group">
@@ -92,7 +92,7 @@
             {
                 @Html.ActionLink("Cancelar", "Index", "Manutencao", null, new { @class = "btn-cancel" })
             }
-            <button type="submit" class="btn-purple">Atualizar manutencao</button>
+            <button type="submit" class="btn-purple">Atualizar manutenção</button>
         </div>
     }
 </div>
