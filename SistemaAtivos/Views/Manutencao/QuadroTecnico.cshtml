@@ -1,17 +1,17 @@
 @model IEnumerable<SistemaAtivos.Models.Manutencao>
 @{
-    ViewBag.Title = "Quadro T&eacute;cnico - Manutenç&otilde;es";
+    ViewBag.Title = "Quadro Tecnico - Manutencoes";
     var empresas = ViewBag.Empresas as List<SistemaAtivos.Models.Empresa>;
     var empresaFiltro = ViewBag.EmpresaFiltro as int?;
 }
 
 <div class="page-header">
     <div>
-        <h4 class="page-title">&#128295; Quadro T&eacute;cnico de Manutenç&otilde;es</h4>
+        <h4 class="page-title">&#128295; Quadro Tecnico de Manutencoes</h4>
         <p class="page-sub">Gerenciamento de chamados em tempo real</p>
     </div>
     <div style="margin-left:auto">
-        @Html.ActionLink("Hist&oacute;rico", "Historico", null, new { @class = "btn-outline-sm" })
+        @Html.ActionLink("Historico", "Historico", null, new { @class = "btn-outline-sm" })
         @Html.ActionLink("+ Novo Chamado", "Create", null, new { @class = "btn-purple" })
     </div>
 </div>
