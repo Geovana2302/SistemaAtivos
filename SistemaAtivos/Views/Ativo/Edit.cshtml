@@ -1,4 +1,4 @@
-@model SistemaAtivos.Models.Ativo
+ï»¿@model SistemaAtivos.Models.Ativo
 @{
     ViewBag.Title = "Editar Ativo";
     var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
@@ -24,36 +24,43 @@
             <div class="field-group">
                 @Html.LabelFor(m => m.NumeroSerie, new { @class = "field-label" })
                 @Html.TextBoxFor(m => m.NumeroSerie, new { @class = "field-input" })
+                @Html.ValidationMessageFor(m => m.NumeroSerie, "", new { @class = "field-error" })
             </div>
         </div>
         <div class="form-row-2">
             <div class="field-group">
                 @Html.LabelFor(m => m.Marca, new { @class = "field-label" })
                 @Html.TextBoxFor(m => m.Marca, new { @class = "field-input" })
+                @Html.ValidationMessageFor(m => m.Marca, "", new { @class = "field-error" })
             </div>
             <div class="field-group">
                 @Html.LabelFor(m => m.Modelo, new { @class = "field-label" })
                 @Html.TextBoxFor(m => m.Modelo, new { @class = "field-input" })
+                @Html.ValidationMessageFor(m => m.Modelo, "", new { @class = "field-error" })
             </div>
         </div>
         <div class="form-row-2">
             <div class="field-group">
                 @Html.LabelFor(m => m.CategoriaId, "Categoria", new { @class = "field-label" })
                 @Html.DropDownList("CategoriaId", (SelectList)ViewBag.Categorias, "-- Selecione --", new { @class = "field-input" })
+                @Html.ValidationMessageFor(m => m.CategoriaId, "", new { @class = "field-error" })
             </div>
             <div class="field-group">
-                @Html.LabelFor(m => m.ColaboradorId, "Responsável", new { @class = "field-label" })
+                @Html.LabelFor(m => m.ColaboradorId, "ResponsÃ¡vel", new { @class = "field-label" })
                 @Html.DropDownList("ColaboradorId", (SelectList)ViewBag.Colaboradores, "-- Selecione --", new { @class = "field-input" })
+                @Html.ValidationMessageFor(m => m.ColaboradorId, "", new { @class = "field-error" })
             </div>
         </div>
         <div class="form-row-2">
             <div class="field-group">
                 @Html.LabelFor(m => m.DataAquisicao, new { @class = "field-label" })
                 @Html.TextBoxFor(m => m.DataAquisicao, "{0:yyyy-MM-dd}", new { @class = "field-input", type = "date" })
+                @Html.ValidationMessageFor(m => m.DataAquisicao, "", new { @class = "field-error" })
             </div>
             <div class="field-group">
                 @Html.LabelFor(m => m.Valor, new { @class = "field-label" })
                 @Html.TextBoxFor(m => m.Valor, new { @class = "field-input" })
+                @Html.ValidationMessageFor(m => m.Valor, "", new { @class = "field-error" })
             </div>
         </div>
         <div class="form-row-2">
@@ -61,22 +68,34 @@
                 @Html.LabelFor(m => m.Status, new { @class = "field-label" })
                 @Html.EnumDropDownListFor(m => m.Status, new { @class = "field-input" })
             </div>
-            @if (isAdmin)
+            if (isAdmin)
             {
                 <div class="field-group">
                     <label class="field-label">Empresa</label>
                     @Html.DropDownList("EmpresaId", (SelectList)ViewBag.EmpresaSelectList, "-- Selecione --", new { @class = "field-input" })
                 </div>
             }
+            else
+            {
+                @Html.Hidden("EmpresaId", (int?)Session["EmpresaId"])
+            }
         </div>
         <div class="field-group">
             @Html.LabelFor(m => m.Observacoes, new { @class = "field-label" })
             @Html.TextAreaFor(m => m.Observacoes, new { @class = "field-input", rows = "3" })
+            @Html.ValidationMessageFor(m => m.Observacoes, "", new { @class = "field-error" })
         </div>
 
         <div class="form-actions">
-            @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn-cancel" })
-            <button type="submit" class="btn-purple">Salvar alterações</button>
+            @if ((int?)Session["EmpresaId"] != null)
+            {
+                @Html.ActionLink("Cancelar", "Empresa", "Admin", new { id = (int?)Session["EmpresaId"] }, new { @class = "btn-cancel" })
+            }
+            else
+            {
+                @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn-cancel" })
+            }
+            <button type="submit" class="btn-purple">Salvar alteraÃ§Ãµes</button>
         </div>
     }
 </div>

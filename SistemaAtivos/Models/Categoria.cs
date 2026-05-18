@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,7 +8,7 @@ namespace SistemaAtivos.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Nome é obrigatório")]
+        [Required(ErrorMessage = "Nome Ã© obrigatÃ³rio")]
         [StringLength(100)]
         [Display(Name = "Categoria")]
         public string Nome { get; set; }

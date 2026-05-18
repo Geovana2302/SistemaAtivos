@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -23,41 +23,31 @@ namespace SistemaAtivos.Controllers
                 .Include(a => a.Empresa)
                 .AsQueryable();
             if (!IsAdmin())
-                q = q.Where(a => a.EmpresaId == GetEmpresaId());
+            {
+                var empresaId = GetEmpresaId();
+                q = q.Where(a => a.EmpresaId == empresaId);
+            }
             return q;
         }
 
         public ActionResult Index(int? empresaId, string ordem)
         {
-            var q = GetQuery().Where(a => a.Status == StatusAtivo.Ativo);
-
-            if (empresaId.HasValue)
-                q = q.Where(a => a.EmpresaId == empresaId);
-
-            switch (ordem)
-            {
-                case "antigo":
-                    q = q.OrderBy(a => a.Id);
-                    break;
-                case "empresa":
-                    q = q.OrderBy(a => a.Empresa.Nome).ThenByDescending(a => a.Id);
-                    break;
-                default:
-                    q = q.OrderByDescending(a => a.Id);
-                    break;
-            }
-
-            ViewBag.Empresas = db.Empresas.ToList();
-            ViewBag.EmpresaFiltro = empresaId;
-            ViewBag.OrdemAtual = ordem ?? "recente";
+            var q = AplicarFiltroEOrdem(GetQuery().Where(a => a.Status == StatusAtivo.Ativo), empresaId, ordem);
+            PopularViewBagLista(empresaId, ordem);
             return View(q.ToList());
         }
 
         public ActionResult Detalhes(int id)
         {
             var ativo = GetQuery()
-                .Include(a => a.Manutencoes)
                 .FirstOrDefault(a => a.Id == id);
+            if (ativo == null) return HttpNotFound();
+            return View(ativo);
+        }
+
+        public ActionResult Imprimir(int id)
+        {
+            var ativo = GetQuery().FirstOrDefault(a => a.Id == id);
             if (ativo == null) return HttpNotFound();
             return View(ativo);
         }
@@ -67,7 +57,8 @@ namespace SistemaAtivos.Controllers
             var ativo = GetQuery().FirstOrDefault(a => a.Id == id);
             if (ativo == null) return HttpNotFound();
 
-            var url = Url.Action("Detalhes", "Ativo", new { id }, Request.Url.Scheme);
+            var scheme = Request.Url?.Scheme ?? "https";
+            var url = Url.Action("Detalhes", "Ativo", new { id }, scheme);
             using (var qrGenerator = new QRCoder.QRCodeGenerator())
             {
                 var qrData = qrGenerator.CreateQrCode(url, QRCoder.QRCodeGenerator.ECCLevel.Q);
@@ -128,6 +119,7 @@ namespace SistemaAtivos.Controllers
         public ActionResult Edit(Ativo ativo)
         {
             if (!IsAdmin()) ativo.EmpresaId = GetEmpresaId();
+
             if (ModelState.IsValid)
             {
                 try
@@ -144,6 +136,7 @@ namespace SistemaAtivos.Controllers
                     TempData["Erro"] = "Erro ao atualizar ativo. Tente novamente.";
                 }
             }
+
             PopularDropdowns(ativo);
             return View(ativo);
         }
@@ -152,14 +145,18 @@ namespace SistemaAtivos.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id)
         {
+            if (!IsAdmin())
+            {
+                TempData["Erro"] = "Apenas administradores podem excluir ativos.";
+                return RedirectToAction("Index");
+            }
+
             var ativo = GetQuery().FirstOrDefault(a => a.Id == id);
             if (ativo == null) return HttpNotFound();
             var empId = ativo.EmpresaId;
 
             try
             {
-                var mans = db.Manutencoes.Where(m => m.AtivoId == id).ToList();
-                db.Manutencoes.RemoveRange(mans);
                 db.Ativos.Remove(ativo);
                 db.SaveChanges();
                 TempData["Sucesso"] = "Ativo excluído.";
@@ -174,8 +171,13 @@ namespace SistemaAtivos.Controllers
 
         public ActionResult Inativos(int? empresaId, string ordem)
         {
-            var q = GetQuery().Where(a => a.Status == StatusAtivo.Inativo);
+            var q = AplicarFiltroEOrdem(GetQuery().Where(a => a.Status == StatusAtivo.Inativo), empresaId, ordem);
+            PopularViewBagLista(empresaId, ordem);
+            return View(q.ToList());
+        }
 
+        private IQueryable<Ativo> AplicarFiltroEOrdem(IQueryable<Ativo> q, int? empresaId, string ordem)
+        {
             if (empresaId.HasValue)
                 q = q.Where(a => a.EmpresaId == empresaId);
 
@@ -191,11 +193,14 @@ namespace SistemaAtivos.Controllers
                     q = q.OrderByDescending(a => a.Id);
                     break;
             }
+            return q;
+        }
 
+        private void PopularViewBagLista(int? empresaId, string ordem)
+        {
             ViewBag.Empresas = db.Empresas.ToList();
             ViewBag.EmpresaFiltro = empresaId;
             ViewBag.OrdemAtual = ordem ?? "recente";
-            return View(q.ToList());
         }
 
         private void PopularDropdowns(Ativo ativo = null)
@@ -210,9 +215,9 @@ namespace SistemaAtivos.Controllers
 
             ViewBag.Categorias  = new SelectList(cats, "Id", "Nome", ativo?.CategoriaId);
             ViewBag.Colaboradores = new SelectList(cols, "Id", "Nome", ativo?.ColaboradorId);
-            ViewBag.EmpresaSelectList    = IsAdmin()
+            ViewBag.EmpresaSelectList = IsAdmin()
                 ? new SelectList(db.Empresas, "Id", "Nome", ativo?.EmpresaId)
-                : new SelectList(db.Empresas.Where(e => e.Id == GetEmpresaId()), "Id", "Nome", GetEmpresaId());
+                : new SelectList(db.Empresas.Where(e => e.Id == empId).ToList(), "Id", "Nome", empId);
         }
 
         protected override void Dispose(bool disposing)

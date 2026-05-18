@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,6 +6,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SistemaAtivos.Models
 {
     public enum StatusAtivo { Ativo, Inativo, EmManutencao }
+
+    public class DataNaoFuturaAttribute : ValidationAttribute
+    {
+        public DataNaoFuturaAttribute()
+        {
+            ErrorMessage = "A data de aquisição não pode ser uma data futura.";
+        }
+        public override bool IsValid(object value)
+        {
+            if (value == null) return true;
+            return (DateTime)value <= DateTime.Today;
+        }
+    }
 
     // =====================================================================
     // REQUISITO 2 - MOVIMENTACAO DE DADOS (Relacionamento entre entidades)
@@ -24,27 +37,29 @@ namespace SistemaAtivos.Models
         [StringLength(100)]
         public string Nome { get; set; }
 
-        [StringLength(100)]
+        [StringLength(100, ErrorMessage = "Número de Série deve ter no máximo 100 caracteres.")]
         [Display(Name = "Número de Série")]
         public string NumeroSerie { get; set; }
 
-        [StringLength(100)]
+        [StringLength(100, ErrorMessage = "Marca deve ter no máximo 100 caracteres.")]
         public string Marca { get; set; }
 
-        [StringLength(100)]
+        [StringLength(100, ErrorMessage = "Modelo deve ter no máximo 100 caracteres.")]
         public string Modelo { get; set; }
 
         [Display(Name = "Data de Aquisição")]
         [DataType(DataType.Date)]
+        [DataNaoFutura]
         public DateTime? DataAquisicao { get; set; }
 
         [Display(Name = "Valor")]
         [DataType(DataType.Currency)]
+        [Range(0, 999999999.99, ErrorMessage = "Valor deve ser maior ou igual a zero.")]
         public decimal? Valor { get; set; }
 
         public StatusAtivo Status { get; set; } = StatusAtivo.Ativo;
 
-        [StringLength(500)]
+        [StringLength(500, ErrorMessage = "Observações deve ter no máximo 500 caracteres.")]
         public string Observacoes { get; set; }
 
         // REQUISITO 2 - Relacionamento: Ativo pertence a uma Categoria
@@ -65,8 +80,5 @@ namespace SistemaAtivos.Models
 
         [ForeignKey("EmpresaId")]
         public virtual Empresa Empresa { get; set; }
-
-        // REQUISITO 2 - Relacionamento 1:N - Um Ativo pode ter varias Manutencoes
-        public virtual ICollection<Manutencao> Manutencoes { get; set; } = new List<Manutencao>();
     }
 }

@@ -1,0 +1,65 @@
+﻿@{
+    ViewBag.Title = "Novo Administrador";
+}
+
+<div class="page-header">
+    <h4 class="page-title">Novo Administrador</h4>
+</div>
+
+<div class="form-card">
+    @using (Html.BeginForm("CreateAdmin", "Admin", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "alert-custom alert-danger-custom" })
+
+        <div class="form-row-2">
+            <div class="field-group">
+                <label class="field-label">Nome</label>
+                <input name="Nome" class="field-input" placeholder="Nome completo" required />
+            </div>
+            <div class="field-group">
+                <label class="field-label">E-mail</label>
+                <input name="Email" type="email" class="field-input" placeholder="admin@sistema.com" required />
+                <span class="field-error">@Html.ValidationMessage("Email")</span>
+            </div>
+        </div>
+
+        <div class="form-row-2">
+            <div class="field-group">
+                <label class="field-label">Senha</label>
+                <input id="novaSenha" name="senha" type="password" class="field-input" placeholder="Senha de acesso" required />
+                <span class="field-error">@Html.ValidationMessage("senha")</span>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Confirmar Senha</label>
+                <input id="confirmarSenha" type="password" class="field-input" placeholder="Repita a senha" required />
+                <span id="senhaErro" class="field-error" style="display:none">As senhas nao coincidem.</span>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            @Html.ActionLink("Cancelar", "Admins", "Admin", null, new { @class = "btn-cancel" })
+            <button type="submit" id="btnSalvar" class="btn-purple">Cadastrar Administrador</button>
+        </div>
+    }
+</div>
+
+@section scripts {
+<script>
+    var nova = document.getElementById('novaSenha');
+    var conf = document.getElementById('confirmarSenha');
+    var erro = document.getElementById('senhaErro');
+    var btn  = document.getElementById('btnSalvar');
+    function validar() {
+        if (nova.value.length > 0 && conf.value.length > 0 && nova.value !== conf.value) {
+            erro.style.display = 'block';
+            btn.disabled = true;
+        } else {
+            erro.style.display = 'none';
+            btn.disabled = false;
+        }
+    }
+    nova.addEventListener('input', validar);
+    conf.addEventListener('input', validar);
+</script>
+}

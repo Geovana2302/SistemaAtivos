@@ -1,10 +1,9 @@
-namespace SistemaAtivos.Migrations
+﻿namespace SistemaAtivos.Migrations
 {
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
-    using SistemaAtivos.Helpers;
 
     internal sealed class Configuration : DbMigrationsConfiguration<SistemaAtivos.Models.AtivosContext>
     {
@@ -17,22 +16,27 @@ namespace SistemaAtivos.Migrations
 
         protected override void Seed(SistemaAtivos.Models.AtivosContext context)
         {
-            // REQUISITO 1 - SEGURANCA DE SENHAS
-            // A senha original era "admin123". Vamos salvar o HASH dela.
-            // Assim, o banco de dados nunca armazena a senha em texto puro.
-            string senhaCriptografada = CriptoHelper.HashSHA256("admin123");
-
-            context.Usuarios.AddOrUpdate(u => u.Email,
-                new SistemaAtivos.Models.Usuario
+            var admin = context.Usuarios.FirstOrDefault(u => u.Email == "admin@sistema.com");
+            if (admin == null)
+            {
+                context.Usuarios.Add(new SistemaAtivos.Models.Usuario
                 {
-                    Nome = "Administrador",
-                    Email = "admin@sistema.com",
-                    Senha = senhaCriptografada, // Salvando a senha embaralhada!
-                    Tipo = SistemaAtivos.Models.TipoUsuario.Admin,
-                    EmpresaId = null
-                }
-            );
-            context.SaveChanges();
+                    Nome         = "Administrador",
+                    Email        = "admin@sistema.com",
+                    Senha        = BCrypt.Net.BCrypt.HashPassword("admin123"),
+                    Perfil       = SistemaAtivos.Models.Perfil.Admin,
+                    EmpresaId    = null,
+                    IsSuperAdmin = true
+                });
+                context.SaveChanges();
+            }
+            else
+            {
+                if (!admin.Senha.StartsWith("$2"))
+                    admin.Senha = BCrypt.Net.BCrypt.HashPassword("admin123");
+                admin.IsSuperAdmin = true;
+                context.SaveChanges();
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-@model IEnumerable<SistemaAtivos.Models.Categoria>
+ï»¿@model IEnumerable<SistemaAtivos.Models.Categoria>
 @{
     ViewBag.Title = "Categorias";
     var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
@@ -23,10 +23,10 @@ else
             <thead>
                 <tr>
                     <th>Nome</th>
-                    <th>Descrição</th>
+                    <th>DescriÃ§Ã£o</th>
                     @if (isAdmin) { <th>Empresa</th> }
                     <th>Ativos</th>
-                    <th>Ações</th>
+                    <th>AÃ§Ãµes</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,8 +34,8 @@ else
                 {
                     <tr>
                         <td style="font-weight:500">@cat.Nome</td>
-                        <td>@(cat.Descricao ?? "—")</td>
-                        @if (isAdmin) { <td>@(cat.Empresa?.Nome ?? "—")</td> }
+                        <td>@(cat.Descricao ?? "â€”")</td>
+                        @if (isAdmin) { <td>@(cat.Empresa?.Nome ?? "â€”")</td> }
                         <td>@cat.Ativos.Count</td>
                         <td>
                             <div style="display:flex;gap:4px">

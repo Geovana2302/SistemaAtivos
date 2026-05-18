@@ -1,0 +1,102 @@
+﻿@model SistemaAtivos.Models.Usuário
+@{
+    ViewBag.Title = "Editar Usuário";
+    var isAdmin  = Session["UsuárioTipo"]?.ToString() == "Admin";
+    var empId    = Session["EmpresaId"] as int?;
+    var cancelUrl = Model.EmpresaId.HasValue
+        ? Url.Action("Empresa", "Admin", new { id = Model.EmpresaId })
+        : Url.Action("Admins", "Admin");
+}
+
+<div class="page-header">
+    <h4 class="page-title">Editar Usuário</h4>
+</div>
+
+<div class="form-card">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Id)
+        @Html.ValidationSummary(true, "", new { @class = "alert-custom alert-danger-custom" })
+
+        <div class="form-row-2">
+            <div class="field-group">
+                @Html.LabelFor(m => m.Nome, new { @class = "field-label" })
+                @Html.TextBoxFor(m => m.Nome, new { @class = "field-input" })
+                @Html.ValidationMessageFor(m => m.Nome, "", new { @class = "field-error" })
+            </div>
+            <div class="field-group">
+                @Html.LabelFor(m => m.Email, new { @class = "field-label" })
+                @Html.TextBoxFor(m => m.Email, new { @class = "field-input" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "field-error" })
+            </div>
+        </div>
+
+        <p class="field-label" style="margin-bottom:6px;font-weight:600">
+            Alterar Senha <span style="font-weight:400;color:#aaa">(deixe em branco para manter a atual)</span>
+        </p>
+        <div class="form-row-2" style="border:1px solid #F0EFE8;border-radius:8px;padding:12px;margin-bottom:1rem">
+            <div class="field-group" style="margin-bottom:0">
+                <label class="field-label">Nova Senha</label>
+                <input type="password" id="novaSenha" name="senha" class="field-input"
+                       placeholder="Digite a nova senha" autocomplete="new-password" />
+            </div>
+            <div class="field-group" style="margin-bottom:0">
+                <label class="field-label">Confirmar Nova Senha</label>
+                <input type="password" id="confirmarSenha" class="field-input"
+                       placeholder="Repita a nova senha" autocomplete="new-password" />
+                <span id="senhaErro" class="field-error" style="display:none">As senhas não coincidem.</span>
+            </div>
+        </div>
+
+        if (isAdmin)
+        {
+            <div class="form-row-2">
+                <div class="field-group">
+                    @Html.LabelFor(m => m.Perfil, new { @class = "field-label" })
+                    @Html.DropDownList("Perfil", (SelectList)ViewBag.Perfis, new { @class = "field-input" })
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Empresa</label>
+                    @Html.DropDownList("EmpresaId", (SelectList)ViewBag.EmpresaSelectList,
+                        "-- Selecione --", new { @class = "field-input" })
+                </div>
+            </div>
+        }
+
+        <div class="field-group">
+            <label class="field-label">Sua senha atual (para confirmar) <span style="color:red">*</span></label>
+            <input type="password" name="senhaAdmin" class="field-input" placeholder="Digite sua senha atual" />
+            <span class="field-error">@Html.ValidationMessage("senhaAdmin")</span>
+        </div>
+
+        <div class="form-actions">
+            <a href="@cancelUrl" class="btn-cancel">Cancelar</a>
+            <button type="submit" id="btnSalvar" class="btn-purple">Salvar alterações</button>
+        </div>
+    }
+</div>
+
+@section scripts {
+<script>
+    var novaSenha      = document.getElementById('novaSenha');
+    var confirmarSenha = document.getElementById('confirmarSenha');
+    var senhaErro      = document.getElementById('senhaErro');
+    var btnSalvar      = document.getElementById('btnSalvar');
+
+    function validarSenhas() {
+        var nova = novaSenha.value;
+        var conf = confirmarSenha.value;
+        if (nova.length > 0 && conf.length > 0 && nova !== conf) {
+            senhaErro.style.display = 'block';
+            btnSalvar.disabled = true;
+        } else {
+            senhaErro.style.display = 'none';
+            btnSalvar.disabled = false;
+        }
+    }
+
+    novaSenha.addEventListener('input', validarSenhas);
+    confirmarSenha.addEventListener('input', validarSenhas);
+</script>
+}

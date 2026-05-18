@@ -1,11 +1,11 @@
-@model SistemaAtivos.Models.Colaborador
+Ôªø@model SistemaAtivos.Models.Colaborador
 @{
-    ViewBag.Title = "Novo Respons·vel";
+    ViewBag.Title = "Novo Respons√°vel";
     var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
 }
 
 <div class="page-header">
-    <h4 class="page-title">Novo Respons·vel</h4>
+    <h4 class="page-title">Novo Respons√°vel</h4>
 </div>
 
 <div class="form-card">
@@ -53,7 +53,7 @@
 
         <div class="form-actions">
             @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn-cancel" })
-            <button type="submit" class="btn-purple">Cadastrar Respons·vel</button>
+            <button type="submit" class="btn-purple">Cadastrar Respons√°vel</button>
         </div>
     }
 </div>

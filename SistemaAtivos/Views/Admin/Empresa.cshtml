@@ -3,7 +3,6 @@
     ViewBag.Title = Model.Nome;
     var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
 }
-
 <nav class="breadcrumb-custom">
     @if (isAdmin)
     {@Html.ActionLink("Empresas", "Dashboard", "Admin") <span> / </span>}
@@ -27,9 +26,10 @@
 <div class="stats-row">
     <div class="stat-card"><p class="stat-label">Categorias</p><p class="stat-value">@Model.Categorias.Count</p></div>
     <div class="stat-card"><p class="stat-label">Ativos</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.Ativo)</p></div>
-    <div class="stat-card"><p class="stat-label">Em Manutencao</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.EmManutencao)</p></div>
+    <div class="stat-card"><p class="stat-label">Em Manuten&ccedil;&atilde;o</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.EmManutencao)</p></div>
     <div class="stat-card"><p class="stat-label">Inativos</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == SistemaAtivos.Models.StatusAtivo.Inativo)</p></div>
-    <div class="stat-card"><p class="stat-label">Responsáveis</p><p class="stat-value">@Model.Colaboradores.Count</p></div>
+    <div class="stat-card"><p class="stat-label">Respons&aacute;veis</p><p class="stat-value">@Model.Colaboradores.Count</p></div>
+    <div class="stat-card"><p class="stat-label">Gestores</p><p class="stat-value">@Model.Usuarios.Count(u => u.Perfil == SistemaAtivos.Models.Perfil.Gestor)</p></div>
 </div>
 
 <div class="section-header">
@@ -60,7 +60,7 @@ else
                 <div style="display:flex;align-items:center;gap:6px">
                     @Html.ActionLink("+", "Create", "Ativo", new { categoriaId = cat.Id, empresaId = Model.Id }, new { @class = "acc-action", title = "Adicionar ativo" })
                     <div class="dropdown" style="display:inline-block">
-                        <button type="button" class="acc-action" data-toggle="dropdown" title="Opções">&#8942;</button>
+                        <button type="button" class="acc-action" data-toggle="dropdown" title="Op&ccedil;&otilde;es">&#8942;</button>
                         <ul class="dropdown-menu dropdown-menu-right">
                             <li>@Html.ActionLink("Editar categoria", "Edit", "Categoria", new { id = cat.Id }, null)</li>
                             <li>
@@ -127,15 +127,15 @@ else
 
 <div style="margin-top:1.5rem">
     <div class="section-header">
-        <p class="section-title">Responsáveis</p>
-        @Html.ActionLink("+ Responsável", "Create", "Colaborador", new { empresaId = Model.Id }, new { @class = "btn-outline-sm" })
+        <p class="section-title">Respons&aacute;veis</p>
+        <a href="@Url.Action("Create", "Colaborador", new { empresaId = Model.Id })" class="btn-outline-sm">+ Respons&aacute;vel</a>
     </div>
 
     @if (!Model.Colaboradores.Any())
     {
         <div class="empty-state">
-        <p>Nenhum responsável cadastrado ainda.</p>
-            @Html.ActionLink("Criar primeiro responsável", "Create", "Colaborador", new { empresaId = Model.Id }, new { @class = "btn-purple" })
+        <p>Nenhum respons&aacute;vel cadastrado ainda.</p>
+            <a href="@Url.Action("Create", "Colaborador", new { empresaId = Model.Id })" class="btn-purple">Criar primeiro respons&aacute;vel</a>
         </div>
     }
     else
@@ -157,7 +157,7 @@ else
                     </div>
                     <div style="display:flex;align-items:center;gap:6px">
                         <div class="dropdown" style="display:inline-block">
-                            <button type="button" class="acc-action" data-toggle="dropdown" title="Opções">&#8942;</button>
+                            <button type="button" class="acc-action" data-toggle="dropdown" title="Op&ccedil;&otilde;es">&#8942;</button>
                             <ul class="dropdown-menu dropdown-menu-right">
                                 <li>@Html.ActionLink("Editar", "Edit", "Colaborador", new { id = col.Id }, null)</li>
                                 <li>
@@ -165,7 +165,7 @@ else
                                     {
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="dropdown-delete-btn"
-                                        onclick="return confirm('Excluir este responsável?')">
+                                        onclick="return confirm('Excluir este respons\u00E1vel?')">
                                             Excluir
                                         </button>
                                     }
@@ -214,6 +214,80 @@ else
         }
     }
 </div>
+
+<div style="margin-top:1.5rem">
+<div class="section-header">
+    <p class="section-title">Gestores</p>
+    <a href="@Url.Action("Create", "Usuario", new { empresaId = Model.Id })" class="btn-outline-sm">+ Gestor</a>
+</div>
+
+@if (!Model.Usuarios.Any(u => u.Perfil == SistemaAtivos.Models.Perfil.Gestor))
+{
+    <div class="empty-state">
+        <p>Nenhum gestor cadastrado ainda.</p>
+        <a href="@Url.Action("Create", "Usuario", new { empresaId = Model.Id })" class="btn-purple">Cadastrar primeiro gestor</a>
+    </div>
+}
+else
+{
+    var usuarioLogadoId = (int)Session["UsuarioId"];
+    foreach (var u in Model.Usuarios.Where(u => u.Perfil == SistemaAtivos.Models.Perfil.Gestor))
+    {
+        <div class="ativo-row">
+            <div>
+                <p class="ativo-name">
+                    @u.Nome
+                    @if (u.Id == usuarioLogadoId) { <span class="acc-badge">você</span> }
+                </p>
+                <p class="ativo-meta">@u.Email &middot; <span class="acc-badge">Gestor</span></p>
+            </div>
+            <div style="display:flex;gap:4px;align-items:center">
+                @Html.ActionLink("Editar", "Edit", "Usuario", new { id = u.Id }, new { @class = "btn-xs-outline" })
+                @if (u.Id != usuarioLogadoId)
+                {
+                    <button type="button" class="btn-xs-danger"
+                            onclick="$('#modalExcluirGestor-@u.Id').modal('show')">
+                        Excluir
+                    </button>
+                }
+            </div>
+        </div>
+    }
+}
+</div>
+
+@foreach (var u in Model.Usuarios.Where(u => u.Perfil == SistemaAtivos.Models.Perfil.Gestor))
+{
+    var logadoId2 = (int)Session["UsuarioId"];
+    if (u.Id != logadoId2)
+    {
+        <div class="modal fade" id="modalExcluirGestor-@u.Id" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content modal-custom">
+                    <div class="modal-body">
+                        <h5 class="modal-title-custom">Excluir gestor</h5>
+                        <p class="modal-sub-custom">
+                            Tem certeza que deseja excluir <strong>@u.Nome</strong>? Esta ação não pode ser desfeita.
+                        </p>
+                        @using (Html.BeginForm("Delete", "Usuario", new { id = u.Id }, FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="field-group">
+                                <label class="field-label">Confirme sua senha <span style="color:red">*</span></label>
+                                <input type="password" name="senhaConfirm" class="field-input"
+                                       placeholder="Digite sua senha de acesso" required />
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn-cancel" data-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn-danger">Confirmar exclusão</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
 
 @section scripts {
     <script>

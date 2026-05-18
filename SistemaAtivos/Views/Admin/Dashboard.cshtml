@@ -1,4 +1,4 @@
-@model IEnumerable<SistemaAtivos.Models.Empresa>
+ï»¿@model IEnumerable<SistemaAtivos.Models.Empresa>
 @{
     ViewBag.Title = "Dashboard";
 }
@@ -39,7 +39,6 @@
 
 @foreach (var emp in Model)
 {
-    <!-- Modal Editar -->
     <div class="modal fade" id="modalEditar-@emp.Id" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content modal-custom">
@@ -64,7 +63,7 @@
                         </div>
                         <div class="modal-actions">
                             <button type="button" class="btn-cancel" data-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn-purple">Salvar alterações</button>
+                            <button type="submit" class="btn-purple">Salvar alteracoes</button>
                         </div>
                     }
                 </div>
@@ -72,14 +71,13 @@
         </div>
     </div>
 
-    <!-- Modal Excluir -->
     <div class="modal fade" id="modalExcluir-@emp.Id" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content modal-custom">
                 <div class="modal-body">
                     <h5 class="modal-title-custom">Excluir empresa</h5>
                     <p class="modal-sub-custom">
-                        Esta ação removerá <strong>@emp.Nome</strong> e todos os dados vinculados permanentemente.
+                        Esta acao removera <strong>@emp.Nome</strong> e todos os dados vinculados permanentemente.
                     </p>
                     @using (Html.BeginForm("DeleteEmpresa", "Admin", FormMethod.Post))
                     {
@@ -91,7 +89,7 @@
                         </div>
                         <div class="modal-actions">
                             <button type="button" class="btn-cancel" data-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn-danger">Confirmar exclusão</button>
+                            <button type="submit" class="btn-danger">Confirmar exclusao</button>
                         </div>
                     }
                 </div>

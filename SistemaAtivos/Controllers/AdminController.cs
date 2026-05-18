@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -47,11 +47,10 @@ namespace SistemaAtivos.Controllers
         // REQUISITO 5 - try-catch para tratamento de excecoes
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateEmpresa(Empresa empresa, string emailCliente)
+        public ActionResult CreateEmpresa(Empresa empresa)
         {
             if (!IsAdmin()) return new HttpUnauthorizedResult();
 
-            // REQUISITO 4 - Regra de negocio: limite maximo de empresas
             if (db.Empresas.Count() >= 25)
             {
                 TempData["Erro"] = "Limite de 25 empresas atingido.";
@@ -65,35 +64,19 @@ namespace SistemaAtivos.Controllers
             }
 
             if (string.IsNullOrWhiteSpace(empresa.Cor))
-            {
                 empresa.Cor = "#534AB7";
-            }
 
             try
             {
                 db.Empresas.Add(empresa);
                 db.SaveChanges();
-
-                if (!string.IsNullOrWhiteSpace(emailCliente))
-                {
-                    var usuario = new Usuario
-                    {
-                        Nome = empresa.Nome,
-                        Email = emailCliente,
-                        Senha = BCrypt.Net.BCrypt.HashPassword("123456"),
-                        Tipo = TipoUsuario.Cliente,
-                        EmpresaId = empresa.Id
-                    };
-                    db.Usuarios.Add(usuario);
-                    db.SaveChanges();
-                }
-                TempData["Sucesso"] = $"Empresa \"{empresa.Nome}\" criada com sucesso! Senha inicial do cliente: 123456";
+                TempData["Sucesso"] = $"Empresa \"{empresa.Nome}\" criada com sucesso! Acesse a empresa para cadastrar o primeiro gestor.";
             }
             catch (Exception)
             {
                 TempData["Erro"] = "Erro ao criar empresa. Tente novamente.";
             }
-            return RedirectToAction("Dashboard");
+            return RedirectToAction("Empresa", new { id = empresa.Id });
         }
 
         [HttpPost]
@@ -160,9 +143,6 @@ namespace SistemaAtivos.Controllers
 
             try
             {
-                var manutencoes = db.Manutencoes.Where(m => m.EmpresaId == id).ToList();
-                db.Manutencoes.RemoveRange(manutencoes);
-
                 var ativos = db.Ativos.Where(a => a.EmpresaId == id).ToList();
                 db.Ativos.RemoveRange(ativos);
 
@@ -202,11 +182,98 @@ namespace SistemaAtivos.Controllers
                 .Include(e => e.Categorias)
                 .Include(e => e.Colaboradores)
                 .Include(e => e.Usuarios)
-                .Include(e => e.Manutencoes)
                 .FirstOrDefault(e => e.Id == id);
 
             if (empresa == null) return HttpNotFound();
             return View(empresa);
+        }
+
+        // ?? CRUD de Administradores do sistema ??????????????????????????
+        public ActionResult Admins()
+        {
+            if (!IsAdmin()) return new HttpUnauthorizedResult();
+            var admins = db.Usuarios.Where(u => u.Perfil == Perfil.Admin).OrderBy(u => u.Nome).ToList();
+            return View(admins);
+        }
+
+        [HttpGet]
+        public ActionResult CreateAdmin()
+        {
+            if (!IsAdmin()) return new HttpUnauthorizedResult();
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateAdmin(string Nome, string Email, string senha)
+        {
+            if (!IsAdmin()) return new HttpUnauthorizedResult();
+
+            if (string.IsNullOrWhiteSpace(senha))
+                ModelState.AddModelError("senha", "A senha é obrigatória.");
+
+            if (db.Usuarios.Any(u => u.Email == Email))
+                ModelState.AddModelError("Email", "Este e-mail já está cadastrado.");
+
+            if (!ModelState.IsValid)
+                return View();
+
+            try
+            {
+                db.Usuarios.Add(new Usuario
+                {
+                    Nome      = Nome,
+                    Email     = Email,
+                    Senha     = BCrypt.Net.BCrypt.HashPassword(senha),
+                    Perfil    = Perfil.Admin,
+                    EmpresaId = null
+                });
+                db.SaveChanges();
+                TempData["Sucesso"] = "Administrador cadastrado com sucesso.";
+            }
+            catch (Exception)
+            {
+                TempData["Erro"] = "Erro ao cadastrar administrador.";
+            }
+            return RedirectToAction("Admins");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteAdmin(int id, string senhaAdmin)
+        {
+            if (!IsAdmin()) return new HttpUnauthorizedResult();
+
+            var adminLogadoId = (int)Session["UsuarioId"];
+            var adminLogado = db.Usuarios.Find(adminLogadoId);
+
+            if (adminLogado == null || !adminLogado.IsSuperAdmin)
+            {
+                TempData["Erro"] = "Apenas o Super Admin pode excluir administradores.";
+                return RedirectToAction("Admins");
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(senhaAdmin, adminLogado.Senha))
+            {
+                TempData["Erro"] = "Senha incorreta. Exclusao cancelada.";
+                return RedirectToAction("Admins");
+            }
+
+            var usuario = db.Usuarios.Find(id);
+            if (usuario == null || usuario.Perfil != Perfil.Admin || usuario.IsSuperAdmin)
+                return HttpNotFound();
+
+            try
+            {
+                db.Usuarios.Remove(usuario);
+                db.SaveChanges();
+                TempData["Sucesso"] = "Administrador excluido.";
+            }
+            catch (Exception)
+            {
+                TempData["Erro"] = "Erro ao excluir administrador.";
+            }
+            return RedirectToAction("Admins");
         }
 
         protected override void Dispose(bool disposing)

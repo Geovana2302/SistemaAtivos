@@ -1,4 +1,4 @@
-@model IEnumerable<SistemaAtivos.Models.Colaborador>
+ï»¿@model IEnumerable<SistemaAtivos.Models.Colaborador>
 @{
     ViewBag.Title = "Colaboradores";
     var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
@@ -27,7 +27,7 @@ else
                     <th>E-mail</th>
                     <th>Telefone</th>
                     @if (isAdmin) { <th>Empresa</th> }
-                    <th>Ações</th>
+                    <th>AÃ§Ãµes</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,10 +35,10 @@ else
                 {
                     <tr>
                         <td style="font-weight:500">@col.Nome</td>
-                        <td>@(col.Cargo ?? "—")</td>
-                        <td>@(col.Email ?? "—")</td>
-                        <td>@(col.Telefone ?? "—")</td>
-                        @if (isAdmin) { <td>@(col.Empresa?.Nome ?? "—")</td> }
+                        <td>@(col.Cargo ?? "â€”")</td>
+                        <td>@(col.Email ?? "â€”")</td>
+                        <td>@(col.Telefone ?? "â€”")</td>
+                        @if (isAdmin) { <td>@(col.Empresa?.Nome ?? "â€”")</td> }
                         <td>
                             <div style="display:flex;gap:4px">
                                 <div class="dropdown" style="display:inline-block">

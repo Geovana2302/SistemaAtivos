@@ -1,4 +1,4 @@
-@model IEnumerable<SistemaAtivos.Models.Ativo>
+﻿@model IEnumerable<SistemaAtivos.Models.Ativo>
 @{
     ViewBag.Title = "Inativos";
     var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
@@ -43,7 +43,12 @@
 
 @if (!Model.Any())
 {
-    <div class="empty-state"><p>Nenhum ativo inativo encontrado.</p></div>
+    <div class="empty-state">
+        <p style="font-size:32px;margin-bottom:8px">&#9989;</p>
+        <p style="font-weight:500;color:#555;margin-bottom:4px">Nenhum ativo inativo</p>
+        <p style="font-size:12px;color:#aaa;margin-bottom:1rem">Todos os ativos estão com status Ativo.</p>
+        @Html.ActionLink("Ver ativos", "Index", null, new { @class = "btn-purple" })
+    </div>
 }
 else
 {
@@ -58,7 +63,7 @@ else
                         <th>Empresa</th>
 }
                     <th>Status</th>
-                    <th>A��es</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>

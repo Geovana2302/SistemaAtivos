@@ -1,0 +1,101 @@
+﻿@model IEnumerable<SistemaAtivos.Models.Usuario>
+@{
+    ViewBag.Title = "Usuarios";
+    var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
+    var empresas = ViewBag.Empresas as List<SistemaAtivos.Models.Empresa>;
+    var empresaFiltro = ViewBag.EmpresaFiltro as int?;
+}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Usuarios</h4>
+        <p class="page-sub">@Model.Count() usuario(s) cadastrado(s)</p>
+    </div>
+    @Html.ActionLink("+ Novo Usuario", "Create", null, new { @class = "btn-purple" })
+</div>
+
+@if (isAdmin && empresas != null)
+{
+    <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+        <span style="font-size:12px;color:#888">Filtrar:</span>
+        <a href="@Url.Action("Index")" class="filter-chip @(empresaFiltro == null ? "filter-chip-active" : "")">Todos</a>
+        @foreach (var emp in empresas)
+        {
+            <a href="@Url.Action("Index", new { empresaId = emp.Id })"
+               class="filter-chip @(empresaFiltro == emp.Id ? "filter-chip-active" : "")"
+               style="@(empresaFiltro == emp.Id ? "background:" + emp.Cor + ";color:#fff;border-color:" + emp.Cor : "")">
+                <span class="filter-dot" style="background:@emp.Cor"></span>@emp.Nome
+            </a>
+        }
+    </div>
+}
+
+@if (TempData["Sucesso"] != null)
+{<div class="alert-custom alert-success-custom">@TempData["Sucesso"]</div>}
+@if (TempData["Erro"] != null)
+{<div class="alert-custom alert-danger-custom">@TempData["Erro"]</div>}
+
+@if (!Model.Any())
+{
+    <div class="empty-state"><p>Nenhum usuario encontrado.</p></div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Perfil</th>
+                    @if (isAdmin)
+                    {
+                        <th>Empresa</th>
+}
+                    <th>Acoes</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var usuario in Model)
+                {
+                    <tr>
+                        <td><p style="font-weight:500;margin:0">@usuario.Nome</p></td>
+                        <td>@usuario.Email</td>
+                        <td>@(usuario.Perfil == SistemaAtivos.Models.Perfil.Admin ? "Administrador" : "Gestor de Empresa")</td>
+                        @if (isAdmin)
+                        {
+                            <td>
+                                @if (usuario.Empresa != null)
+                                {
+                                    <span class="filter-dot" style="background:@usuario.Empresa.Cor"></span>@usuario.Empresa.Nome
+                                }
+                                else
+                                { <text>-</text>}
+                            </td>
+                        }
+                        <td>
+                            <div style="display:flex;gap:4px">
+                                @Html.ActionLink("Editar", "Edit", new { id = usuario.Id }, new { @class = "btn-xs-outline" })
+                                <div class="dropdown" style="display:inline-block">
+                                    <button type="button" class="btn-xs-outline" data-toggle="dropdown">&#8942;</button>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li>
+                                            @using (Html.BeginForm("Delete", "Usuario", new { id = usuario.Id }, FormMethod.Post))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="dropdown-delete-btn"
+                                                        onclick="return confirm('Excluir este usuario?')">
+                                                    Excluir
+                                                </button>
+                                            }
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

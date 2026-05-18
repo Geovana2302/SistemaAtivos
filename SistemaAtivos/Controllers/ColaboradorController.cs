@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -19,7 +19,10 @@ namespace SistemaAtivos.Controllers
         {
             var q = db.Colaboradores.Include(c => c.Empresa).AsQueryable();
             if (!IsAdmin())
-                q = q.Where(c => c.EmpresaId == GetEmpresaId());
+            {
+                var empresaId = GetEmpresaId();
+                q = q.Where(c => c.EmpresaId == empresaId);
+            }
             return q;
         }
 
@@ -52,7 +55,7 @@ namespace SistemaAtivos.Controllers
         {
             if (!IsAdmin()) colaborador.EmpresaId = GetEmpresaId();
             if (!colaborador.EmpresaId.HasValue)
-                ModelState.AddModelError("EmpresaId", "Empresa é obrigatória.");
+                ModelState.AddModelError("EmpresaId", "Empresa Ã© obrigatÃ³ria.");
             if (ModelState.IsValid)
             {
                 try
@@ -76,7 +79,7 @@ namespace SistemaAtivos.Controllers
         [HttpGet]
         public ActionResult Edit(int id)
         {
-            var col = GetQuery().FirstOrDefault(c => c.Id == id);
+            Colaborador col = GetQuery().FirstOrDefault(c => c.Id == id);
             if (col == null) return HttpNotFound();
             ViewBag.Empresas = new SelectList(db.Empresas, "Id", "Nome", col.EmpresaId);
             return View(col);
@@ -88,7 +91,7 @@ namespace SistemaAtivos.Controllers
         {
             if (!IsAdmin()) colaborador.EmpresaId = GetEmpresaId();
             if (!colaborador.EmpresaId.HasValue)
-                ModelState.AddModelError("EmpresaId", "Empresa é obrigatória.");
+                ModelState.AddModelError("EmpresaId", "Empresa Ã© obrigatÃ³ria.");
             if (ModelState.IsValid)
             {
                 try
@@ -119,7 +122,7 @@ namespace SistemaAtivos.Controllers
 
             if (db.Ativos.Any(a => a.ColaboradorId == id))
             {
-                TempData["Erro"] = "Não é possível excluir este colaborador pois existem ativos vinculados a ele.";
+                TempData["Erro"] = "NÃ£o Ã© possÃ­vel excluir este colaborador pois existem ativos vinculados a ele.";
                 if (empId.HasValue) return RedirectToAction("Empresa", "Admin", new { id = empId });
                 return RedirectToAction("Index");
             }
@@ -128,7 +131,7 @@ namespace SistemaAtivos.Controllers
             {
                 db.Colaboradores.Remove(col);
                 db.SaveChanges();
-                TempData["Sucesso"] = "Colaborador excluído.";
+                TempData["Sucesso"] = "Colaborador excluÃ­do.";
             }
             catch (Exception)
             {

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -19,7 +19,10 @@ namespace SistemaAtivos.Controllers
         {
             var q = db.Categorias.Include(c => c.Empresa).AsQueryable();
             if (!IsAdmin())
-                q = q.Where(c => c.EmpresaId == GetEmpresaId());
+            {
+                var empresaId = GetEmpresaId();
+                q = q.Where(c => c.EmpresaId == empresaId);
+            }
             return q;
         }
 
