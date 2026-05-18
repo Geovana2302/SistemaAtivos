@@ -1,225 +1,146 @@
-# 📦 Sistema de Gestão de Ativos
+﻿# Gestao de Ativos
 
-Sistema web **multiempresa** para gerenciamento de ativos patrimoniais e controle completo de manutenções, desenvolvido com **ASP.NET MVC 5**, **Entity Framework 6** e **.NET Framework 4.8**.
-
----
-
-## 🚀 Funcionalidades
-
-### 🔐 Autenticação e Controle de Acesso (Requisito 1)
-- Login com validação de credenciais via hash **SHA-256** (senha nunca armazenada em texto puro)
-- Controle de **Sessão** para proteger todas as áreas restritas
-- Dois perfis de acesso: **Admin** e **Cliente**
-- Filtro `[EmpresaAuthorize]` aplicado em todos os controllers sensíveis
-- Logout com `Session.Clear()` + `Session.Abandon()`
-
-### 🏢 Gestão de Empresas
-- Cadastro e gerenciamento de empresas clientes
-- Dashboard administrativo com visão geral de todas as empresas
-- Página individual por empresa com seus ativos, colaboradores e manutenções
-
-### 🖥️ Gestão de Ativos
-- Cadastro completo de equipamentos/patrimônios
-- Vinculação a **Empresa**, **Categoria** e **Colaborador** responsável
-- Controle de status: **Ativo**, **Inativo**, **Em Manutenção**
-- Geração de **QR Code** por ativo (rota `/Ativo/QrCode/{id}`) para acesso via dispositivo móvel
-- Filtros por empresa e ordenação dinâmica
-- Histórico de manutenções por ativo
-
-### 🔧 Gestão de Manutenções (Requisito 2 — Movimentação de Dados)
-- Abertura de chamados vinculados a ativos e empresas (relacionamento entre múltiplas entidades)
-- **Máquina de estados** completa:
-
-```
-Aberto → Em Orçamento → Aguardando Aprovação → Aprovado → Em Conserto → Concluído
-                                                                       ↘ Cancelado
-```
-
-- **Quadro Técnico (Kanban)** para movimentação de chamados com suporte a **AJAX**
-- Envio de orçamento com diagnóstico técnico e valor pelo técnico (Admin)
-- Aprovação de orçamento pelo cliente com registro de data e nome do responsável
-- **Histórico** com filtro por empresa e intervalo de datas + cálculo de faturamento total
-
-### 👥 Colaboradores
-- Cadastro de colaboradores por empresa
-- Associação como responsável por ativos
-
-### 🗂️ Categorias
-- Gerenciamento de categorias de ativos por empresa
+Sistema web **multi-empresa** para gerenciamento de ativos patrimoniais, desenvolvido com **ASP.NET MVC 5**, **Entity Framework 6** e **.NET Framework 4.8**. Conta com controle de acesso por perfil, geracao de QR Code e impressao de etiquetas para os ativos.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Funcionalidades
 
-| Tecnologia | Versão |
+### Administrador
+- Dashboard com visao geral de todas as empresas cadastradas
+- Cadastro de empresas com cor de identificacao (limite de 25 empresas)
+- Edicao e exclusao de empresas com confirmacao de senha
+- Cadastro e gerenciamento de administradores do sistema
+- Acesso completo a todos os modulos
+
+### Multi-Empresa
+- Cada empresa possui seus proprios ativos, categorias, responsaveis e gestores
+- Gestores acessam apenas os dados da sua propria empresa
+- Isolamento total de dados entre empresas
+
+### Ativos
+- Cadastro completo: nome, numero de serie, marca, modelo, categoria, responsavel, data de aquisicao, valor, status e observacoes
+- Status: **Ativo**, **Inativo**, **Em Manutencao**
+- Listagem de ativos ativos e inativos separadamente
+- Pagina de detalhes com todas as informacoes do ativo
+- **Geracao de QR Code** com link direto para os detalhes do ativo
+- **Impressao de etiqueta** com QR Code para colagem nos equipamentos
+
+### Categorias
+- Cadastro de categorias por empresa
+- Vinculacao de ativos a categorias
+- Protecao contra exclusao de categorias com ativos vinculados
+
+### Responsaveis (Colaboradores)
+- Cadastro de responsaveis por empresa
+- Vinculacao de ativos a responsaveis
+- Protecao contra exclusao de responsaveis com ativos vinculados
+
+### Usuarios / Gestores
+- Cadastro de gestores por empresa
+- Edicao e exclusao com confirmacao de senha
+- Controle de perfil: **Admin** e **Gestor**
+
+### Seguranca
+- Autenticacao por sessao
+- Senhas armazenadas com hash **BCrypt**
+- Filtro de autorizacao [EmpresaAuthorize] protegendo todos os controllers
+- Gestores nao conseguem acessar dados de outras empresas
+- Protecao CSRF em todos os formularios POST
+
+---
+
+## Tecnologias
+
+| Tecnologia | Versao |
 |---|---|
-| ASP.NET MVC | 5.2.9 |
+| ASP.NET MVC | 5 |
 | .NET Framework | 4.8 |
-| Entity Framework | 6.5.1 (Code First + Migrations) |
-| Bootstrap | 5 |
-| Bootstrap Icons | Ícones da interface |
-| jQuery | 3.6.0 |
-| QRCoder | 1.4.3 |
-| SQL Server / LocalDB | Banco de dados |
+| Entity Framework | 6 Code First |
+| SQL Server | LocalDB |
+| Bootstrap | 3 |
+| jQuery | 3.6 |
+| BCrypt.Net | - |
+| QRCoder | - |
 
 ---
 
-## 🏗️ Estrutura do Projeto
+## Como Executar
 
-```
-SistemaAtivos/
-├── Controllers/
-│   ├── AccountController.cs       ← Login, logout e controle de sessão
-│   ├── AdminController.cs         ← Dashboard e gestão de empresas
-│   ├── AtivoController.cs         ← CRUD de ativos + QR Code
-│   ├── ManutencaoController.cs    ← Fluxo completo de manutenções (Kanban, orçamento, aprovação)
-│   ├── CategoriaController.cs     ← CRUD de categorias
-│   └── ColaboradorController.cs   ← CRUD de colaboradores
-├── Models/
-│   ├── Ativo.cs                   ← Entidade ativo com Data Annotations
-│   ├── Manutencao.cs              ← Entidade manutenção + máquina de estados
-│   ├── Empresa.cs                 ← Entidade empresa
-│   ├── Usuario.cs                 ← Entidade usuário (Admin/Cliente)
-│   ├── Categoria.cs               ← Entidade categoria
-│   ├── Colaborador.cs             ← Entidade colaborador
-│   └── AtivosContext.cs           ← DbContext + configurações EF + Migrations automáticas
-├── Services/
-│   └── ManutencaoService.cs       ← Regras de negócio de manutenção
-├── Filters/
-│   └── EmpresaAuthorizeAttribute.cs  ← Filtro de autorização baseado em sessão
-├── Helpers/
-│   └── CriptoHelper.cs            ← Hash SHA-256 para senhas
-├── Migrations/                    ← Migrations do Entity Framework
-├── Content/
-│   └── Site.css                   ← Estilos customizados
-└── Views/
-    ├── Account/Login.cshtml
-    ├── Admin/
-    │   ├── Dashboard.cshtml        ← Cards de empresas
-    │   └── Empresa.cshtml          ← Área interna da empresa
-    ├── Ativo/
-    │   ├── Index.cshtml
-    │   ├── Create.cshtml
-    │   ├── Edit.cshtml
-    │   ├── Detalhes.cshtml         ← Histórico + QR Code
-    │   └── Inativos.cshtml
-    ├── Manutencao/
-    │   ├── Index.cshtml            ← Visão do cliente
-    │   ├── Create.cshtml
-    │   ├── Edit.cshtml
-    │   ├── QuadroTecnico.cshtml    ← Kanban (Admin)
-    │   ├── Historico.cshtml        ← Histórico com faturamento
-    │   ├── _ManutencaoCard.cshtml  ← Partial card do Kanban
-    │   └── _OrcamentoModal.cshtml  ← Modal de orçamento
-    ├── Categoria/ e Colaborador/
-    └── Shared/_Layout.cshtml
-```
-
----
-
-## 🗄️ Modelo de Dados
-
-```
-Empresa  (1) ──── (N) Usuario
-Empresa  (1) ──── (N) Ativo
-Empresa  (1) ──── (N) Colaborador
-Empresa  (1) ──── (N) Categoria
-Empresa  (1) ──── (N) Manutencao
-Ativo    (1) ──── (N) Manutencao
-Ativo    (N) ──── (1) Categoria
-Ativo    (N) ──── (1) Colaborador
-```
-
----
-
-## ⚙️ Como Executar
-
-### Pré-requisitos
+### Pre-requisitos
 - Visual Studio 2019 ou superior
 - .NET Framework 4.8
-- SQL Server ou LocalDB (incluso no Visual Studio)
+- SQL Server LocalDB (incluido no Visual Studio)
 
 ### Passos
 
-**1. Clone o repositório**
-```bash
+1. Clone o repositorio
+`ash
 git clone https://github.com/Geovana2302/SistemaAtivos.git
-```
+``r
 
-**2. Abra a solução** no Visual Studio
-```
-SistemaAtivos.sln
-```
+2. Abra SistemaAtivos.sln no Visual Studio
 
-**3. Restaure os pacotes NuGet**
-```
-Tools → NuGet Package Manager → Restore NuGet Packages
-```
+3. Restaure os pacotes NuGet
+``r
+Tools > NuGet Package Manager > Restore NuGet Packages
+``r
 
-**4. Verifique a string de conexão** em `web.config`:
-```xml
-<connectionStrings>
-  <add name="AtivosContext"
-       connectionString="Data Source=(LocalDb)\MSSQLLocalDB;Initial Catalog=SistemaAtivos;Integrated Security=True"
-       providerName="System.Data.SqlClient" />
-</connectionStrings>
-```
+4. Execute as Migrations no Package Manager Console
+``r
+Update-Database
+``r
 
-**5. Execute o projeto** — as Migrations são aplicadas automaticamente (`MigrateDatabaseToLatestVersion`)
-
-**6. Acesse** via browser:
-```
-https://localhost:{porta}/Account/Login
-```
-
-### Credenciais padrão (criadas no Seed)
-| Campo | Valor |
-|---|---|
-| E-mail | `admin@sistema.com` |
-| Senha | `admin123` |
-| Tipo | Admin |
-
-> Usuários clientes são criados junto com a empresa e recebem a senha padrão `123456`.
+5. Execute o projeto com **F5**
 
 ---
 
-## 🔒 Segurança
+## Estrutura do Projeto
 
-- Senhas armazenadas com **hash SHA-256** — nunca em texto puro
-- Todas as rotas protegidas pelo filtro `[EmpresaAuthorize]`
-- Proteção contra **CSRF** com `@Html.AntiForgeryToken()` em todos os formulários POST
-- **Isolamento de dados por empresa** — clientes só visualizam seus próprios registros
-
----
-
-## 🔑 Controle de Acesso
-
-| Funcionalidade | Admin | Cliente |
-|---|---|---|
-| Ver todas as empresas | ✅ | ✗ |
-| Ver apenas sua empresa | ✅ | ✅ |
-| Criar / excluir empresa | ✅ | ✗ |
-| CRUD de ativos | ✅ | ✅ (só os seus) |
-| Quadro Técnico (Kanban) | ✅ | ✗ |
-| Enviar orçamento | ✅ | ✗ |
-| Aprovar orçamento | ✅ | ✅ |
-| Histórico de faturamento | ✅ | ✗ |
-| Ver manutenções | ✅ | ✅ (só as suas) |
-
----
-
-## 📋 Requisitos do Projeto Atendidos
-
-| # | Requisito | Como foi implementado | Status |
-|---|---|---|---|
-| 1 | **Autenticação e Sessão** | `AccountController` com hash SHA-256, `Session`, filtro `[EmpresaAuthorize]` | ✅ |
-| 2 | **Movimentação de Dados** | Fluxo de manutenção com relacionamento entre `Manutencao`, `Ativo` e `Empresa` | ✅ |
-| 3 | **Validação com Data Annotations** | `[Required]`, `[StringLength]`, `[DataType]` em todos os Models + `ModelState.IsValid` nos Controllers | ✅ |
-| 4 | **Lógica Operacional** | Actions `MoverStatus`, `Aprovar`, `Orcamento`, `QuadroTecnico`, `Historico` com estado em tempo real | ✅ |
-| 5 | **Estabilidade (try-catch)** | Blocos `try-catch` em todas as operações críticas de escrita no banco | ✅ |
+``r
+SistemaAtivos/
+├── Controllers/
+│   ├── AccountController.cs       # Login e logout
+│   ├── AdminController.cs         # Gestao de empresas e admins
+│   ├── AtivoController.cs         # CRUD de ativos + QR Code + Etiqueta
+│   ├── CategoriaController.cs     # CRUD de categorias
+│   ├── ColaboradorController.cs   # CRUD de responsaveis
+│   └── UsuarioController.cs       # CRUD de usuarios/gestores
+├── Models/
+│   ├── Ativo.cs
+│   ├── Categoria.cs
+│   ├── Colaborador.cs
+│   ├── Empresa.cs
+│   ├── Usuario.cs
+│   └── AtivosContext.cs
+├── Views/
+│   ├── Admin/
+│   ├── Ativo/           # CRUD + Detalhes + Imprimir etiqueta
+│   ├── Categoria/
+│   ├── Colaborador/
+│   ├── Usuario/
+│   └── Shared/_Layout.cshtml
+├── Filters/
+│   └── EmpresaAuthorizeAttribute.cs
+└── Migrations/
+`ust
 
 ---
 
-## 👩‍💻 Autora
+## Etiqueta com QR Code
 
-**Geovana** — [@Geovana2302](https://github.com/Geovana2302)
+Cada ativo possui pagina de impressao dedicada (/Ativo/Imprimir/{id}) que exibe:
+- Nome da empresa
+- Nome do ativo
+- QR Code 180x180px com link direto para os detalhes
+- Numero de serie, modelo, categoria e responsavel
+- URL completa do ativo
+
+Ao acessar, o dialogo de impressao abre automaticamente. Possivel imprimir ou salvar como PDF.
+
+---
+
+## Autora
+
+**Geovana Bicalho**
+GitHub: https://github.com/Geovana2302
