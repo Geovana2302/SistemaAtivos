@@ -128,12 +128,19 @@
         @* regra de impressao sem @media para evitar conflito com Razor *@
     </style>
     <style type="text/css" media="print">
+        @page {
+            margin: 0;
+            size: auto;
+        }
         body {
             background: #fff;
-            padding: 0;
+            padding: 10mm;
             justify-content: center;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
         .no-print { display: none !important; }
+        .aviso-impressao { display: none !important; }
         .etiqueta {
             border: 1.5px solid #ccc;
             box-shadow: none;
