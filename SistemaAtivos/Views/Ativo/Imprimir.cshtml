@@ -128,7 +128,7 @@
         @* regra de impressao sem @media para evitar conflito com Razor *@
     </style>
     <style type="text/css" media="print">
-        @page {
+        @@page {
             margin: 0;
             size: auto;
         }
@@ -146,6 +146,7 @@
             box-shadow: none;
             page-break-inside: avoid;
         }
+
     </style>
 </head>
 <body>
