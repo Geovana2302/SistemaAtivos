@@ -478,44 +478,57 @@ textarea.field-input { height: auto; padding: 8px 10px; resize: vertical; }
    ============================================================ */
 @media print {
 
-    /* Remove cabecalho, rodape e numero de pagina do navegador */
     @page {
         margin: 10mm 12mm;
     }
 
-    /* Oculta elementos de navegacao e interacao */
+    /* Fundo branco, texto preto, fonte menor */
+    body {
+        background: #fff !important;
+        color: #000 !important;
+        font-size: 12px !important;
+    }
+
+    /* Oculta navegacao e botoes interativos */
     .navbar,
     .navbar-brand,
+    .navbar-links,
     .nav-links,
     .nav-user,
+    .nav-link,
     .btn-logout,
     .btn-purple,
     .btn-cancel,
     .btn-danger,
+    .btn-login,
     .btn-outline-sm,
     .btn-xs-outline,
     .btn-xs-danger,
     .btn-sm-outline,
     .btn-sm-danger,
-    .btn-login,
+    .btn-icon,
     .form-actions,
     .detail-actions,
     .dropdown,
+    .dropdown-menu,
     .acc-action,
     .empresa-footer,
     .filter-bar,
     .filter-chip,
     .page-header a,
+    .page-header button,
     .section-header a,
+    .section-header button,
     .modal,
     .modal-backdrop,
-    .breadcrumb-custom a { display: none !important; }
+    .breadcrumb-custom a,
+    .alert-custom,
+    button { display: none !important; }
 
-    /* Fundo branco, texto preto */
-    body {
-        background: #fff !important;
+    /* Links sem URL impressa, sem cor, sem sublinhado */
+    a, a:visited, a:link {
         color: #000 !important;
-        font-size: 12px !important;
+        text-decoration: none !important;
     }
 
     /* Remove sombras e bordas decorativas */
@@ -524,46 +537,60 @@ textarea.field-input { height: auto; padding: 8px 10px; resize: vertical; }
     .acc-card,
     .stat-card,
     .empresa-card,
-    .ativo-row {
+    .ativo-row,
+    .detail-item,
+    .page-header,
+    .section-header {
         box-shadow: none !important;
         border-color: #ccc !important;
+        background: #fff !important;
     }
 
-    /* Garante que o conteudo ocupe a largura toda */
+    /* Conteudo ocupa largura toda */
     .main-content,
     .container,
     .empresa-grid,
-    .stats-row {
+    .stats-row,
+    .form-row-2,
+    .detail-grid {
         width: 100% !important;
         padding: 0 !important;
         margin: 0 !important;
     }
 
-    /* Links ficam sem cor/decoracao */
-    a, a:visited {
-        color: #000 !important;
-        text-decoration: none !important;
-    }
-
-    /* Evita quebra de pagina dentro de cards */
-    .acc-card,
-    .empresa-card,
-    .detail-card,
-    .stat-card,
-    .ativo-row {
-        page-break-inside: avoid;
-    }
-
-    /* Garante que os accordions ficam abertos na impressao */
+    /* Accordions sempre abertos */
     .acc-body-custom {
         display: block !important;
     }
 
-    /* Status badges ficam visiveis */
+    /* Evita corte de elementos entre paginas */
+    .acc-card,
+    .empresa-card,
+    .detail-card,
+    .stat-card,
+    .ativo-row,
+    .detail-item {
+        page-break-inside: avoid;
+    }
+
+    /* Status badges visiveis e legiveis */
     .status-badge {
-        border: 1px solid #ccc !important;
+        border: 1px solid #999 !important;
         background: #fff !important;
         color: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Badges de contagem */
+    .acc-badge {
+        border: 1px solid #999 !important;
+        background: #fff !important;
+        color: #000 !important;
+    }
+
+    /* Initials das empresas mantém cor */
+    .empresa-initials {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
