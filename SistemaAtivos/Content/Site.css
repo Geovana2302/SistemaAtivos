@@ -474,7 +474,6 @@ textarea.field-input { height: auto; padding: 8px 10px; resize: vertical; }
 
 /* ============================================================
    MEDIA PRINT — Estilos globais de impressao
-   Aplicado em todas as paginas do sistema exceto Imprimir.cshtml
    ============================================================ */
 @media print {
 
@@ -482,20 +481,31 @@ textarea.field-input { height: auto; padding: 8px 10px; resize: vertical; }
         margin: 10mm 12mm;
     }
 
-    /* Fundo branco, texto preto, fonte menor */
-    body {
-        background: #fff !important;
-        color: #000 !important;
-        font-size: 12px !important;
+    /* 1. Forca o navegador a imprimir cores de fundo exatas (vital para badges e initials) */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 
-    /* Oculta navegacao e botoes interativos */
+    /* 2. Fundo branco, texto preto */
+    body {
+        background-color: #fff !important;
+        color: #000 !important;
+        font-size: 12px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* 3. Oculta navegacao, botoes e elementos interativos */
+    header,
+    nav,
     .navbar,
     .navbar-brand,
     .navbar-links,
-    .nav-links,
     .nav-user,
     .nav-link,
+    .btn,
     .btn-logout,
     .btn-purple,
     .btn-cancel,
@@ -525,13 +535,27 @@ textarea.field-input { height: auto; padding: 8px 10px; resize: vertical; }
     .alert-custom,
     button { display: none !important; }
 
-    /* Links sem URL impressa, sem cor, sem sublinhado */
+    /* 4. Links sem cor nem sublinhado */
     a, a:visited, a:link {
         color: #000 !important;
         text-decoration: none !important;
     }
 
-    /* Remove sombras e bordas decorativas */
+    /* 5. Container ocupa a folha toda (compativel com Bootstrap) */
+    .container,
+    .container-fluid,
+    .main-content,
+    .empresa-grid,
+    .stats-row,
+    .form-row-2,
+    .detail-grid {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* 6. Cards e linhas: borda visivel, sem sombra, sem corte entre paginas */
     .form-card,
     .detail-card,
     .acc-card,
@@ -542,56 +566,28 @@ textarea.field-input { height: auto; padding: 8px 10px; resize: vertical; }
     .page-header,
     .section-header {
         box-shadow: none !important;
-        border-color: #ccc !important;
+        border: 1px solid #ddd !important;
         background: #fff !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+        margin-bottom: 10px !important;
     }
 
-    /* Conteudo ocupa largura toda */
-    .main-content,
-    .container,
-    .empresa-grid,
-    .stats-row,
-    .form-row-2,
-    .detail-grid {
-        width: 100% !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-
-    /* Accordions sempre abertos */
+    /* 7. Accordions sempre abertos na impressao */
     .acc-body-custom {
         display: block !important;
     }
 
-    /* Evita corte de elementos entre paginas */
-    .acc-card,
-    .empresa-card,
-    .detail-card,
-    .stat-card,
-    .ativo-row,
-    .detail-item {
-        page-break-inside: avoid;
-    }
-
-    /* Status badges visiveis e legiveis */
+    /* 8. Status badges com borda legivel */
     .status-badge {
         border: 1px solid #999 !important;
-        background: #fff !important;
-        color: #000 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+        padding: 2px 6px !important;
     }
 
-    /* Badges de contagem */
+    /* 9. Badges de contagem */
     .acc-badge {
         border: 1px solid #999 !important;
-        background: #fff !important;
+        background: #eee !important;
         color: #000 !important;
-    }
-
-    /* Initials das empresas mantém cor */
-    .empresa-initials {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
     }
 }
