@@ -40,17 +40,17 @@
             }
 
             // ── Empresa de demonstracao ────────────────────────────────────
-            if (!context.Empresas.Any(e => e.Nome == "Empresa Demo"))
+            var empresa = context.Empresas.FirstOrDefault(e => e.Nome == "Empresa Demo");
+            if (empresa == null)
             {
-                var empresa = new SistemaAtivos.Models.Empresa
-                {
-                    Nome = "Empresa Demo",
-                    Cor  = "#534AB7"
-                };
+                empresa = new SistemaAtivos.Models.Empresa { Nome = "Empresa Demo", Cor = "#534AB7" };
                 context.Empresas.Add(empresa);
                 context.SaveChanges();
+            }
 
-                // Gestor da empresa
+            // Gestor
+            if (!context.Usuarios.Any(u => u.Email == "gestor@demo.com"))
+            {
                 context.Usuarios.Add(new SistemaAtivos.Models.Usuario
                 {
                     Nome      = "Gestor Demo",
@@ -60,133 +60,106 @@
                     EmpresaId = empresa.Id
                 });
                 context.SaveChanges();
+            }
 
-                // Colaboradores
-                var colaborador = new SistemaAtivos.Models.Colaborador
-                {
-                    Nome      = "Joao Silva",
-                    Cargo     = "Analista de TI",
-                    Email     = "joao@demo.com",
-                    EmpresaId = empresa.Id
-                };
-                var colaborador2 = new SistemaAtivos.Models.Colaborador
-                {
-                    Nome      = "Maria Souza",
-                    Cargo     = "Gestora Administrativa",
-                    Email     = "maria@demo.com",
-                    EmpresaId = empresa.Id
-                };
+            // Colaboradores
+            var colaborador = context.Colaboradores.FirstOrDefault(c => c.Email == "joao@demo.com" && c.EmpresaId == empresa.Id);
+            if (colaborador == null)
+            {
+                colaborador = new SistemaAtivos.Models.Colaborador { Nome = "Joao Silva", Cargo = "Analista de TI", Email = "joao@demo.com", EmpresaId = empresa.Id };
                 context.Colaboradores.Add(colaborador);
-                context.Colaboradores.Add(colaborador2);
-                context.SaveChanges();
-
-                // Categorias separadas com icones
-                var catNotebook  = new SistemaAtivos.Models.Categoria { Nome = "Notebooks",    Descricao = "Computadores portateis",              EmpresaId = empresa.Id, Icone = "bi-laptop" };
-                var catMonitor   = new SistemaAtivos.Models.Categoria { Nome = "Monitores",    Descricao = "Telas e displays",                   EmpresaId = empresa.Id, Icone = "bi-display" };
-                var catPerif     = new SistemaAtivos.Models.Categoria { Nome = "Perifericos",  Descricao = "Teclados, mouses e headsets",         EmpresaId = empresa.Id, Icone = "bi-keyboard" };
-                var catRede      = new SistemaAtivos.Models.Categoria { Nome = "Rede",         Descricao = "Roteadores, switches e cabeamento",   EmpresaId = empresa.Id, Icone = "bi-wifi" };
-                var catMoveis    = new SistemaAtivos.Models.Categoria { Nome = "Moveis",       Descricao = "Mesas, cadeiras e armarios",          EmpresaId = empresa.Id, Icone = "bi-lamp" };
-                context.Categorias.Add(catNotebook);
-                context.Categorias.Add(catMonitor);
-                context.Categorias.Add(catPerif);
-                context.Categorias.Add(catRede);
-                context.Categorias.Add(catMoveis);
-                context.SaveChanges();
-
-                // Ativos distribuidos nas categorias
-                context.Ativos.Add(new SistemaAtivos.Models.Ativo
-                {
-                    Nome          = "Notebook Dell Inspiron",
-                    NumeroSerie   = "SN-001",
-                    Marca         = "Dell",
-                    Modelo        = "Inspiron 15",
-                    Status        = SistemaAtivos.Models.StatusAtivo.Ativo,
-                    DataAquisicao = new DateTime(2023, 1, 10),
-                    Valor         = 3500.00m,
-                    CategoriaId   = catNotebook.Id,
-                    ColaboradorId = colaborador.Id,
-                    EmpresaId     = empresa.Id
-                });
-                context.Ativos.Add(new SistemaAtivos.Models.Ativo
-                {
-                    Nome          = "Notebook Lenovo ThinkPad",
-                    NumeroSerie   = "SN-002",
-                    Marca         = "Lenovo",
-                    Modelo        = "ThinkPad E14",
-                    Status        = SistemaAtivos.Models.StatusAtivo.Ativo,
-                    DataAquisicao = new DateTime(2023, 6, 15),
-                    Valor         = 4200.00m,
-                    CategoriaId   = catNotebook.Id,
-                    ColaboradorId = colaborador2.Id,
-                    EmpresaId     = empresa.Id
-                });
-                context.Ativos.Add(new SistemaAtivos.Models.Ativo
-                {
-                    Nome          = "Monitor LG 24\"",
-                    NumeroSerie   = "SN-003",
-                    Marca         = "LG",
-                    Modelo        = "24MP60G",
-                    Status        = SistemaAtivos.Models.StatusAtivo.Ativo,
-                    DataAquisicao = new DateTime(2023, 3, 5),
-                    Valor         = 1200.00m,
-                    CategoriaId   = catMonitor.Id,
-                    ColaboradorId = colaborador.Id,
-                    EmpresaId     = empresa.Id
-                });
-                context.Ativos.Add(new SistemaAtivos.Models.Ativo
-                {
-                    Nome          = "Monitor Samsung 27\"",
-                    NumeroSerie   = "SN-004",
-                    Marca         = "Samsung",
-                    Modelo        = "F27T450",
-                    Status        = SistemaAtivos.Models.StatusAtivo.Ativo,
-                    DataAquisicao = new DateTime(2022, 11, 20),
-                    Valor         = 1800.00m,
-                    CategoriaId   = catMonitor.Id,
-                    ColaboradorId = colaborador2.Id,
-                    EmpresaId     = empresa.Id
-                });
-                context.Ativos.Add(new SistemaAtivos.Models.Ativo
-                {
-                    Nome          = "Teclado Mecanico Logitech",
-                    NumeroSerie   = "SN-005",
-                    Marca         = "Logitech",
-                    Modelo        = "G413",
-                    Status        = SistemaAtivos.Models.StatusAtivo.Ativo,
-                    DataAquisicao = new DateTime(2023, 2, 1),
-                    Valor         = 450.00m,
-                    CategoriaId   = catPerif.Id,
-                    ColaboradorId = colaborador.Id,
-                    EmpresaId     = empresa.Id
-                });
-                context.Ativos.Add(new SistemaAtivos.Models.Ativo
-                {
-                    Nome          = "Roteador TP-Link",
-                    NumeroSerie   = "SN-006",
-                    Marca         = "TP-Link",
-                    Modelo        = "Archer AX73",
-                    Status        = SistemaAtivos.Models.StatusAtivo.Ativo,
-                    DataAquisicao = new DateTime(2022, 8, 10),
-                    Valor         = 600.00m,
-                    CategoriaId   = catRede.Id,
-                    ColaboradorId = colaborador.Id,
-                    EmpresaId     = empresa.Id
-                });
-                context.Ativos.Add(new SistemaAtivos.Models.Ativo
-                {
-                    Nome          = "Cadeira Ergonomica",
-                    NumeroSerie   = "SN-007",
-                    Marca         = "Flexform",
-                    Modelo        = "Pro 500",
-                    Status        = SistemaAtivos.Models.StatusAtivo.Ativo,
-                    DataAquisicao = new DateTime(2022, 6, 20),
-                    Valor         = 800.00m,
-                    CategoriaId   = catMoveis.Id,
-                    ColaboradorId = colaborador2.Id,
-                    EmpresaId     = empresa.Id
-                });
                 context.SaveChanges();
             }
+
+            var colaborador2 = context.Colaboradores.FirstOrDefault(c => c.Email == "maria@demo.com" && c.EmpresaId == empresa.Id);
+            if (colaborador2 == null)
+            {
+                colaborador2 = new SistemaAtivos.Models.Colaborador { Nome = "Maria Souza", Cargo = "Gestora Administrativa", Email = "maria@demo.com", EmpresaId = empresa.Id };
+                context.Colaboradores.Add(colaborador2);
+                context.SaveChanges();
+            }
+
+            // Categorias com icones — cria ou atualiza
+            var defCats = new[]
+            {
+                new { Nome = "Notebooks",   Descricao = "Computadores portateis",            Icone = "bi-laptop"   },
+                new { Nome = "Monitores",   Descricao = "Telas e displays",                  Icone = "bi-display"  },
+                new { Nome = "Perifericos", Descricao = "Teclados, mouses e headsets",        Icone = "bi-keyboard" },
+                new { Nome = "Rede",        Descricao = "Roteadores, switches e cabeamento",  Icone = "bi-wifi"     },
+                new { Nome = "Moveis",      Descricao = "Mesas, cadeiras e armarios",         Icone = "bi-lamp"     },
+            };
+
+            // Remove categorias antigas genericas (Informatica) sem ativos vinculados
+            var catGenerica = context.Categorias.FirstOrDefault(c => c.EmpresaId == empresa.Id && c.Nome == "Informatica");
+            if (catGenerica != null && !context.Ativos.Any(a => a.CategoriaId == catGenerica.Id))
+            {
+                context.Categorias.Remove(catGenerica);
+                context.SaveChanges();
+            }
+
+            foreach (var def in defCats)
+            {
+                var cat = context.Categorias.FirstOrDefault(c => c.EmpresaId == empresa.Id && c.Nome == def.Nome);
+                if (cat == null)
+                {
+                    context.Categorias.Add(new SistemaAtivos.Models.Categoria
+                    {
+                        Nome      = def.Nome,
+                        Descricao = def.Descricao,
+                        Icone     = def.Icone,
+                        EmpresaId = empresa.Id
+                    });
+                }
+                else
+                {
+                    cat.Icone     = def.Icone;
+                    cat.Descricao = def.Descricao;
+                }
+            }
+            context.SaveChanges();
+
+            // Referencia rapida as categorias
+            var catNotebook = context.Categorias.First(c => c.EmpresaId == empresa.Id && c.Nome == "Notebooks");
+            var catMonitor  = context.Categorias.First(c => c.EmpresaId == empresa.Id && c.Nome == "Monitores");
+            var catPerif    = context.Categorias.First(c => c.EmpresaId == empresa.Id && c.Nome == "Perifericos");
+            var catRede     = context.Categorias.First(c => c.EmpresaId == empresa.Id && c.Nome == "Rede");
+            var catMoveis   = context.Categorias.First(c => c.EmpresaId == empresa.Id && c.Nome == "Moveis");
+
+            // Ativos — insere apenas se nao existir pelo numero de serie
+            var defAtivos = new[]
+            {
+                new { Nome = "Notebook Dell Inspiron",    NS = "DEMO-001", Marca = "Dell",     Modelo = "Inspiron 15",   Valor = 3500m,  Cat = catNotebook.Id, Col = colaborador.Id,  Data = new DateTime(2023,1,10)  },
+                new { Nome = "Notebook Lenovo ThinkPad",  NS = "DEMO-002", Marca = "Lenovo",   Modelo = "ThinkPad E14",  Valor = 4200m,  Cat = catNotebook.Id, Col = colaborador2.Id, Data = new DateTime(2023,6,15)  },
+                new { Nome = "Monitor LG 24\"",           NS = "DEMO-003", Marca = "LG",       Modelo = "24MP60G",       Valor = 1200m,  Cat = catMonitor.Id,  Col = colaborador.Id,  Data = new DateTime(2023,3,5)   },
+                new { Nome = "Monitor Samsung 27\"",      NS = "DEMO-004", Marca = "Samsung",  Modelo = "F27T450",       Valor = 1800m,  Cat = catMonitor.Id,  Col = colaborador2.Id, Data = new DateTime(2022,11,20) },
+                new { Nome = "Teclado Logitech G413",     NS = "DEMO-005", Marca = "Logitech", Modelo = "G413",          Valor = 450m,   Cat = catPerif.Id,    Col = colaborador.Id,  Data = new DateTime(2023,2,1)   },
+                new { Nome = "Mouse Logitech MX Master",  NS = "DEMO-006", Marca = "Logitech", Modelo = "MX Master 3",   Valor = 380m,   Cat = catPerif.Id,    Col = colaborador2.Id, Data = new DateTime(2023,2,1)   },
+                new { Nome = "Roteador TP-Link AX73",     NS = "DEMO-007", Marca = "TP-Link",  Modelo = "Archer AX73",   Valor = 600m,   Cat = catRede.Id,     Col = colaborador.Id,  Data = new DateTime(2022,8,10)  },
+                new { Nome = "Switch HP 24 Portas",       NS = "DEMO-008", Marca = "HP",       Modelo = "1820-24G",      Valor = 950m,   Cat = catRede.Id,     Col = colaborador.Id,  Data = new DateTime(2022,5,15)  },
+                new { Nome = "Cadeira Ergonomica",        NS = "DEMO-009", Marca = "Flexform", Modelo = "Pro 500",       Valor = 800m,   Cat = catMoveis.Id,   Col = colaborador2.Id, Data = new DateTime(2022,6,20)  },
+                new { Nome = "Mesa de Escritorio",        NS = "DEMO-010", Marca = "Tokstok",  Modelo = "Stan 140cm",    Valor = 650m,   Cat = catMoveis.Id,   Col = colaborador2.Id, Data = new DateTime(2021,3,10)  },
+            };
+
+            foreach (var a in defAtivos)
+            {
+                if (!context.Ativos.Any(x => x.NumeroSerie == a.NS && x.EmpresaId == empresa.Id))
+                {
+                    context.Ativos.Add(new SistemaAtivos.Models.Ativo
+                    {
+                        Nome          = a.Nome,
+                        NumeroSerie   = a.NS,
+                        Marca         = a.Marca,
+                        Modelo        = a.Modelo,
+                        Status        = SistemaAtivos.Models.StatusAtivo.Ativo,
+                        DataAquisicao = a.Data,
+                        Valor         = a.Valor,
+                        CategoriaId   = a.Cat,
+                        ColaboradorId = a.Col,
+                        EmpresaId     = empresa.Id
+                    });
+                }
+            }
+            context.SaveChanges();
         }
     }
 }
