@@ -1,7 +1,7 @@
-﻿@model SistemaAtivos.Models.Usuário
+﻿@model SistemaAtivos.Models.Usuario
 @{
     ViewBag.Title = "Editar Usuário";
-    var isAdmin  = Session["UsuárioTipo"]?.ToString() == "Admin";
+    var isAdmin  = Session["UsuarioTipo"]?.ToString() == "Admin";
     var empId    = Session["EmpresaId"] as int?;
     var cancelUrl = Model.EmpresaId.HasValue
         ? Url.Action("Empresa", "Admin", new { id = Model.EmpresaId })
