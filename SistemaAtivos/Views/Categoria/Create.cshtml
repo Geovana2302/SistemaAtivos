@@ -2,6 +2,9 @@
 @{
     ViewBag.Title = "Nova Categoria";
     var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
+    var cancelUrl = Model.EmpresaId.HasValue
+        ? Url.Action("Empresa", "Admin", new { id = Model.EmpresaId })
+        : Url.Action("Index", "Categoria");
 }
 
 <div class="page-header">
@@ -38,7 +41,7 @@
         }
 
         <div class="form-actions">
-            @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn-cancel" })
+            <a href="@cancelUrl" class="btn-cancel">Cancelar</a>
             <button type="submit" class="btn-purple">Criar Categoria</button>
         </div>
     }
