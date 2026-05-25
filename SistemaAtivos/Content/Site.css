@@ -1209,10 +1209,46 @@ textarea.field-input {
 /* ============================================================
    NAVBAR — estilos extraídos do _Layout.cshtml
    ============================================================ */
-.navbar-sistema {
-    background: #fff;
-    border-bottom: 1px solid #E5E4E0;
-    margin-bottom: 0;
+.navbar.navbar-sistema,
+.navbar-default.navbar-sistema {
+    background: #fff !important;
+    border-bottom: 1px solid #E5E4E0 !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-radius: 0 !important;
+    margin-bottom: 0 !important;
+    box-shadow: none !important;
+}
+
+.navbar-default.navbar-sistema .navbar-nav > li > a {
+    color: #444 !important;
+}
+
+.navbar-default.navbar-sistema .navbar-nav > li > a:hover,
+.navbar-default.navbar-sistema .navbar-nav > li > a:focus {
+    color: #534AB7 !important;
+    background: transparent !important;
+}
+
+.navbar-default.navbar-sistema .navbar-nav > .active > a,
+.navbar-default.navbar-sistema .navbar-nav > .active > a:hover,
+.navbar-default.navbar-sistema .navbar-nav > .active > a:focus {
+    color: #534AB7 !important;
+    background: transparent !important;
+}
+
+.navbar-default.navbar-sistema .navbar-toggle {
+    border-color: #E5E4E0 !important;
+}
+
+.navbar-default.navbar-sistema .navbar-toggle .icon-bar {
+    background-color: #555 !important;
+}
+
+.navbar-default.navbar-sistema .navbar-toggle:hover,
+.navbar-default.navbar-sistema .navbar-toggle:focus {
+    background: #F5F4F2 !important;
 }
 
 .navbar-brand-sistema {
