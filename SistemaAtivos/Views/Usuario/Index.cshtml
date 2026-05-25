@@ -16,14 +16,15 @@
 
 @if (isAdmin && empresas != null)
 {
-    <div class="filter-bar">
-        <span class="filter-bar-label">Filtrar:</span>
+    <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+        <span style="font-size:12px;color:#888">Filtrar:</span>
         <a href="@Url.Action("Index")" class="filter-chip @(empresaFiltro == null ? "filter-chip-active" : "")">Todos</a>
         @foreach (var emp in empresas)
         {
             <a href="@Url.Action("Index", new { empresaId = emp.Id })"
-               class="filter-chip @(empresaFiltro == emp.Id ? "filter-chip-active" : "")">
-                <span class="filter-dot" style="background:@emp.Cor" aria-hidden="true"></span>@emp.Nome
+               class="filter-chip @(empresaFiltro == emp.Id ? "filter-chip-active" : "")"
+               style="@(empresaFiltro == emp.Id ? "background:" + emp.Cor + ";color:#fff;border-color:" + emp.Cor : "")">
+                <span class="filter-dot" style="background:@emp.Cor"></span>@emp.Nome
             </a>
         }
     </div>
@@ -58,7 +59,7 @@ else
                 @foreach (var usuario in Model)
                 {
                     <tr>
-                        <td><p class="td-nome-principal">@usuario.Nome</p></td>
+                        <td><p style="font-weight:500;margin:0">@usuario.Nome</p></td>
                         <td>@usuario.Email</td>
                         <td>@(usuario.Perfil == SistemaAtivos.Models.Perfil.Admin ? "Administrador" : "Gestor de Empresa")</td>
                         @if (isAdmin)
@@ -66,16 +67,16 @@ else
                             <td>
                                 @if (usuario.Empresa != null)
                                 {
-                                    <span class="filter-dot" style="background:@usuario.Empresa.Cor" aria-hidden="true"></span>@usuario.Empresa.Nome
+                                    <span class="filter-dot" style="background:@usuario.Empresa.Cor"></span>@usuario.Empresa.Nome
                                 }
                                 else
                                 { <text>-</text>}
                             </td>
                         }
                         <td>
-                            <div class="td-actions">
+                            <div style="display:flex;gap:4px">
                                 @Html.ActionLink("Editar", "Edit", new { id = usuario.Id }, new { @class = "btn-xs-outline" })
-                                <div class="dropdown dropdown-inline">
+                                <div class="dropdown" style="display:inline-block">
                                     <button type="button" class="btn-xs-outline" data-toggle="dropdown">&#8942;</button>
                                     <ul class="dropdown-menu dropdown-menu-right">
                                         <li>

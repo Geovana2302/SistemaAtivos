@@ -18,7 +18,7 @@
 
         if (TempData["Erro"] != null)
         {
-            <div class="alert-error-inline" role="alert">
+            <div class="alert-custom" style="background:#FEECEC;border:1px solid #F08A8A;color:#7A0000;font-size:13px;margin-bottom:1rem">
                 @TempData["Erro"]
             </div>
         }
@@ -32,10 +32,10 @@
         <div class="field-group">
             <label class="field-label" for="Cor">Cor da marca</label>
             @Html.TextBoxFor(m => m.Cor, new { @type = "color", @class = "field-input field-color", value = "#534AB7" })
-            <small class="icone-hint">Escolha uma cor para identificar a empresa</small>
+            <small style="font-size:11px;color:#aaa">Escolha uma cor para identificar a empresa</small>
         </div>
 
-        <div class="alert-warning-custom" role="note">
+        <div class="alert-custom" style="background:#FEF9EC;border:1px solid #F0D98A;color:#7A5C00;font-size:12px;margin-top:0.5rem">
             Ap&oacute;s criar a empresa, acesse-a para cadastrar o primeiro gestor.
         </div>
 

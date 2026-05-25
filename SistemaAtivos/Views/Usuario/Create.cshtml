@@ -29,7 +29,7 @@
 
         <div class="field-group">
             <label class="field-label" for="senha">Senha</label>
-            <input type="password" id="senha" name="senha" class="field-input" placeholder="Senha de acesso" autocomplete="new-password" aria-required="true" />
+            <input type="password" id="senha" name="senha" class="field-input" placeholder="Senha de acesso" />
             <span class="field-error">@Html.ValidationMessage("senha")</span>
         </div>
 
@@ -38,7 +38,7 @@
         if (isAdmin)
         {
             <div class="field-group">
-                <label class="field-label">Empresa</label>
+                <label class="field-label" for="EmpresaId">Empresa</label>
                 @Html.DropDownList("EmpresaId", (SelectList)ViewBag.EmpresaSelectList, "-- Selecione --", new { @class = "field-input" })
             </div>
         }

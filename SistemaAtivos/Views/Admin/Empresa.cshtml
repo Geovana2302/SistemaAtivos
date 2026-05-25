@@ -10,12 +10,12 @@
 </nav>
 
 <div class="empresa-header-bar">
-    <div class="empresa-initials" style="background:@Model.Cor;width:48px;height:48px;font-size:20px;border-radius:10px" aria-hidden="true">
+    <div class="empresa-initials" style="background:@Model.Cor;width:48px;height:48px;font-size:20px;border-radius:10px">
         @(Model.Nome.Length >= 2 ? Model.Nome.Substring(0, 2).ToUpper() : Model.Nome.ToUpper())
     </div>
     <div>
-        <h5 class="page-title empresa-page-title">@Model.Nome</h5>
-        <p class="page-sub empresa-page-sub">
+        <h5 class="page-title" style="margin:0">@Model.Nome</h5>
+        <p class="page-sub" style="margin:0">
             @{ var usr = Model.Usuarios.FirstOrDefault(); }
             @if (usr != null)
             {<text>@usr.Email</text>}
@@ -56,14 +56,14 @@ else
                     <span class="acc-dot" style="background:@Model.Cor"></span>
                     @if (!string.IsNullOrEmpty(cat.Icone))
                     {
-                        <i class="bi @cat.Icone cat-icon" aria-hidden="true"></i>
+                        <i class="bi @cat.Icone" style="font-size:16px;color:#534AB7"></i>
                     }
                     <span class="acc-label">@cat.Nome</span>
                     <span class="acc-badge">@ativos.Count</span>
                 </div>
-                <div class="td-actions">
+                <div style="display:flex;align-items:center;gap:6px">
                     @Html.ActionLink("+", "Create", "Ativo", new { categoriaId = cat.Id, empresaId = Model.Id }, new { @class = "acc-action", title = "Adicionar ativo" })
-                    <div class="dropdown dropdown-inline">
+                    <div class="dropdown" style="display:inline-block">
                         <button type="button" class="acc-action" data-toggle="dropdown" title="Op&ccedil;&otilde;es">&#8942;</button>
                         <ul class="dropdown-menu dropdown-menu-right">
                             <li>@Html.ActionLink("Editar categoria", "Edit", "Categoria", new { id = cat.Id }, null)</li>
@@ -102,9 +102,9 @@ else
                                     {<text> &middot; @ativo.Colaborador.Nome</text>}
                                 </p>
                             </div>
-                            <div class="td-actions">
+                            <div style="display:flex;gap:4px;align-items:center">
                                 @Html.ActionLink("Detalhes", "Detalhes", "Ativo", new { id = ativo.Id }, new { @class = "btn-xs-outline" })
-                                <div class="dropdown dropdown-inline">
+                                <div class="dropdown" style="display:inline-block">
                                     <button type="button" class="btn-xs-outline" data-toggle="dropdown">&#8942;</button>
                                     <ul class="dropdown-menu dropdown-menu-right">
                                         <li>@Html.ActionLink("Editar", "Edit", "Ativo", new { id = ativo.Id }, null)</li>
@@ -129,7 +129,8 @@ else
     }
 }
 
-<div class="empresa-section-top">
+<div style="margin-top:1.5rem">
+    <div class="section-header">
         <p class="section-title">Respons&aacute;veis</p>
         <a href="@Url.Action("Create", "Colaborador", new { empresaId = Model.Id })" class="btn-outline-sm">+ Respons&aacute;vel</a>
     </div>
@@ -154,12 +155,12 @@ else
                         <span class="acc-label">@col.Nome</span>
                         @if (!string.IsNullOrEmpty(col.Cargo))
                         {
-                            <span class="colaborador-cargo">@col.Cargo</span>
+                            <span style="font-size:11px;color:#888">@col.Cargo</span>
                         }
                         <span class="acc-badge">@ativosCol.Count ativo(s)</span>
                     </div>
-                    <div class="td-actions">
-                        <div class="dropdown dropdown-inline">
+                    <div style="display:flex;align-items:center;gap:6px">
+                        <div class="dropdown" style="display:inline-block">
                             <button type="button" class="acc-action" data-toggle="dropdown" title="Op&ccedil;&otilde;es">&#8942;</button>
                             <ul class="dropdown-menu dropdown-menu-right">
                                 <li>@Html.ActionLink("Editar", "Edit", "Colaborador", new { id = col.Id }, null)</li>
@@ -181,7 +182,7 @@ else
                 <div id="@colCollapseId" class="acc-body-custom">
                     @if (!string.IsNullOrEmpty(col.Email) || !string.IsNullOrEmpty(col.Telefone))
                     {
-                        <p class="gestor-hint">
+                        <p style="font-size:11px;color:#888;margin:0 0 6px">
                             @if (!string.IsNullOrEmpty(col.Email)){<text>@col.Email</text>}
                             @if (!string.IsNullOrEmpty(col.Email) && !string.IsNullOrEmpty(col.Telefone)){<text> &middot; </text>}
                             @if (!string.IsNullOrEmpty(col.Telefone)){<text>@col.Telefone</text>}
@@ -206,7 +207,7 @@ else
                                         {<text> &middot; @ativo.Categoria.Nome</text>}
                                     </p>
                                 </div>
-                                <div class="td-actions">
+                                <div style="display:flex;gap:4px;align-items:center">
                                     @Html.ActionLink("Detalhes", "Detalhes", "Ativo", new { id = ativo.Id }, new { @class = "btn-xs-outline" })
                                 </div>
                             </div>
@@ -218,7 +219,7 @@ else
     }
 </div>
 
-<div class="empresa-section-top">
+<div style="margin-top:1.5rem">
 <div class="section-header">
     <p class="section-title">Gestores</p>
     <a href="@Url.Action("Create", "Usuario", new { empresaId = Model.Id })" class="btn-outline-sm">+ Gestor</a>
@@ -244,7 +245,7 @@ else
                 </p>
                 <p class="ativo-meta">@u.Email &middot; <span class="acc-badge">Gestor</span></p>
             </div>
-            <div class="td-actions">
+            <div style="display:flex;gap:4px;align-items:center">
                 @Html.ActionLink("Editar", "Edit", "Usuario", new { id = u.Id }, new { @class = "btn-xs-outline" })
                 @if (u.Id != usuarioLogadoId)
                 {

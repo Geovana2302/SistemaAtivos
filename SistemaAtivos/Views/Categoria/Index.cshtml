@@ -15,14 +15,14 @@
 
 @if (isAdmin)
 {
-    <div class="filter-bar">
+    <div class="filter-bar" style="margin-bottom:1rem;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
         <a href="@Url.Action("Index", "Categoria")"
            class="filter-chip @(empresaFiltro == null ? "filter-chip-active" : "")">Todas</a>
         @foreach (var emp in (IEnumerable<SistemaAtivos.Models.Empresa>)ViewBag.Empresas)
         {
             <a href="@Url.Action("Index", "Categoria", new { empresaId = emp.Id })"
                class="filter-chip @(empresaFiltro == emp.Id ? "filter-chip-active" : "")">
-                <span class="filter-dot" style="background:@emp.Cor" aria-hidden="true"></span>
+                <span class="filter-dot" style="background:@emp.Cor"></span>
                 @emp.Nome
             </a>
         }
@@ -50,10 +50,10 @@ else
                 @foreach (var cat in Model)
                 {
                     <tr>
-                        <td class="td-bold">
+                        <td style="font-weight:500">
                             @if (!string.IsNullOrEmpty(cat.Icone))
                             {
-                                <i class="bi @cat.Icone cat-icon" aria-hidden="true"></i>
+                                <i class="bi @cat.Icone" style="font-size:16px;margin-right:6px;color:#534AB7"></i>
                             }
                             @cat.Nome
                         </td>
@@ -61,8 +61,8 @@ else
                         @if (isAdmin) { <td>@(cat.Empresa?.Nome ?? "—")</td> }
                         <td>@cat.Ativos.Count</td>
                         <td>
-                            <div class="td-actions">
-                                <div class="dropdown dropdown-inline">
+                            <div style="display:flex;gap:4px">
+                                <div class="dropdown" style="display:inline-block">
                                     <button type="button" class="btn-xs-outline" data-toggle="dropdown">&#8942;</button>
                                     <ul class="dropdown-menu dropdown-menu-right">
                                         <li>@Html.ActionLink("Editar", "Edit", new { id = cat.Id }, null)</li>

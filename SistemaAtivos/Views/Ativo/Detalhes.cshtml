@@ -15,7 +15,7 @@
 <div class="detail-card">
     <div class="detail-header">
         <div>
-            <h5 class="page-title empresa-page-title">@Model.Nome</h5>
+            <h5 class="page-title" style="margin:0">@Model.Nome</h5>
             <p class="page-sub">@Model.Marca @Model.Modelo</p>
         </div>
         <span class="status-badge status-@Model.Status.ToString().ToLower()">@Model.Status</span>
@@ -39,10 +39,10 @@
     }
 
     <div class="detail-qr">
-        <p class="detail-label detail-qr-label">QR Code deste ativo</p>
+        <p class="detail-label" style="margin-bottom:8px">QR Code deste ativo</p>
         <img src="@Url.Action("QrCode", "Ativo", new { id = Model.Id })"
-             alt="QR Code do ativo @Model.Nome"
-             class="detail-qr-img" />
+             alt="QR Code @Model.Nome"
+             style="width:150px;height:150px;border:1px solid #E5E4E0;border-radius:8px;padding:8px" />
     </div>
 
     <div class="detail-actions">
