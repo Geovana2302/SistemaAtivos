@@ -35,50 +35,53 @@
         var nome = Session["UsuarioNome"]?.ToString();
         var empId = Session["EmpresaId"];
 
-        <nav class="navbar navbar-default navbar-sistema" aria-label="Menu Principal">
+        <nav class="navbar navbar-sistema" aria-label="Menu Principal">
             <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu-hamburguer" aria-expanded="false" aria-controls="menu-hamburguer" aria-label="Abrir menu de navegação">
-                        <span class="sr-only">Alternar navegação</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <div class="navbar-brand navbar-brand-sistema">
-                        <div class="brand-logo" aria-hidden="true">A</div>
-                        <span class="brand-name">Sistema Ativos</span>
-                    </div>
+
+                <div class="navbar-brand navbar-brand-sistema">
+                    <div class="brand-logo" aria-hidden="true">A</div>
+                    <span class="brand-name">Sistema Ativos</span>
                 </div>
 
+                <button class="navbar-toggler-sistema" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#menu-hamburguer"
+                        aria-controls="menu-hamburguer" aria-expanded="false"
+                        aria-label="Abrir menu de navegação">
+                    <span class="navbar-toggler-icon-bar"></span>
+                    <span class="navbar-toggler-icon-bar"></span>
+                    <span class="navbar-toggler-icon-bar"></span>
+                </button>
+
                 <div class="collapse navbar-collapse" id="menu-hamburguer">
-                    <ul class="nav navbar-nav">
+                    <ul class="navbar-nav me-auto">
                         @if (tipo == "Admin")
                         {
-                            <li>@Html.ActionLink("Empresas", "Dashboard", "Admin", null, new { aria_label = "Acessar página de Empresas" })</li>
-                            <li>@Html.ActionLink("Administradores", "Admins", "Admin", null, new { aria_label = "Acessar página de Administradores" })</li>
-                            <li>@Html.ActionLink("Ativos", "Index", "Ativo", null, new { aria_label = "Acessar lista de Ativos" })</li>
-                            <li>@Html.ActionLink("Inativos", "Inativos", "Ativo", null, new { aria_label = "Acessar lista de Inativos" })</li>
+                            <li class="nav-item">@Html.ActionLink("Empresas", "Dashboard", "Admin", null, new { @class = "nav-link", aria_label = "Acessar página de Empresas" })</li>
+                            <li class="nav-item">@Html.ActionLink("Administradores", "Admins", "Admin", null, new { @class = "nav-link", aria_label = "Acessar página de Administradores" })</li>
+                            <li class="nav-item">@Html.ActionLink("Ativos", "Index", "Ativo", null, new { @class = "nav-link", aria_label = "Acessar lista de Ativos" })</li>
+                            <li class="nav-item">@Html.ActionLink("Inativos", "Inativos", "Ativo", null, new { @class = "nav-link", aria_label = "Acessar lista de Inativos" })</li>
                         }
                         else
                         {
-                            <li>@Html.ActionLink("Minha Empresa", "Empresa", "Admin", new { id = empId }, new { aria_label = "Acessar Minha Empresa" })</li>
-                            <li>@Html.ActionLink("Ativos", "Index", "Ativo", null, new { aria_label = "Acessar lista de Ativos" })</li>
-                            <li>@Html.ActionLink("Inativos", "Inativos", "Ativo", null, new { aria_label = "Acessar lista de Inativos" })</li>
+                            <li class="nav-item">@Html.ActionLink("Minha Empresa", "Empresa", "Admin", new { id = empId }, new { @class = "nav-link", aria_label = "Acessar Minha Empresa" })</li>
+                            <li class="nav-item">@Html.ActionLink("Ativos", "Index", "Ativo", null, new { @class = "nav-link", aria_label = "Acessar lista de Ativos" })</li>
+                            <li class="nav-item">@Html.ActionLink("Inativos", "Inativos", "Ativo", null, new { @class = "nav-link", aria_label = "Acessar lista de Inativos" })</li>
                         }
                     </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <li class="nav-item">
                             <div class="nav-user-info">
                                 <span class="nav-user-name" aria-label="Usuário logado: @nome">@nome</span>
                                 <span class="nav-user-badge @(tipo == "Admin" ? "badge-admin" : "badge-cliente")" aria-label="Nível de acesso: @tipo">@(tipo == "Admin" ? "Admin" : "Gestor")</span>
                             </div>
                         </li>
-                        <li>
+                        <li class="nav-item">
                             @Html.ActionLink("Sair", "Logout", "Account", null, new { @class = "btn-logout", aria_label = "Sair do sistema" })
                         </li>
                     </ul>
                 </div>
+
             </div>
         </nav>
     }
@@ -96,7 +99,7 @@
     </div>
 
     <script src="~/Scripts/jquery-3.7.1.min.js"></script>
-    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
 
     <script>
         function verificarOrientacao() {

@@ -1207,48 +1207,54 @@ textarea.field-input {
 }
 
 /* ============================================================
-   NAVBAR — estilos extraídos do _Layout.cshtml
+   NAVBAR — Bootstrap 5
    ============================================================ */
-.navbar.navbar-sistema,
-.navbar-default.navbar-sistema {
+.navbar.navbar-sistema {
     background: #fff !important;
-    border-bottom: 1px solid #E5E4E0 !important;
-    border-top: none !important;
-    border-left: none !important;
-    border-right: none !important;
-    border-radius: 0 !important;
-    margin-bottom: 0 !important;
-    box-shadow: none !important;
+    border-bottom: 1px solid #E5E4E0;
+    padding: 0 0;
+    min-height: 50px;
 }
 
-.navbar-default.navbar-sistema .navbar-nav > li > a {
-    color: #444 !important;
+.navbar-brand-sistema {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    text-decoration: none;
 }
 
-.navbar-default.navbar-sistema .navbar-nav > li > a:hover,
-.navbar-default.navbar-sistema .navbar-nav > li > a:focus {
-    color: #534AB7 !important;
-    background: transparent !important;
+.navbar.navbar-sistema .nav-link {
+    color: #444;
+    font-size: 13px;
+    padding: 14px 14px;
 }
 
-.navbar-default.navbar-sistema .navbar-nav > .active > a,
-.navbar-default.navbar-sistema .navbar-nav > .active > a:hover,
-.navbar-default.navbar-sistema .navbar-nav > .active > a:focus {
-    color: #534AB7 !important;
-    background: transparent !important;
+.navbar.navbar-sistema .nav-link:hover,
+.navbar.navbar-sistema .nav-link:focus {
+    color: #534AB7;
 }
 
-.navbar-default.navbar-sistema .navbar-toggle {
-    border-color: #E5E4E0 !important;
+.navbar-toggler-sistema {
+    border: 1px solid #E5E4E0;
+    background: transparent;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 8px;
 }
 
-.navbar-default.navbar-sistema .navbar-toggle .icon-bar {
-    background-color: #555 !important;
+.navbar-toggler-sistema:hover {
+    background: #F5F4F2;
 }
 
-.navbar-default.navbar-sistema .navbar-toggle:hover,
-.navbar-default.navbar-sistema .navbar-toggle:focus {
-    background: #F5F4F2 !important;
+.navbar-toggler-icon-bar {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #555;
+    border-radius: 2px;
+    margin: 4px 0;
 }
 
 .navbar-brand-sistema {
