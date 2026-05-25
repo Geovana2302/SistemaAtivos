@@ -1,4 +1,4 @@
-@model SistemaAtivos.Models.Empresa
+ï»¿@model SistemaAtivos.Models.Empresa
 @{
     ViewBag.Title = Model.Nome;
     var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
@@ -237,7 +237,7 @@ else
             <div>
                 <p class="ativo-name">
                     @u.Nome
-                    @if (u.Id == usuarioLogadoId) { <span class="acc-badge">você</span> }
+                    @if (u.Id == usuarioLogadoId) { <span class="acc-badge">vocÃª</span> }
                 </p>
                 <p class="ativo-meta">@u.Email &middot; <span class="acc-badge">Gestor</span></p>
             </div>
@@ -267,7 +267,7 @@ else
                     <div class="modal-body">
                         <h5 class="modal-title-custom">Excluir gestor</h5>
                         <p class="modal-sub-custom">
-                            Tem certeza que deseja excluir <strong>@u.Nome</strong>? Esta ação não pode ser desfeita.
+                            Tem certeza que deseja excluir <strong>@u.Nome</strong>? Esta aÃ§Ã£o nÃ£o pode ser desfeita.
                         </p>
                         @using (Html.BeginForm("Delete", "Usuario", new { id = u.Id }, FormMethod.Post))
                         {
@@ -279,7 +279,7 @@ else
                             </div>
                             <div class="modal-actions">
                                 <button type="button" class="btn-cancel" data-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn-danger">Confirmar exclusão</button>
+                                <button type="submit" class="btn-danger">Confirmar exclusÃ£o</button>
                             </div>
                         }
                     </div>
