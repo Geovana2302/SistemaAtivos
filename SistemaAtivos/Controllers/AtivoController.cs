@@ -145,27 +145,33 @@ namespace SistemaAtivos.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id)
         {
-            if (!IsAdmin())
+            // A trava antiga "if (!IsAdmin())" FOI REMOVIDA DAQUI!
+
+            // O GetQuery() já garante que o Gestor só encontra o ativo se for da empresa dele.
+            var ativo = GetQuery().FirstOrDefault(a => a.Id == id);
+
+            if (ativo == null)
             {
-                TempData["Erro"] = "Apenas administradores podem excluir ativos.";
+                TempData["Erro"] = "Ativo não encontrado ou não tem permissão para o excluir.";
                 return RedirectToAction("Index");
             }
 
-            var ativo = GetQuery().FirstOrDefault(a => a.Id == id);
-            if (ativo == null) return HttpNotFound();
             var empId = ativo.EmpresaId;
 
             try
             {
                 db.Ativos.Remove(ativo);
                 db.SaveChanges();
-                TempData["Sucesso"] = "Ativo excluído.";
+                TempData["Sucesso"] = "Ativo excluído com sucesso.";
             }
             catch (Exception)
             {
-                TempData["Erro"] = "Erro ao excluir ativo. Tente novamente.";
+                TempData["Erro"] = "Erro ao excluir ativo. Verifique se ele possui dependências.";
             }
-            if (empId.HasValue) return RedirectToAction("Empresa", "Admin", new { id = empId });
+
+            if (empId.HasValue)
+                return RedirectToAction("Empresa", "Admin", new { id = empId });
+
             return RedirectToAction("Index");
         }
 

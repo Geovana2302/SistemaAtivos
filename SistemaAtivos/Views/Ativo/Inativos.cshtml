@@ -1,12 +1,16 @@
 ﻿@model IEnumerable<SistemaAtivos.Models.Ativo>
 @{
     ViewBag.Title = "Inativos";
-    var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
+
+    // 1. Pegamos as informações do usuário logado
+    var tipoUsuario = Session["UsuarioTipo"]?.ToString();
+    var isAdmin = (tipoUsuario == "Admin" || tipoUsuario == "Admin Chefe");
+    var empresaIdLogada = Session["EmpresaId"] as int?;
+
     var empresas = ViewBag.Empresas as List<SistemaAtivos.Models.Empresa>;
     var empresaFiltro = ViewBag.EmpresaFiltro as int?;
     var ordemAtual = ViewBag.OrdemAtual as string ?? "recente";
 }
-
 <div class="page-header">
     <div>
         <h4 class="page-title">Inativos</h4>
@@ -61,7 +65,7 @@ else
                     @if (isAdmin)
                     {
                         <th>Empresa</th>
-}
+                    }
                     <th>Status</th>
                     <th>Ações</th>
                 </tr>
@@ -95,16 +99,20 @@ else
                                     <button type="button" class="btn-xs-outline" data-toggle="dropdown">&#8942;</button>
                                     <ul class="dropdown-menu dropdown-menu-right">
                                         <li>@Html.ActionLink("Editar", "Edit", new { id = ativo.Id }, null)</li>
-                                        <li>
-                                            @using (Html.BeginForm("Delete", "Ativo", new { id = ativo.Id }, FormMethod.Post))
-                                            {
-                                                @Html.AntiForgeryToken()
-                                                <button type="submit" class="dropdown-delete-btn"
-                                                        onclick="return confirm('Excluir este ativo?')">
-                                                    Excluir
-                                                </button>
-                                            }
-                                        </li>
+
+                                        @if (isAdmin || (tipoUsuario == "Gestor" && ativo.EmpresaId == empresaIdLogada))
+                                        {
+                                            <li>
+                                                @using (Html.BeginForm("Delete", "Ativo", new { id = ativo.Id }, FormMethod.Post))
+                                                {
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="dropdown-delete-btn"
+                                                            onclick="return confirm('Excluir este ativo?')">
+                                                        Excluir
+                                                    </button>
+                                                }
+                                            </li>
+                                        }
                                     </ul>
                                 </div>
                             </div>

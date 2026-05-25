@@ -34,30 +34,49 @@
         var tipo = Session["UsuarioTipo"]?.ToString();
         var nome = Session["UsuarioNome"]?.ToString();
         var empId = Session["EmpresaId"];
-        <nav class="navbar">
-            <div class="navbar-brand">
-                <div class="brand-logo">A</div>
-                <span class="brand-name">Sistema Ativos</span>
-            </div>
-            <div class="navbar-links">
-                @if (tipo == "Admin")
-                {
-                    @Html.ActionLink("Empresas", "Dashboard", "Admin", null, new { @class = "nav-link" })
-                    @Html.ActionLink("Administradores", "Admins", "Admin", null, new { @class = "nav-link" })
-                    @Html.ActionLink("Ativos", "Index", "Ativo", null, new { @class = "nav-link" })
-                    @Html.ActionLink("Inativos", "Inativos", "Ativo", null, new { @class = "nav-link" })
-                }
-                else
-                {
-                    @Html.ActionLink("Minha Empresa", "Empresa", "Admin", new { id = empId }, new { @class = "nav-link" })
-                    @Html.ActionLink("Ativos", "Index", "Ativo", null, new { @class = "nav-link" })
-                    @Html.ActionLink("Inativos", "Inativos", "Ativo", null, new { @class = "nav-link" })
-                }
-            </div>
-            <div class="navbar-user">
-                <span class="user-name">@nome</span>
-                <span class="user-badge @(tipo == "Admin" ? "badge-admin" : "badge-cliente")">@(tipo == "Admin" ? "Admin" : "Gestor")</span>
-                @Html.ActionLink("Sair", "Logout", "Account", null, new { @class = "btn-logout" })
+
+        <nav class="navbar navbar-default" style="background: #fff; border-bottom: 1px solid #E5E4E0; margin-bottom: 0;" aria-label="Menu Principal">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu-hamburguer" aria-expanded="false" aria-controls="menu-hamburguer" aria-label="Abrir menu de navegação">
+                        <span class="sr-only">Alternar navegação</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <div class="navbar-brand" style="display: flex; align-items: center; gap: 10px;" aria-hidden="true">
+                        <div style="width: 30px; height: 30px; background: #534AB7; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; font-weight: 500;">A</div>
+                        <span style="font-size: 14px; font-weight: 500; color: #222;">Sistema Ativos</span>
+                    </div>
+                </div>
+
+                <div class="collapse navbar-collapse" id="menu-hamburguer">
+                    <ul class="nav navbar-nav">
+                        @if (tipo == "Admin")
+                        {
+                            <li>@Html.ActionLink("Empresas", "Dashboard", "Admin", null, new { aria_label = "Acessar página de Empresas" })</li>
+                            <li>@Html.ActionLink("Administradores", "Admins", "Admin", null, new { aria_label = "Acessar página de Administradores" })</li>
+                            <li>@Html.ActionLink("Ativos", "Index", "Ativo", null, new { aria_label = "Acessar lista de Ativos" })</li>
+                            <li>@Html.ActionLink("Inativos", "Inativos", "Ativo", null, new { aria_label = "Acessar lista de Inativos" })</li>
+                        }
+                        else
+                        {
+                            <li>@Html.ActionLink("Minha Empresa", "Empresa", "Admin", new { id = empId }, new { aria_label = "Acessar Minha Empresa" })</li>
+                            <li>@Html.ActionLink("Ativos", "Index", "Ativo", null, new { aria_label = "Acessar lista de Ativos" })</li>
+                            <li>@Html.ActionLink("Inativos", "Inativos", "Ativo", null, new { aria_label = "Acessar lista de Inativos" })</li>
+                        }
+                    </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li style="padding: 15px; display:flex; align-items:center; gap: 10px;">
+                            <span style="font-size: 13px; color: #555;" aria-label="Usuário logado: @nome">@nome</span>
+                            <span class="@(tipo == "Admin" ? "badge-admin" : "badge-cliente")" style="font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px; text-transform: uppercase;" aria-label="Nível de acesso: @tipo">@(tipo == "Admin" ? "Admin" : "Gestor")</span>
+                        </li>
+                        <li style="padding-top: 8px; padding-right: 15px;">
+                            @Html.ActionLink("Sair", "Logout", "Account", null, new { @class = "btn-logout", aria_label = "Sair do sistema" })
+                        </li>
+                    </ul>
+                </div>
             </div>
         </nav>
     }
@@ -65,17 +84,42 @@
     <div class="@(Session["UsuarioId"] != null ? "main-content" : "")">
         @if (TempData["Sucesso"] != null)
         {
-            <div class="alert-custom alert-success-custom">@TempData["Sucesso"]</div>
+            <div class="alert-custom alert-success-custom" role="alert" aria-live="polite">@TempData["Sucesso"]</div>
         }
         @if (TempData["Erro"] != null)
         {
-            <div class="alert-custom alert-danger-custom">@TempData["Erro"]</div>
+            <div class="alert-custom alert-danger-custom" role="alert" aria-live="assertive">@TempData["Erro"]</div>
         }
         @RenderBody()
     </div>
 
     <script src="~/Scripts/jquery-3.6.0.min.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
+
+    <script>
+        function verificarOrientacao() {
+            // Verifica se a largura da tela é de celular (<= 768px)
+            var isMobile = window.innerWidth <= 768;
+            // Verifica se a altura é maior que a largura (Celular em pé)
+            var isPortrait = window.innerHeight > window.innerWidth;
+
+            if (isMobile && isPortrait) {
+                alert("📱 Gire seu aparelho!\n\nEste sistema foi projetado para ser utilizado na horizontal (modo paisagem) para melhor visualização das tabelas.");
+            }
+        }
+
+        // Executa assim que a página carrega
+        $(document).ready(function () {
+            verificarOrientacao();
+        });
+
+        // Executa sempre que o usuário virar o celular
+        window.addEventListener("orientationchange", function () {
+            // Pequeno atraso para dar tempo do navegador recalcular a largura
+            setTimeout(verificarOrientacao, 200);
+        });
+    </script>
+
     @RenderSection("scripts", required: false)
 </body>
 </html>

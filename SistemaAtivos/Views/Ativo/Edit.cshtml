@@ -68,17 +68,14 @@
                 @Html.LabelFor(m => m.Status, new { @class = "field-label" })
                 @Html.EnumDropDownListFor(m => m.Status, new { @class = "field-input" })
             </div>
-            if (isAdmin)
-            {
+            
                 <div class="field-group">
                     <label class="field-label">Empresa</label>
                     @Html.DropDownList("EmpresaId", (SelectList)ViewBag.EmpresaSelectList, "-- Selecione --", new { @class = "field-input" })
                 </div>
-            }
-            else
-            {
+            
                 @Html.Hidden("EmpresaId", (int?)Session["EmpresaId"])
-            }
+            
         </div>
         <div class="field-group">
             @Html.LabelFor(m => m.Observacoes, new { @class = "field-label" })

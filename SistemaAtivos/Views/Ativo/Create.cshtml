@@ -17,24 +17,24 @@
         <div class="form-row-2">
             <div class="field-group">
                 @Html.LabelFor(m => m.Nome, new { @class = "field-label" })
-                @Html.TextBoxFor(m => m.Nome, new { @class = "field-input", placeholder = "Nome do ativo" })
+                @Html.TextBoxFor(m => m.Nome, new { @class = "field-input", placeholder = "Nome do ativo", maxlength = "100" })
                 @Html.ValidationMessageFor(m => m.Nome, "", new { @class = "field-error" })
             </div>
             <div class="field-group">
                 @Html.LabelFor(m => m.NumeroSerie, new { @class = "field-label" })
-                @Html.TextBoxFor(m => m.NumeroSerie, new { @class = "field-input", placeholder = "SN-001" })
+                @Html.TextBoxFor(m => m.NumeroSerie, new { @class = "field-input", placeholder = "SN-001", maxlength = "50" })
                 @Html.ValidationMessageFor(m => m.NumeroSerie, "", new { @class = "field-error" })
             </div>
         </div>
         <div class="form-row-2">
             <div class="field-group">
                 @Html.LabelFor(m => m.Marca, new { @class = "field-label" })
-                @Html.TextBoxFor(m => m.Marca, new { @class = "field-input" })
+                @Html.TextBoxFor(m => m.Marca, new { @class = "field-input", maxlength = "50" })
                 @Html.ValidationMessageFor(m => m.Marca, "", new { @class = "field-error" })
             </div>
             <div class="field-group">
                 @Html.LabelFor(m => m.Modelo, new { @class = "field-label" })
-                @Html.TextBoxFor(m => m.Modelo, new { @class = "field-input" })
+                @Html.TextBoxFor(m => m.Modelo, new { @class = "field-input", maxlength = "50" })
                 @Html.ValidationMessageFor(m => m.Modelo, "", new { @class = "field-error" })
             </div>
         </div>
@@ -58,7 +58,14 @@
             </div>
             <div class="field-group">
                 @Html.LabelFor(m => m.Valor, new { @class = "field-label" })
-                @Html.TextBoxFor(m => m.Valor, new { @class = "field-input", placeholder = "0,00" })
+                @Html.TextBoxFor(m => m.Valor, new
+                {
+                    @class = "field-input",
+                    placeholder = "0,00",
+                    maxlength = "15",
+                    inputmode = "numeric",
+                    onkeypress = "return event.charCode >= 48 && event.charCode <= 57"
+                })
                 @Html.ValidationMessageFor(m => m.Valor, "", new { @class = "field-error" })
             </div>
         </div>
@@ -81,7 +88,7 @@
         </div>
         <div class="field-group">
             @Html.LabelFor(m => m.Observacoes, new { @class = "field-label" })
-            @Html.TextAreaFor(m => m.Observacoes, new { @class = "field-input", rows = "3" })
+            @Html.TextAreaFor(m => m.Observacoes, new { @class = "field-input", rows = "3", maxlength = "500" })
             @Html.ValidationMessageFor(m => m.Observacoes, "", new { @class = "field-error" })
         </div>
 
@@ -91,3 +98,32 @@
         </div>
     }
 </div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Máscara do Valor
+            $('#Valor').on('input', function (e) {
+                // Remove tudo que não for número (garantia extra do JS)
+                let value = e.target.value.replace(/\D/g, "");
+
+                if (value === "") {
+                    e.target.value = "";
+                    return;
+                }
+
+                // Transforma em formato decimal (divide por 100)
+                value = (parseInt(value) / 100).toFixed(2) + "";
+
+                // Troca o ponto da casa decimal por vírgula
+                value = value.replace(".", ",");
+
+                // Adiciona o ponto de separação de milhar
+                value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+                // Atualiza o valor no input
+                e.target.value = value;
+            });
+        });
+    </script>
+}

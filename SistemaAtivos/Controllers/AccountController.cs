@@ -9,7 +9,7 @@ namespace SistemaAtivos.Controllers
         private AtivosContext db = new AtivosContext();
 
         [HttpGet]
-        public ActionResult Login()
+        public ActionResult Login() 
         {
             if (Session["UsuarioId"] != null)
             {

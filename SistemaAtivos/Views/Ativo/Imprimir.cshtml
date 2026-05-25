@@ -18,14 +18,16 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 30px 20px;
+
             min-height: 100vh;
+
         }
 
         .toolbar {
             display: flex;
             gap: 10px;
             margin-bottom: 24px;
+        
         }
 
         .btn-print {
@@ -123,7 +125,9 @@
             text-align: center;
         }
 
-        .no-print { }
+        .no-print {
+            margin-top: 100px;
+        }
 
         @* regra de impressao sem @media para evitar conflito com Razor *@
     </style>
@@ -133,8 +137,9 @@
             size: auto;
         }
         body {
+            margin: 0px !important;
             background: #fff;
-            padding: 10mm;
+            padding: 3px !important;
             justify-content: center;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
@@ -142,11 +147,32 @@
         .no-print { display: none !important; }
         .aviso-impressao { display: none !important; }
         .etiqueta {
-            border: 1.5px solid #ccc;
+            width: 12cm;
+            height: 16cm;
+            border: 1.5px solid #ccc !important;
             box-shadow: none;
             page-break-inside: avoid;
+            padding:1px;
         }
-
+        .etiqueta-qr {
+            
+            width: 10cm;
+            height: 10cm
+        }
+        .etiqueta-qr img{
+            width:100%;
+            height:100%
+        }
+        .etiqueta-dados{
+            width: 8cm;
+            font-size: 50px !important;
+        }
+        .dado-label{
+            font-size: 15px !important;
+        }
+        .dado-value{
+            font-size: 15px !important;
+        }
     </style>
 </head>
 <body>
@@ -200,7 +226,7 @@
             }
         </div>
 
-        <p class="etiqueta-url">@urlAtivo</p>
+        
     </div>
 
     <p class="aviso-impressao no-print">
