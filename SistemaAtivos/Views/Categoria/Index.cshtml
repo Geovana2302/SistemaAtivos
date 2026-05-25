@@ -50,7 +50,13 @@ else
                 @foreach (var cat in Model)
                 {
                     <tr>
-                        <td style="font-weight:500">@cat.Nome</td>
+                        <td style="font-weight:500">
+                            @if (!string.IsNullOrEmpty(cat.Icone))
+                            {
+                                <i class="bi @cat.Icone" style="font-size:16px;margin-right:6px;color:#534AB7"></i>
+                            }
+                            @cat.Nome
+                        </td>
                         <td>@(cat.Descricao ?? "—")</td>
                         @if (isAdmin) { <td>@(cat.Empresa?.Nome ?? "—")</td> }
                         <td>@cat.Ativos.Count</td>

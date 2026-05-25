@@ -16,6 +16,9 @@ namespace SistemaAtivos.Models
         [StringLength(300)]
         public string Descricao { get; set; }
 
+        [StringLength(100)]
+        public string Icone { get; set; }
+
         public int? EmpresaId { get; set; }
 
         [ForeignKey("EmpresaId")]

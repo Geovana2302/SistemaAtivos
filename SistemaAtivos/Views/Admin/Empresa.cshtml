@@ -54,6 +54,10 @@ else
             <div class="acc-header-custom" data-acc-target="@collapseId">
                 <div class="acc-left">
                     <span class="acc-dot" style="background:@Model.Cor"></span>
+                    @if (!string.IsNullOrEmpty(cat.Icone))
+                    {
+                        <i class="bi @cat.Icone" style="font-size:16px;color:#534AB7"></i>
+                    }
                     <span class="acc-label">@cat.Nome</span>
                     <span class="acc-badge">@ativos.Count</span>
                 </div>

@@ -1,10 +1,39 @@
 ﻿@model SistemaAtivos.Models.Categoria
+@model SistemaAtivos.Models.Categoria
 @{
     ViewBag.Title = "Editar Categoria";
     var isAdmin = Session["UsuarioTipo"]?.ToString() == "Admin";
     var cancelUrl = Model.EmpresaId.HasValue
         ? Url.Action("Empresa", "Admin", new { id = Model.EmpresaId })
         : Url.Action("Index", "Categoria");
+
+    var icones = new[]
+    {
+        new { valor = "bi-laptop",          label = "Notebook" },
+        new { valor = "bi-display",         label = "Monitor" },
+        new { valor = "bi-printer",         label = "Impressora" },
+        new { valor = "bi-phone",           label = "Celular" },
+        new { valor = "bi-keyboard",        label = "Teclado" },
+        new { valor = "bi-mouse",           label = "Mouse" },
+        new { valor = "bi-hdd",             label = "HD/Storage" },
+        new { valor = "bi-wifi",            label = "Rede/WiFi" },
+        new { valor = "bi-camera",          label = "Camera" },
+        new { valor = "bi-headset",         label = "Headset" },
+        new { valor = "bi-tv",              label = "TV" },
+        new { valor = "bi-router",          label = "Roteador" },
+        new { valor = "bi-server",          label = "Servidor" },
+        new { valor = "bi-tools",           label = "Ferramentas" },
+        new { valor = "bi-briefcase",       label = "Escritorio" },
+        new { valor = "bi-chair",           label = "Movel" },
+        new { valor = "bi-building",        label = "Infraestrutura" },
+        new { valor = "bi-car-front",       label = "Veiculo" },
+        new { valor = "bi-box-seam",        label = "Estoque" },
+        new { valor = "bi-gear",            label = "Equipamento" },
+        new { valor = "bi-shield-check",    label = "Seguranca" },
+        new { valor = "bi-graph-up",        label = "Financeiro" },
+        new { valor = "bi-people",          label = "RH" },
+        new { valor = "bi-bookmark",        label = "Geral" },
+    };
 }
 
 <div class="page-header">
@@ -16,6 +45,7 @@
     {
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.Id)
+        @Html.HiddenFor(m => m.Icone)
         @Html.ValidationSummary(true, "", new { @class = "alert-custom alert-danger-custom" })
 
         <div class="field-group">
@@ -27,6 +57,25 @@
             @Html.LabelFor(m => m.Descricao, new { @class = "field-label" })
             @Html.TextAreaFor(m => m.Descricao, new { @class = "field-input", rows = "3" })
         </div>
+
+        <div class="field-group">
+            <label class="field-label">
+                &Iacute;cone <span style="font-weight:400;color:#aaa">(opcional)</span>
+            </label>
+            <div id="icone-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:8px;margin-top:4px">
+                @foreach (var ic in icones)
+                {
+                    <div class="icone-opt" data-valor="@ic.valor"
+                         title="@ic.label"
+                         style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 4px;border:1.5px solid #E5E4E0;border-radius:8px;cursor:pointer;font-size:11px;color:#666;background:#fff;transition:all .15s">
+                        <i class="bi @ic.valor" style="font-size:22px"></i>
+                        <span>@ic.label</span>
+                    </div>
+                }
+            </div>
+            <p style="font-size:11px;color:#aaa;margin-top:6px">Clique para selecionar um &iacute;cone para esta categoria.</p>
+        </div>
+
         if (isAdmin)
         {
             <div class="field-group">
@@ -41,3 +90,28 @@
         </div>
     }
 </div>
+
+@section scripts {
+<script>
+    var selectedIcone = "@Model.Icone";
+
+    function atualizarSelecao() {
+        document.querySelectorAll('.icone-opt').forEach(function (el) {
+            var ativo = el.dataset.valor === selectedIcone;
+            el.style.borderColor = ativo ? '#534AB7' : '#E5E4E0';
+            el.style.background  = ativo ? '#F0EEFF' : '#fff';
+            el.style.color       = ativo ? '#534AB7' : '#666';
+        });
+        document.getElementById('Icone').value = selectedIcone;
+    }
+
+    document.querySelectorAll('.icone-opt').forEach(function (el) {
+        el.addEventListener('click', function () {
+            selectedIcone = (selectedIcone === el.dataset.valor) ? '' : el.dataset.valor;
+            atualizarSelecao();
+        });
+    });
+
+    atualizarSelecao();
+</script>
+}
