@@ -18,8 +18,8 @@
     </div>
 </div>
 
-<div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
-    <span style="font-size:12px;color:#888">Filtrar:</span>
+<div class="filter-bar">
+    <span class="filter-bar-label">Filtrar:</span>
     <a href="@Url.Action("Inativos", new { ordem = ordemAtual })"
        class="filter-chip @(empresaFiltro == null ? "filter-chip-active" : "")">Todas</a>
     @if (isAdmin && empresas != null)
@@ -27,13 +27,12 @@
         foreach (var emp in empresas)
         {
             <a href="@Url.Action("Inativos", new { empresaId = emp.Id, ordem = ordemAtual })"
-               class="filter-chip @(empresaFiltro == emp.Id ? "filter-chip-active" : "")"
-               style="@(empresaFiltro == emp.Id ? "background:" + emp.Cor + ";color:#fff;border-color:" + emp.Cor : "")">
-                <span class="filter-dot" style="background:@emp.Cor"></span>@emp.Nome
+               class="filter-chip @(empresaFiltro == emp.Id ? "filter-chip-active" : "")">
+                <span class="filter-dot" style="background:@emp.Cor" aria-hidden="true"></span>@emp.Nome
             </a>
         }
     }
-    <span style="font-size:12px;color:#888;margin-left:12px">Ordenar:</span>
+    <span class="filter-bar-label-spaced">Ordenar:</span>
     <a href="@Url.Action("Inativos", new { empresaId = empresaFiltro, ordem = "recente" })"
        class="filter-chip @(ordemAtual == "recente" ? "filter-chip-active" : "")">Mais recente</a>
     <a href="@Url.Action("Inativos", new { empresaId = empresaFiltro, ordem = "antigo" })"
@@ -48,9 +47,9 @@
 @if (!Model.Any())
 {
     <div class="empty-state">
-        <p style="font-size:32px;margin-bottom:8px">&#9989;</p>
-        <p style="font-weight:500;color:#555;margin-bottom:4px">Nenhum ativo inativo</p>
-        <p style="font-size:12px;color:#aaa;margin-bottom:1rem">Todos os ativos estão com status Ativo.</p>
+        <p class="empty-state-icon">&#9989;</p>
+        <p class="empty-state-title">Nenhum ativo inativo</p>
+        <p class="empty-state-sub">Todos os ativos estão com status Ativo.</p>
         @Html.ActionLink("Ver ativos", "Index", null, new { @class = "btn-purple" })
     </div>
 }
@@ -75,8 +74,8 @@ else
                 {
                     <tr>
                         <td>
-                            <p style="font-weight:500;margin:0">@ativo.Nome</p>
-                            <p style="font-size:11px;color:#888;margin:0">@ativo.NumeroSerie</p>
+                            <p class="td-nome-principal">@ativo.Nome</p>
+                            <p class="td-nome-secundario">@ativo.NumeroSerie</p>
                         </td>
                         <td>@(ativo.Categoria?.Nome ?? "-")</td>
                         @if (isAdmin)
@@ -84,7 +83,7 @@ else
                             <td>
                                 @if (ativo.Empresa != null)
                                 {
-                                    <span class="filter-dot" style="background:@ativo.Empresa.Cor"></span>
+                                    <span class="filter-dot" style="background:@ativo.Empresa.Cor" aria-hidden="true"></span>
                                     @ativo.Empresa.Nome
                                 }
                                 else
@@ -93,9 +92,9 @@ else
                         }
                         <td><span class="status-badge status-inativo">Inativo</span></td>
                         <td>
-                            <div style="display:flex;gap:4px">
+                            <div class="td-actions">
                                 @Html.ActionLink("Ver", "Detalhes", new { id = ativo.Id }, new { @class = "btn-xs-outline" })
-                                <div class="dropdown" style="display:inline-block">
+                                <div class="dropdown dropdown-inline">
                                     <button type="button" class="btn-xs-outline" data-toggle="dropdown">&#8942;</button>
                                     <ul class="dropdown-menu dropdown-menu-right">
                                         <li>@Html.ActionLink("Editar", "Edit", new { id = ativo.Id }, null)</li>

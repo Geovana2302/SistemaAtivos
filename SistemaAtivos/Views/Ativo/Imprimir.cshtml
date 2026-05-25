@@ -8,8 +8,78 @@
 <html lang="pt-br">
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Etiqueta - @Model.Nome</title>
-    <style>
+    <link rel="stylesheet" href="~/Content/Site.css" />
+</head>
+<body>
+
+    <div class="etiqueta-wrap">
+        <div class="etiqueta-toolbar etiqueta-no-print">
+            <button class="btn-print" onclick="window.print()">
+                <span aria-hidden="true">🖨</span> Imprimir
+            </button>
+            <button class="btn-close-etiqueta" onclick="window.close()">Fechar</button>
+        </div>
+
+        <main class="etiqueta" role="main" aria-label="Etiqueta do ativo @Model.Nome">
+
+            @if (Model.Empresa != null)
+            {
+                <p class="etiqueta-empresa">@Model.Empresa.Nome</p>
+            }
+
+            <h1 class="etiqueta-nome">@Model.Nome</h1>
+
+            <div class="etiqueta-qr">
+                <img src="@urlQr" alt="QR Code do ativo @Model.Nome — link para detalhes" />
+            </div>
+
+            <div class="etiqueta-dados">
+                @if (!string.IsNullOrEmpty(Model.NumeroSerie))
+                {
+                    <div class="dado-row">
+                        <span class="dado-label">N. Série</span>
+                        <span class="dado-value">@Model.NumeroSerie</span>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Marca) || !string.IsNullOrEmpty(Model.Modelo))
+                {
+                    <div class="dado-row">
+                        <span class="dado-label">Modelo</span>
+                        <span class="dado-value">@(Model.Marca + " " + Model.Modelo)</span>
+                    </div>
+                }
+                @if (Model.Categoria != null)
+                {
+                    <div class="dado-row">
+                        <span class="dado-label">Categoria</span>
+                        <span class="dado-value">@Model.Categoria.Nome</span>
+                    </div>
+                }
+                @if (Model.Colaborador != null)
+                {
+                    <div class="dado-row">
+                        <span class="dado-label">Responsável</span>
+                        <span class="dado-value">@Model.Colaborador.Nome</span>
+                    </div>
+                }
+            </div>
+
+            <p class="etiqueta-url">@urlAtivo</p>
+        </main>
+
+        <p class="etiqueta-aviso etiqueta-no-print">
+            Use o botão "Imprimir" acima ou <kbd>Ctrl+P</kbd> para gerar o PDF ou enviar para a impressora.
+        </p>
+    </div>
+
+    <script>
+        window.onload = function () { window.print(); };
+    </script>
+
+</body>
+</html>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {

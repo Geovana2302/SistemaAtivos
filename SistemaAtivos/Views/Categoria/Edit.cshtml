@@ -58,21 +58,22 @@
         </div>
 
         <div class="field-group">
-            <label class="field-label">
-                &Iacute;cone <span style="font-weight:400;color:#aaa">(opcional)</span>
+            <label class="field-label" id="label-icone">
+                &Iacute;cone <span class="campo-opcional">(opcional)</span>
             </label>
-            <div id="icone-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:8px;margin-top:4px">
+            <div id="icone-grid" class="icone-grid" role="group" aria-labelledby="label-icone">
                 @foreach (var ic in icones)
                 {
                     <div class="icone-opt" data-valor="@ic.valor"
-                         title="@ic.label"
-                         style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 4px;border:1.5px solid #E5E4E0;border-radius:8px;cursor:pointer;font-size:11px;color:#666;background:#fff;transition:all .15s">
-                        <i class="bi @ic.valor" style="font-size:22px"></i>
+                         role="button" tabindex="0"
+                         aria-label="@ic.label"
+                         title="@ic.label">
+                        <i class="bi @ic.valor" aria-hidden="true"></i>
                         <span>@ic.label</span>
                     </div>
                 }
             </div>
-            <p style="font-size:11px;color:#aaa;margin-top:6px">Clique para selecionar um &iacute;cone para esta categoria.</p>
+            <p class="icone-hint">Clique para selecionar um &iacute;cone para esta categoria.</p>
         </div>
 
         if (isAdmin)
@@ -96,10 +97,7 @@
 
     function atualizarSelecao() {
         document.querySelectorAll('.icone-opt').forEach(function (el) {
-            var ativo = el.dataset.valor === selectedIcone;
-            el.style.borderColor = ativo ? '#534AB7' : '#E5E4E0';
-            el.style.background  = ativo ? '#F0EEFF' : '#fff';
-            el.style.color       = ativo ? '#534AB7' : '#666';
+            el.classList.toggle('selecionado', el.dataset.valor === selectedIcone);
         });
         document.getElementById('Icone').value = selectedIcone;
     }
@@ -108,6 +106,13 @@
         el.addEventListener('click', function () {
             selectedIcone = (selectedIcone === el.dataset.valor) ? '' : el.dataset.valor;
             atualizarSelecao();
+        });
+        el.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                selectedIcone = (selectedIcone === el.dataset.valor) ? '' : el.dataset.valor;
+                atualizarSelecao();
+            }
         });
     });
 

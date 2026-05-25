@@ -35,7 +35,7 @@
         var nome = Session["UsuarioNome"]?.ToString();
         var empId = Session["EmpresaId"];
 
-        <nav class="navbar navbar-default" style="background: #fff; border-bottom: 1px solid #E5E4E0; margin-bottom: 0;" aria-label="Menu Principal">
+        <nav class="navbar navbar-default navbar-sistema" aria-label="Menu Principal">
             <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu-hamburguer" aria-expanded="false" aria-controls="menu-hamburguer" aria-label="Abrir menu de navegação">
@@ -44,9 +44,9 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <div class="navbar-brand" style="display: flex; align-items: center; gap: 10px;" aria-hidden="true">
-                        <div style="width: 30px; height: 30px; background: #534AB7; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; font-weight: 500;">A</div>
-                        <span style="font-size: 14px; font-weight: 500; color: #222;">Sistema Ativos</span>
+                    <div class="navbar-brand navbar-brand-sistema">
+                        <div class="brand-logo" aria-hidden="true">A</div>
+                        <span class="brand-name">Sistema Ativos</span>
                     </div>
                 </div>
 
@@ -68,11 +68,13 @@
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">
-                        <li style="padding: 15px; display:flex; align-items:center; gap: 10px;">
-                            <span style="font-size: 13px; color: #555;" aria-label="Usuário logado: @nome">@nome</span>
-                            <span class="@(tipo == "Admin" ? "badge-admin" : "badge-cliente")" style="font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px; text-transform: uppercase;" aria-label="Nível de acesso: @tipo">@(tipo == "Admin" ? "Admin" : "Gestor")</span>
+                        <li>
+                            <div class="nav-user-info">
+                                <span class="nav-user-name" aria-label="Usuário logado: @nome">@nome</span>
+                                <span class="nav-user-badge @(tipo == "Admin" ? "badge-admin" : "badge-cliente")" aria-label="Nível de acesso: @tipo">@(tipo == "Admin" ? "Admin" : "Gestor")</span>
+                            </div>
                         </li>
-                        <li style="padding-top: 8px; padding-right: 15px;">
+                        <li>
                             @Html.ActionLink("Sair", "Logout", "Account", null, new { @class = "btn-logout", aria_label = "Sair do sistema" })
                         </li>
                     </ul>
@@ -93,7 +95,7 @@
         @RenderBody()
     </div>
 
-    <script src="~/Scripts/jquery-3.6.0.min.js"></script>
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
 
     <script>

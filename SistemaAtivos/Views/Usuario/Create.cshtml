@@ -28,8 +28,8 @@
         </div>
 
         <div class="field-group">
-            <label class="field-label">Senha</label>
-            <input type="password" name="senha" class="field-input" placeholder="Senha de acesso" />
+            <label class="field-label" for="senha">Senha</label>
+            <input type="password" id="senha" name="senha" class="field-input" placeholder="Senha de acesso" autocomplete="new-password" aria-required="true" />
             <span class="field-error">@Html.ValidationMessage("senha")</span>
         </div>
 

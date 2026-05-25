@@ -34,14 +34,14 @@ else
                 @foreach (var col in Model)
                 {
                     <tr>
-                        <td style="font-weight:500">@col.Nome</td>
+                        <td class="td-bold">@col.Nome</td>
                         <td>@(col.Cargo ?? "—")</td>
                         <td>@(col.Email ?? "—")</td>
                         <td>@(col.Telefone ?? "—")</td>
                         @if (isAdmin) { <td>@(col.Empresa?.Nome ?? "—")</td> }
                         <td>
-                            <div style="display:flex;gap:4px">
-                                <div class="dropdown" style="display:inline-block">
+                            <div class="td-actions">
+                                <div class="dropdown dropdown-inline">
                                     <button type="button" class="btn-xs-outline" data-toggle="dropdown">&#8942;</button>
                                     <ul class="dropdown-menu dropdown-menu-right">
                                         <li>@Html.ActionLink("Editar", "Edit", new { id = col.Id }, null)</li>

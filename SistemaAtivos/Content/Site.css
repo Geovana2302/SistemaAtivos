@@ -1128,3 +1128,552 @@ textarea.field-input {
         display: block !important;
     }
 }
+
+/* ============================================================
+   LOGIN — estilos extraídos do Login.cshtml
+   ============================================================ */
+.login-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 1.5rem 0;
+    color: #bbb;
+    font-size: 12px;
+}
+
+.login-divider::before,
+.login-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #E5E4E0;
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: 1.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #F0EFE8;
+    font-size: 12px;
+    color: #aaa;
+}
+
+.login-field-icon {
+    position: relative;
+}
+
+.login-field-icon .field-input {
+    padding-left: 38px;
+}
+
+.login-field-icon .icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: 15px;
+    pointer-events: none;
+}
+
+.login-error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #FCEBEB;
+    border: 1px solid #F7C1C1;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #A32D2D;
+    margin-bottom: 1.5rem;
+}
+
+.login-error svg {
+    flex-shrink: 0;
+}
+
+.login-version {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #EEEDFE;
+    color: #534AB7;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin: 0 auto 1.25rem;
+}
+
+/* ============================================================
+   NAVBAR — estilos extraídos do _Layout.cshtml
+   ============================================================ */
+.navbar-sistema {
+    background: #fff;
+    border-bottom: 1px solid #E5E4E0;
+    margin-bottom: 0;
+}
+
+.navbar-brand-sistema {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-logo {
+    width: 30px;
+    height: 30px;
+    background: #534AB7;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.brand-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #222;
+}
+
+.nav-user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+}
+
+.nav-user-name {
+    font-size: 13px;
+    color: #555;
+}
+
+.nav-user-badge {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+}
+
+/* ============================================================
+   ALERTAS INLINE — extraídos do CreateEmpresa.cshtml
+   ============================================================ */
+.alert-warning-custom {
+    background: #FEF9EC;
+    border: 1px solid #F0D98A;
+    color: #7A5C00;
+    font-size: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.alert-error-inline {
+    background: #FEECEC;
+    border: 1px solid #F08A8A;
+    color: #7A0000;
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+/* ============================================================
+   ÍCONE GRID — extraído de Categoria/Create e Edit
+   ============================================================ */
+.icone-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.icone-opt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 10px 4px;
+    border: 1.5px solid #E5E4E0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 11px;
+    color: #666;
+    background: #fff;
+    transition: all .15s;
+}
+
+.icone-opt:hover {
+    border-color: #534AB7;
+    background: #F0EEFF;
+    color: #534AB7;
+}
+
+.icone-opt.selecionado {
+    border-color: #534AB7;
+    background: #F0EEFF;
+    color: #534AB7;
+}
+
+.icone-opt i {
+    font-size: 22px;
+}
+
+.icone-hint {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 6px;
+}
+
+/* ============================================================
+   SENHA SECTION — extraído de Usuario/Edit.cshtml
+   ============================================================ */
+.senha-section {
+    border: 1px solid #F0EFE8;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 1rem;
+}
+
+.campo-opcional {
+    font-weight: 400;
+    color: #aaa;
+}
+
+/* ============================================================
+   ETIQUETA (IMPRIMIR) — extraído de Ativo/Imprimir.cshtml
+   ============================================================ */
+.etiqueta-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    background: #f5f5f5;
+}
+
+.etiqueta-toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    margin-top: 24px;
+}
+
+.btn-print {
+    background: #534AB7;
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-print:hover {
+    background: #3C3489;
+}
+
+.btn-close-etiqueta {
+    background: #fff;
+    color: #444;
+    border: 1px solid #ddd;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-close-etiqueta:hover {
+    background: #f5f5f5;
+}
+
+.etiqueta {
+    background: #fff;
+    border: 2px solid #E5E4E0;
+    border-radius: 12px;
+    padding: 24px;
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+}
+
+.etiqueta-empresa {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.etiqueta-nome {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a2e;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.etiqueta-qr img {
+    width: 180px;
+    height: 180px;
+    display: block;
+}
+
+.etiqueta-dados {
+    width: 100%;
+    border-top: 1px solid #eee;
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.dado-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+}
+
+.dado-label {
+    color: #888;
+}
+
+.dado-value {
+    color: #333;
+    font-weight: 600;
+    text-align: right;
+    max-width: 180px;
+}
+
+.etiqueta-url {
+    font-size: 10px;
+    color: #bbb;
+    text-align: center;
+    word-break: break-all;
+}
+
+.etiqueta-aviso {
+    margin-top: 16px;
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+}
+
+.etiqueta-no-print {
+    margin-top: 24px;
+}
+
+@media print {
+    .etiqueta-toolbar { display: none !important; }
+    .etiqueta-aviso   { display: none !important; }
+    .etiqueta-wrap    { background: #fff; min-height: unset; }
+    .etiqueta {
+        width: 12cm;
+        border: 1.5px solid #ccc;
+        box-shadow: none;
+        page-break-inside: avoid;
+    }
+}
+
+/* ============================================================
+   TABELA — utilitários de célula
+   ============================================================ */
+.td-nome-principal {
+    font-weight: 500;
+    margin: 0;
+}
+
+.td-nome-secundario {
+    font-size: 11px;
+    color: #888;
+    margin: 0;
+}
+
+.td-bold {
+    font-weight: 500;
+}
+
+/* ============================================================
+   FILTER BAR — barra de filtros
+   ============================================================ */
+.filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-bar-label {
+    font-size: 12px;
+    color: #888;
+}
+
+.filter-bar-label-spaced {
+    font-size: 12px;
+    color: #888;
+    margin-left: 12px;
+}
+
+/* ============================================================
+   ACTIONS CELL — célula de ações na tabela
+   ============================================================ */
+.td-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.dropdown-inline {
+    display: inline-block;
+}
+
+/* ícone de categoria na tabela */
+.cat-icon {
+    font-size: 16px;
+    margin-right: 6px;
+    color: #534AB7;
+    vertical-align: middle;
+}
+
+/* ============================================================
+   EMPTY STATE — textos internos
+   ============================================================ */
+.empty-state-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.empty-state-title {
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 4px;
+}
+
+.empty-state-sub {
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 1rem;
+}
+
+/* ============================================================
+   ADMIN VIEWS — utilitários
+   ============================================================ */
+.admin-nome-cell {
+    font-weight: 500;
+    margin: 0;
+}
+
+.admin-super-badge {
+    font-size: 10px;
+    background: #E1F5EE;
+    color: #0F6E56;
+    padding: 1px 7px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-left: 4px;
+}
+
+.admin-email-cell {
+    color: #555;
+}
+
+.user-badge-default {
+    font-size: 10px;
+    background: #F5F4F2;
+    color: #555;
+    border: 1px solid #E5E4E0;
+    padding: 1px 8px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+/* ============================================================
+   EMPRESA PAGE — utilitários
+   ============================================================ */
+.empresa-page-title {
+    margin: 0;
+}
+
+.empresa-page-sub {
+    margin: 0;
+}
+
+.empresa-section-top {
+    margin-top: 1.5rem;
+}
+
+.colaborador-cargo {
+    font-size: 11px;
+    color: #888;
+}
+
+.gestor-hint {
+    font-size: 11px;
+    color: #888;
+    margin: 0 0 6px;
+}
+
+/* ============================================================
+   DETAIL PAGE — utilitários
+   ============================================================ */
+.detail-qr-label {
+    margin-bottom: 8px;
+}
+
+.detail-qr-img {
+    width: 150px;
+    height: 150px;
+    border: 1px solid #E5E4E0;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+/* ============================================================
+   AVATAR — iniciais do usuário na tabela de admins
+   ============================================================ */
+.avatar-initials {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.avatar-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #EEEDFE;
+    color: #3C3489;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+/* alinhamento central para login-version */
+.login-version-wrap {
+    text-align: center;
+}
+
+/* campo label com destaque */
+.field-label-destaque {
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+/* coluna estreita em tabela */
+.th-narrow {
+    width: 80px;
+}
