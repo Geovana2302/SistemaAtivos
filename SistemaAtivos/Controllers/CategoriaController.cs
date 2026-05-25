@@ -26,9 +26,14 @@ namespace SistemaAtivos.Controllers
             return q;
         }
 
-        public ActionResult Index()
+        public ActionResult Index(int? empresaId)
         {
-            return View(GetQuery().ToList());
+            var q = GetQuery().Include(c => c.Ativos);
+            if (IsAdmin() && empresaId.HasValue)
+                q = q.Where(c => c.EmpresaId == empresaId);
+            ViewBag.Empresas = db.Empresas.OrderBy(e => e.Nome).ToList();
+            ViewBag.EmpresaFiltro = empresaId;
+            return View(q.ToList());
         }
 
         [HttpGet]
