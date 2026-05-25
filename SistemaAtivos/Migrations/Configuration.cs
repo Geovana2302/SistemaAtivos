@@ -74,7 +74,7 @@
 
                 // Categorias
                 var catTI  = new SistemaAtivos.Models.Categoria { Nome = "Informatica", EmpresaId = empresa.Id, Icone = "bi-laptop" };
-                var catMov = new SistemaAtivos.Models.Categoria { Nome = "Moveis",      EmpresaId = empresa.Id, Icone = "bi-chair" };
+                var catMov = new SistemaAtivos.Models.Categoria { Nome = "Moveis",      EmpresaId = empresa.Id, Icone = "bi-lamp" };
                 context.Categorias.Add(catTI);
                 context.Categorias.Add(catMov);
                 context.SaveChanges();
