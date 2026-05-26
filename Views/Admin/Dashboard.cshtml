@@ -1,0 +1,95 @@
+@model IEnumerable<SistemaAtivos.Models.Empresa>
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Empresas</h4>
+        <p class="page-sub">@Model.Count() / 25 empresa(s) cadastrada(s)</p>
+    </div>
+    @if (Model.Count() < 25)
+    {
+        <a asp-controller="Admin" asp-action="CreateEmpresa" class="btn-purple btn-icon" title="Nova empresa">+</a>
+    }
+</div>
+
+<div class="empresa-grid">
+    @foreach (var emp in Model)
+    {
+        <div class="empresa-card">
+            <div class="empresa-banner" style="background:@emp.Cor"></div>
+            <div class="empresa-body">
+                <div class="empresa-initials" style="background:@emp.Cor">
+                    @(emp.Nome.Length >= 2 ? emp.Nome.Substring(0, 2).ToUpper() : emp.Nome.ToUpper())
+                </div>
+                <p class="empresa-name">@emp.Nome</p>
+                <p class="empresa-count">@emp.Ativos.Count ativo(s) &middot; @emp.Categorias.Count categoria(s)</p>
+            </div>
+            <div class="empresa-footer">
+                <a asp-controller="Admin" asp-action="Empresa" asp-route-id="@emp.Id" class="btn-sm-outline">Abrir</a>
+                <button type="button" class="btn-sm-outline" data-bs-toggle="modal" data-bs-target="#modalEditar-@emp.Id">Editar</button>
+                <button type="button" class="btn-sm-danger" data-bs-toggle="modal" data-bs-target="#modalExcluir-@emp.Id">Excluir</button>
+            </div>
+        </div>
+    }
+</div>
+
+@foreach (var emp in Model)
+{
+    <div class="modal fade" id="modalEditar-@emp.Id" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content modal-custom">
+                <div class="modal-body">
+                    <h5 class="modal-title-custom">Editar empresa</h5>
+                    <p class="modal-sub-custom">Altere os dados e confirme com sua senha de admin.</p>
+                    <form asp-controller="Admin" asp-action="EditEmpresa" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="Id" value="@emp.Id" />
+                        <div class="field-group">
+                            <label class="field-label">Nome</label>
+                            <input name="Nome" class="field-input" value="@emp.Nome" required />
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label">Cor</label>
+                            <input name="Cor" type="color" class="field-input field-color" value="@emp.Cor" />
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label">Confirme sua senha de admin</label>
+                            <input name="senhaAdmin" type="password" class="field-input" placeholder="********" required />
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn-purple">Salvar alterações</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalExcluir-@emp.Id" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content modal-custom">
+                <div class="modal-body">
+                    <h5 class="modal-title-custom">Excluir empresa</h5>
+                    <p class="modal-sub-custom">
+                        Esta ação removerá <strong>@emp.Nome</strong> e todos os dados vinculados permanentemente.
+                    </p>
+                    <form asp-controller="Admin" asp-action="DeleteEmpresa" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@emp.Id" />
+                        <div class="field-group">
+                            <label class="field-label">Confirme sua senha de admin</label>
+                            <input name="senhaAdmin" type="password" class="field-input" placeholder="********" required />
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn-danger">Confirmar exclusão</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}

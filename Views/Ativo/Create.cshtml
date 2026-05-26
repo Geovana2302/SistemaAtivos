@@ -1,0 +1,88 @@
+@model SistemaAtivos.Models.Ativo
+@{
+    ViewBag.Title = "Novo Ativo";
+    var isAdmin = Context.Session.GetString("UsuarioTipo") == "Admin";
+}
+
+<div class="page-header">
+    <h4 class="page-title">Novo Ativo</h4>
+</div>
+
+<div class="form-card">
+    <form asp-controller="Ativo" asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert-custom alert-danger-custom"></div>
+
+        <div class="form-row-2">
+            <div class="field-group">
+                <label asp-for="Nome" class="field-label"></label>
+                <input asp-for="Nome" class="field-input" placeholder="Nome do ativo" maxlength="100" />
+                <span asp-validation-for="Nome" class="field-error"></span>
+            </div>
+            <div class="field-group">
+                <label asp-for="NumeroSerie" class="field-label"></label>
+                <input asp-for="NumeroSerie" class="field-input" placeholder="SN-001" maxlength="100" />
+                <span asp-validation-for="NumeroSerie" class="field-error"></span>
+            </div>
+        </div>
+        <div class="form-row-2">
+            <div class="field-group">
+                <label asp-for="Marca" class="field-label"></label>
+                <input asp-for="Marca" class="field-input" maxlength="100" />
+            </div>
+            <div class="field-group">
+                <label asp-for="Modelo" class="field-label"></label>
+                <input asp-for="Modelo" class="field-input" maxlength="100" />
+            </div>
+        </div>
+        <div class="form-row-2">
+            <div class="field-group">
+                <label class="field-label">Categoria</label>
+                @Html.DropDownList("CategoriaId", (Microsoft.AspNetCore.Mvc.Rendering.SelectList)ViewBag.Categorias, "-- Selecione --", new { @class = "field-input" })
+            </div>
+            <div class="field-group">
+                <label class="field-label">Responsável</label>
+                @Html.DropDownList("ColaboradorId", (Microsoft.AspNetCore.Mvc.Rendering.SelectList)ViewBag.Colaboradores, "-- Selecione --", new { @class = "field-input" })
+            </div>
+        </div>
+        <div class="form-row-2">
+            <div class="field-group">
+                <label asp-for="DataAquisicao" class="field-label"></label>
+                <input asp-for="DataAquisicao" type="date" class="field-input" />
+                <span asp-validation-for="DataAquisicao" class="field-error"></span>
+            </div>
+            <div class="field-group">
+                <label asp-for="Valor" class="field-label"></label>
+                <input asp-for="Valor" id="Valor" class="field-input" placeholder="0,00" />
+                <span asp-validation-for="Valor" class="field-error"></span>
+            </div>
+        </div>
+        <div class="form-row-2">
+            <div class="field-group">
+                <label asp-for="Status" class="field-label"></label>
+                <select asp-for="Status" asp-items="Html.GetEnumSelectList<SistemaAtivos.Models.StatusAtivo>()" class="field-input"></select>
+            </div>
+            @if (isAdmin && (bool?)ViewBag.EmpresaPreSelecionada == true)
+            {
+                <input type="hidden" asp-for="EmpresaId" />
+            }
+            else if (isAdmin)
+            {
+                <div class="field-group">
+                    <label class="field-label">Empresa</label>
+                    @Html.DropDownList("EmpresaId", (Microsoft.AspNetCore.Mvc.Rendering.SelectList)ViewBag.EmpresaSelectList, "-- Selecione --", new { @class = "field-input" })
+                </div>
+            }
+        </div>
+        <div class="field-group">
+            <label asp-for="Observacoes" class="field-label"></label>
+            <textarea asp-for="Observacoes" class="field-input" rows="3" maxlength="500"></textarea>
+            <span asp-validation-for="Observacoes" class="field-error"></span>
+        </div>
+
+        <div class="form-actions">
+            <a asp-controller="Ativo" asp-action="Index" class="btn-cancel">Cancelar</a>
+            <button type="submit" class="btn-purple">Salvar ativo</button>
+        </div>
+    </form>
+</div>

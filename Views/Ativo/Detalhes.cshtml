@@ -1,0 +1,56 @@
+@model SistemaAtivos.Models.Ativo
+@{
+    ViewBag.Title = Model.Nome;
+}
+
+<nav class="breadcrumb-custom">
+    @if (Model.EmpresaId.HasValue)
+    {
+        <a asp-controller="Admin" asp-action="Empresa" asp-route-id="@Model.EmpresaId">@(Model.Empresa?.Nome ?? "Empresa")</a>
+        <span> / </span>
+    }
+    <span>@Model.Nome</span>
+</nav>
+
+<div class="detail-card">
+    <div class="detail-header">
+        <div>
+            <h5 class="page-title" style="margin:0">@Model.Nome</h5>
+            <p class="page-sub">@Model.Marca @Model.Modelo</p>
+        </div>
+        <span class="status-badge status-@Model.Status.ToString().ToLower()">@Model.Status</span>
+    </div>
+
+    <div class="detail-grid">
+        <div class="detail-item"><span class="detail-label">Número de Série</span><span class="detail-value">@(Model.NumeroSerie ?? "-")</span></div>
+        <div class="detail-item"><span class="detail-label">Categoria</span><span class="detail-value">@(Model.Categoria?.Nome ?? "—")</span></div>
+        <div class="detail-item"><span class="detail-label">Responsável</span><span class="detail-value">@(Model.Colaborador?.Nome ?? "-")</span></div>
+        <div class="detail-item"><span class="detail-label">Data de Aquisição</span><span class="detail-value">@(Model.DataAquisicao?.ToString("dd/MM/yyyy") ?? "-")</span></div>
+        <div class="detail-item"><span class="detail-label">Valor</span><span class="detail-value">@(Model.Valor.HasValue ? Model.Valor.Value.ToString("C2") : "-")</span></div>
+        <div class="detail-item"><span class="detail-label">Empresa</span><span class="detail-value">@(Model.Empresa?.Nome ?? "-")</span></div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Observacoes))
+    {
+        <div class="detail-obs">
+            <span class="detail-label">Observações</span>
+            <p>@Model.Observacoes</p>
+        </div>
+    }
+
+    <div class="detail-qr">
+        <p class="detail-label" style="margin-bottom:8px">QR Code deste ativo</p>
+        <img src="@Url.Action("QrCode", "Ativo", new { id = Model.Id })"
+             alt="QR Code @Model.Nome"
+             style="width:150px;height:150px;border:1px solid #E5E4E0;border-radius:8px;padding:8px" />
+    </div>
+
+    <div class="detail-actions">
+        <a asp-controller="Ativo" asp-action="Edit" asp-route-id="@Model.Id" class="btn-purple">Editar</a>
+        <a asp-controller="Ativo" asp-action="Imprimir" asp-route-id="@Model.Id" class="btn-outline-sm" target="_blank">🖨️ Imprimir Etiqueta</a>
+        @if (Model.EmpresaId.HasValue)
+        {
+            <a asp-controller="Admin" asp-action="Empresa" asp-route-id="@Model.EmpresaId" class="btn-cancel">← Voltar</a>
+        }
+    </div>
+</div>

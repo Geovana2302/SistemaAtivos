@@ -1,0 +1,61 @@
+@model SistemaAtivos.Models.Colaborador
+@{
+    ViewBag.Title = "Editar Responsável";
+    var isAdmin = Context.Session.GetString("UsuarioTipo") == "Admin";
+}
+<div class="page-header"><h4 class="page-title">Editar Responsável</h4></div>
+<div class="form-card">
+    <form asp-controller="Colaborador" asp-action="Edit" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="alert-custom alert-danger-custom"></div>
+        <div class="form-row-2">
+            <div class="field-group">
+                <label asp-for="Nome" class="field-label"></label>
+                <input asp-for="Nome" class="field-input" />
+                <span asp-validation-for="Nome" class="field-error"></span>
+            </div>
+            <div class="field-group">
+                <label asp-for="Cargo" class="field-label"></label>
+                <input asp-for="Cargo" class="field-input" />
+            </div>
+        </div>
+        <div class="form-row-2">
+            <div class="field-group">
+                <label asp-for="Email" class="field-label"></label>
+                <input asp-for="Email" type="email" class="field-input" maxlength="100" />
+                <span asp-validation-for="Email" class="field-error"></span>
+            </div>
+            <div class="field-group">
+                <label asp-for="Telefone" class="field-label"></label>
+                <input asp-for="Telefone" id="Telefone" class="field-input" maxlength="15" />
+                <span asp-validation-for="Telefone" class="field-error"></span>
+            </div>
+        </div>
+        @if (isAdmin)
+        {
+            <div class="field-group">
+                <label class="field-label">Empresa</label>
+                @Html.DropDownList("EmpresaId", (Microsoft.AspNetCore.Mvc.Rendering.SelectList)ViewBag.Empresas, "-- Selecione --", new { @class = "field-input" })
+            </div>
+        }
+        <div class="form-actions">
+            <a asp-controller="Colaborador" asp-action="Index" class="btn-cancel">Cancelar</a>
+            <button type="submit" class="btn-purple">Salvar alterações</button>
+        </div>
+    </form>
+</div>
+@section Scripts {
+<script>
+    document.getElementById('Telefone').addEventListener('input', function() {
+        var v = this.value.replace(/\D/g,'').substring(0,11);
+        if (v.length > 6) {
+            this.value = '(' + v.substring(0,2) + ') ' + v.substring(2,v.length-4) + '-' + v.substring(v.length-4);
+        } else if (v.length > 2) {
+            this.value = '(' + v.substring(0,2) + ') ' + v.substring(2);
+        } else if (v.length > 0) {
+            this.value = '(' + v;
+        }
+    });
+</script>
+}

@@ -1,0 +1,79 @@
+@model SistemaAtivos.Models.Usuario
+@{
+    ViewBag.Title = "Editar Usuário";
+    var isAdmin = Context.Session.GetString("UsuarioTipo") == "Admin";
+    var cancelUrl = Model.EmpresaId.HasValue
+        ? Url.Action("Empresa", "Admin", new { id = Model.EmpresaId })
+        : Url.Action("Admins", "Admin");
+}
+<div class="page-header"><h4 class="page-title">Editar Usuário</h4></div>
+<div class="form-card">
+    <form asp-controller="Usuario" asp-action="Edit" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="alert-custom alert-danger-custom"></div>
+        <div class="form-row-2">
+            <div class="field-group">
+                <label asp-for="Nome" class="field-label"></label>
+                <input asp-for="Nome" class="field-input" />
+                <span asp-validation-for="Nome" class="field-error"></span>
+            </div>
+            <div class="field-group">
+                <label asp-for="Email" class="field-label"></label>
+                <input asp-for="Email" class="field-input" />
+                <span asp-validation-for="Email" class="field-error"></span>
+            </div>
+        </div>
+        <p class="field-label" style="margin-bottom:6px;font-weight:600">
+            Alterar Senha <span style="font-weight:400;color:#aaa">(deixe em branco para manter)</span>
+        </p>
+        <div class="form-row-2" style="border:1px solid #F0EFE8;border-radius:8px;padding:12px;margin-bottom:1rem">
+            <div class="field-group" style="margin-bottom:0">
+                <label class="field-label">Nova Senha</label>
+                <input type="password" id="novaSenha" name="senha" class="field-input" placeholder="Nova senha" autocomplete="new-password" />
+            </div>
+            <div class="field-group" style="margin-bottom:0">
+                <label class="field-label">Confirmar Nova Senha</label>
+                <input type="password" id="confirmarSenha" class="field-input" placeholder="Repita a senha" autocomplete="new-password" />
+                <span id="senhaErro" class="field-error" style="display:none">As senhas não coincidem.</span>
+            </div>
+        </div>
+        @if (isAdmin)
+        {
+            <div class="form-row-2">
+                <div class="field-group">
+                    <label asp-for="Perfil" class="field-label"></label>
+                    @Html.DropDownList("Perfil", (Microsoft.AspNetCore.Mvc.Rendering.SelectList)ViewBag.Perfis, new { @class = "field-input" })
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Empresa</label>
+                    @Html.DropDownList("EmpresaId", (Microsoft.AspNetCore.Mvc.Rendering.SelectList)ViewBag.EmpresaSelectList, "-- Selecione --", new { @class = "field-input" })
+                </div>
+            </div>
+        }
+        <div class="field-group">
+            <label class="field-label">Sua senha atual (para confirmar) <span style="color:red">*</span></label>
+            <input type="password" name="senhaAdmin" class="field-input" placeholder="Digite sua senha atual" />
+            <span class="field-error">@Html.ValidationMessage("senhaAdmin")</span>
+        </div>
+        <div class="form-actions">
+            <a href="@cancelUrl" class="btn-cancel">Cancelar</a>
+            <button type="submit" id="btnSalvar" class="btn-purple">Salvar alterações</button>
+        </div>
+    </form>
+</div>
+@section Scripts {
+<script>
+    var nova = document.getElementById('novaSenha');
+    var conf = document.getElementById('confirmarSenha');
+    var erro = document.getElementById('senhaErro');
+    var btn  = document.getElementById('btnSalvar');
+    function validar() {
+        var mismatch = nova.value.length > 0 && conf.value.length > 0 && nova.value !== conf.value;
+        erro.style.display = mismatch ? 'block' : 'none';
+        btn.disabled = mismatch;
+    }
+    nova.addEventListener('input', validar);
+    conf.addEventListener('input', validar);
+</script>
+}

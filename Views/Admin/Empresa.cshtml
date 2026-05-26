@@ -1,0 +1,288 @@
+@model SistemaAtivos.Models.Empresa
+@{
+    ViewBag.Title = Model.Nome;
+    var isAdmin      = Context.Session.GetString("UsuarioTipo") == "Admin";
+    var usuarioLogadoId = Context.Session.GetInt32("UsuarioId");
+}
+
+<nav class="breadcrumb-custom">
+    @if (isAdmin)
+    {
+        <a asp-controller="Admin" asp-action="Dashboard">Empresas</a>
+        <span> / </span>
+    }
+    <span>@Model.Nome</span>
+</nav>
+
+<div class="empresa-header-bar">
+    <div class="empresa-initials" style="background:@Model.Cor;width:48px;height:48px;font-size:20px;border-radius:10px">
+        @(Model.Nome.Length >= 2 ? Model.Nome.Substring(0, 2).ToUpper() : Model.Nome.ToUpper())
+    </div>
+    <div>
+        <h5 class="page-title" style="margin:0">@Model.Nome</h5>
+        <p class="page-sub" style="margin:0">
+            @{ var usr = Model.Usuarios.FirstOrDefault(); }
+            @if (usr != null) { @usr.Email }
+        </p>
+    </div>
+</div>
+
+<div class="stats-row">
+    <div class="stat-card"><p class="stat-label">Categorias</p><p class="stat-value">@Model.Categorias.Count</p></div>
+    <div class="stat-card"><p class="stat-label">Ativos</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == StatusAtivo.Ativo)</p></div>
+    <div class="stat-card"><p class="stat-label">Em Manutenção</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == StatusAtivo.EmManutencao)</p></div>
+    <div class="stat-card"><p class="stat-label">Inativos</p><p class="stat-value">@Model.Ativos.Count(a => a.Status == StatusAtivo.Inativo)</p></div>
+    <div class="stat-card"><p class="stat-label">Responsáveis</p><p class="stat-value">@Model.Colaboradores.Count</p></div>
+    <div class="stat-card"><p class="stat-label">Gestores</p><p class="stat-value">@Model.Usuarios.Count(u => u.Perfil == Perfil.Gestor)</p></div>
+</div>
+
+<!-- Categorias -->
+<div class="section-header">
+    <p class="section-title">Categorias</p>
+    <a asp-controller="Categoria" asp-action="Create" asp-route-empresaId="@Model.Id" class="btn-outline-sm">+ Categoria</a>
+</div>
+
+@if (!Model.Categorias.Any())
+{
+    <div class="empty-state">
+        <p>Nenhuma categoria cadastrada ainda.</p>
+        <a asp-controller="Categoria" asp-action="Create" asp-route-empresaId="@Model.Id" class="btn-purple">Criar primeira categoria</a>
+    </div>
+}
+else
+{
+    foreach (var cat in Model.Categorias)
+    {
+        var ativos = Model.Ativos.Where(a => a.CategoriaId == cat.Id).ToList();
+        var collapseId = "cat-" + cat.Id;
+        <div class="acc-card">
+            <div class="acc-header-custom" data-acc-target="@collapseId">
+                <div class="acc-left">
+                    <span class="acc-dot" style="background:@Model.Cor"></span>
+                    @if (!string.IsNullOrEmpty(cat.Icone))
+                    {
+                        <i class="bi @cat.Icone" style="font-size:16px;color:#534AB7"></i>
+                    }
+                    <span class="acc-label">@cat.Nome</span>
+                    <span class="acc-badge">@ativos.Count</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px">
+                    <a asp-controller="Ativo" asp-action="Create" asp-route-categoriaId="@cat.Id" asp-route-empresaId="@Model.Id" class="acc-action" title="Adicionar ativo">+</a>
+                    <div class="dropdown" style="display:inline-block">
+                        <button type="button" class="acc-action" data-bs-toggle="dropdown" title="Opções">&#8942;</button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" asp-controller="Categoria" asp-action="Edit" asp-route-id="@cat.Id">Editar categoria</a></li>
+                            <li>
+                                <form asp-controller="Categoria" asp-action="Delete" asp-route-id="@cat.Id" method="post" style="display:inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-delete-btn"
+                                            onclick="return confirm('Excluir esta categoria?')">Excluir categoria</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                    <span class="acc-chevron-custom">&#9660;</span>
+                </div>
+            </div>
+            <div id="@collapseId" class="acc-body-custom">
+                @if (!ativos.Any())
+                {
+                    <p class="acc-empty">Nenhum ativo nesta categoria.</p>
+                }
+                else
+                {
+                    foreach (var ativo in ativos)
+                    {
+                        <div class="ativo-row">
+                            <div>
+                                <p class="ativo-name">@ativo.Nome</p>
+                                <p class="ativo-meta">
+                                    @if (!string.IsNullOrEmpty(ativo.NumeroSerie)) { <text>SN: @ativo.NumeroSerie &middot; </text> }
+                                    <span class="status-badge status-@ativo.Status.ToString().ToLower()">@ativo.Status</span>
+                                    @if (ativo.Colaborador != null) { <text> &middot; @ativo.Colaborador.Nome</text> }
+                                </p>
+                            </div>
+                            <div style="display:flex;gap:4px;align-items:center">
+                                <a asp-controller="Ativo" asp-action="Detalhes" asp-route-id="@ativo.Id" class="btn-xs-outline">Detalhes</a>
+                                <div class="dropdown" style="display:inline-block">
+                                    <button type="button" class="btn-xs-outline" data-bs-toggle="dropdown">&#8942;</button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" asp-controller="Ativo" asp-action="Edit" asp-route-id="@ativo.Id">Editar</a></li>
+                                        <li>
+                                            <form asp-controller="Ativo" asp-action="Delete" asp-route-id="@ativo.Id" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="dropdown-delete-btn"
+                                                        onclick="return confirm('Excluir este ativo?')">Excluir</button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+}
+
+<!-- Responsáveis -->
+<div style="margin-top:1.5rem">
+    <div class="section-header">
+        <p class="section-title">Responsáveis</p>
+        <a asp-controller="Colaborador" asp-action="Create" asp-route-empresaId="@Model.Id" class="btn-outline-sm">+ Responsável</a>
+    </div>
+    @if (!Model.Colaboradores.Any())
+    {
+        <div class="empty-state">
+            <p>Nenhum responsável cadastrado ainda.</p>
+            <a asp-controller="Colaborador" asp-action="Create" asp-route-empresaId="@Model.Id" class="btn-purple">Criar primeiro responsável</a>
+        </div>
+    }
+    else
+    {
+        foreach (var col in Model.Colaboradores)
+        {
+            var ativosCol    = Model.Ativos.Where(a => a.ColaboradorId == col.Id).ToList();
+            var colCollapseId = "resp-" + col.Id;
+            <div class="acc-card">
+                <div class="acc-header-custom" data-acc-target="@colCollapseId">
+                    <div class="acc-left">
+                        <span class="acc-dot" style="background:@Model.Cor"></span>
+                        <span class="acc-label">@col.Nome</span>
+                        @if (!string.IsNullOrEmpty(col.Cargo)) { <span style="font-size:11px;color:#888">@col.Cargo</span> }
+                        <span class="acc-badge">@ativosCol.Count ativo(s)</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                        <div class="dropdown" style="display:inline-block">
+                            <button type="button" class="acc-action" data-bs-toggle="dropdown" title="Opções">&#8942;</button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" asp-controller="Colaborador" asp-action="Edit" asp-route-id="@col.Id">Editar</a></li>
+                                <li>
+                                    <form asp-controller="Colaborador" asp-action="Delete" asp-route-id="@col.Id" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="dropdown-delete-btn"
+                                                onclick="return confirm('Excluir este responsável?')">Excluir</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                        <span class="acc-chevron-custom">&#9660;</span>
+                    </div>
+                </div>
+                <div id="@colCollapseId" class="acc-body-custom">
+                    @if (!string.IsNullOrEmpty(col.Email) || !string.IsNullOrEmpty(col.Telefone))
+                    {
+                        <p style="font-size:11px;color:#888;margin:0 0 6px">
+                            @col.Email @if (!string.IsNullOrEmpty(col.Email) && !string.IsNullOrEmpty(col.Telefone)) { <text> &middot; </text> } @col.Telefone
+                        </p>
+                    }
+                    @if (!ativosCol.Any())
+                    {
+                        <p class="acc-empty">Nenhum ativo sob responsabilidade.</p>
+                    }
+                    else
+                    {
+                        foreach (var ativo in ativosCol)
+                        {
+                            <div class="ativo-row">
+                                <div>
+                                    <p class="ativo-name">@ativo.Nome</p>
+                                    <p class="ativo-meta">
+                                        @if (!string.IsNullOrEmpty(ativo.NumeroSerie)) { <text>SN: @ativo.NumeroSerie &middot; </text> }
+                                        <span class="status-badge status-@ativo.Status.ToString().ToLower()">@ativo.Status</span>
+                                        @if (ativo.Categoria != null) { <text> &middot; @ativo.Categoria.Nome</text> }
+                                    </p>
+                                </div>
+                                <a asp-controller="Ativo" asp-action="Detalhes" asp-route-id="@ativo.Id" class="btn-xs-outline">Detalhes</a>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<!-- Gestores -->
+<div style="margin-top:1.5rem">
+    <div class="section-header">
+        <p class="section-title">Gestores</p>
+        <a asp-controller="Usuario" asp-action="Create" asp-route-empresaId="@Model.Id" class="btn-outline-sm">+ Gestor</a>
+    </div>
+    @if (!Model.Usuarios.Any(u => u.Perfil == Perfil.Gestor))
+    {
+        <div class="empty-state">
+            <p>Nenhum gestor cadastrado ainda.</p>
+            <a asp-controller="Usuario" asp-action="Create" asp-route-empresaId="@Model.Id" class="btn-purple">Cadastrar primeiro gestor</a>
+        </div>
+    }
+    else
+    {
+        foreach (var u in Model.Usuarios.Where(u => u.Perfil == Perfil.Gestor))
+        {
+            <div class="ativo-row">
+                <div>
+                    <p class="ativo-name">
+                        @u.Nome
+                        @if (u.Id == usuarioLogadoId) { <span class="acc-badge">você</span> }
+                    </p>
+                    <p class="ativo-meta">@u.Email &middot; <span class="acc-badge">Gestor</span></p>
+                </div>
+                <div style="display:flex;gap:4px;align-items:center">
+                    <a asp-controller="Usuario" asp-action="Edit" asp-route-id="@u.Id" class="btn-xs-outline">Editar</a>
+                    @if (u.Id != usuarioLogadoId)
+                    {
+                        <button type="button" class="btn-xs-danger"
+                                data-bs-toggle="modal" data-bs-target="#modalExcluirGestor-@u.Id">Excluir</button>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@foreach (var u in Model.Usuarios.Where(u => u.Perfil == Perfil.Gestor && u.Id != usuarioLogadoId))
+{
+    <div class="modal fade" id="modalExcluirGestor-@u.Id" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content modal-custom">
+                <div class="modal-body">
+                    <h5 class="modal-title-custom">Excluir gestor</h5>
+                    <p class="modal-sub-custom">Tem certeza que deseja excluir <strong>@u.Nome</strong>?</p>
+                    <form asp-controller="Usuario" asp-action="Delete" asp-route-id="@u.Id" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="field-group">
+                            <label class="field-label">Confirme sua senha <span style="color:red">*</span></label>
+                            <input type="password" name="senhaConfirm" class="field-input" placeholder="Digite sua senha" required />
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn-danger">Confirmar exclusão</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.acc-header-custom').forEach(function(header) {
+            header.addEventListener('click', function(e) {
+                if (e.target.closest('.dropdown, a, button, form')) return;
+                var id   = header.dataset.accTarget;
+                var body = document.getElementById(id);
+                var chev = header.querySelector('.acc-chevron-custom');
+                if (body.style.display === 'none' || !body.style.display) {
+                    body.style.display = 'block';
+                    chev.innerHTML = '&#9660;';
+                } else {
+                    body.style.display = 'none';
+                    chev.innerHTML = '&#9654;';
+                }
+            });
+        });
+    </script>
+}

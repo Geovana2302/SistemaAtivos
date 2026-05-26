@@ -1,0 +1,45 @@
+@model SistemaAtivos.Models.Usuario
+@{
+    ViewBag.Title = "Novo Usuário";
+    var isAdmin = Context.Session.GetString("UsuarioTipo") == "Admin";
+}
+<div class="page-header"><h4 class="page-title">Novo Usuário</h4></div>
+<div class="form-card">
+    <form asp-controller="Usuario" asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert-custom alert-danger-custom"></div>
+        <div class="form-row-2">
+            <div class="field-group">
+                <label asp-for="Nome" class="field-label"></label>
+                <input asp-for="Nome" class="field-input" placeholder="Nome completo" />
+                <span asp-validation-for="Nome" class="field-error"></span>
+            </div>
+            <div class="field-group">
+                <label asp-for="Email" class="field-label"></label>
+                <input asp-for="Email" class="field-input" placeholder="email@exemplo.com" />
+                <span asp-validation-for="Email" class="field-error"></span>
+            </div>
+        </div>
+        <div class="field-group">
+            <label class="field-label">Senha</label>
+            <input type="password" name="senha" class="field-input" placeholder="Senha de acesso" />
+            <span class="field-error">@Html.ValidationMessage("senha")</span>
+        </div>
+        <input type="hidden" name="Perfil" value="Gestor" />
+        @if (isAdmin)
+        {
+            <div class="field-group">
+                <label class="field-label">Empresa</label>
+                @Html.DropDownList("EmpresaId", (Microsoft.AspNetCore.Mvc.Rendering.SelectList)ViewBag.EmpresaSelectList, "-- Selecione --", new { @class = "field-input" })
+            </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="EmpresaId" />
+        }
+        <div class="form-actions">
+            <a asp-controller="Usuario" asp-action="Index" class="btn-cancel">Cancelar</a>
+            <button type="submit" class="btn-purple">Salvar usuário</button>
+        </div>
+    </form>
+</div>

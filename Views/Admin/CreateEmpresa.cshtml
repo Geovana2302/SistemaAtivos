@@ -1,0 +1,39 @@
+@model SistemaAtivos.Models.Empresa
+@{
+    ViewBag.Title = "Nova Empresa";
+}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Nova Empresa</h4>
+        <p class="page-sub">Preencha os dados para criar uma nova empresa</p>
+    </div>
+    <a asp-controller="Admin" asp-action="Dashboard" class="btn-outline-sm">&larr; Voltar</a>
+</div>
+
+<div class="form-card">
+    <form asp-controller="Admin" asp-action="CreateEmpresa" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="field-group">
+            <label class="field-label" asp-for="Nome">Nome da empresa <span style="color:red">*</span></label>
+            <input asp-for="Nome" class="field-input" placeholder="Ex: TechNova" required />
+            <span asp-validation-for="Nome" class="field-error"></span>
+        </div>
+
+        <div class="field-group">
+            <label class="field-label" asp-for="Cor">Cor da marca</label>
+            <input asp-for="Cor" type="color" class="field-input field-color" value="#534AB7" />
+            <small style="font-size:11px;color:#aaa">Escolha uma cor para identificar a empresa</small>
+        </div>
+
+        <div class="alert-custom" style="background:#FEF9EC;border:1px solid #F0D98A;color:#7A5C00;font-size:12px;margin-top:0.5rem">
+            Após criar a empresa, acesse-a para cadastrar o primeiro gestor.
+        </div>
+
+        <div class="form-actions">
+            <a asp-controller="Admin" asp-action="Dashboard" class="btn-cancel">Cancelar</a>
+            <button type="submit" class="btn-purple">Criar Empresa</button>
+        </div>
+    </form>
+</div>

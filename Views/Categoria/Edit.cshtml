@@ -1,0 +1,107 @@
+@model SistemaAtivos.Models.Categoria
+@{
+    ViewBag.Title = "Editar Categoria";
+    var isAdmin = Context.Session.GetString("UsuarioTipo") == "Admin";
+    var cancelUrl = Model.EmpresaId.HasValue
+        ? Url.Action("Empresa", "Admin", new { id = Model.EmpresaId })
+        : Url.Action("Index", "Categoria");
+
+    var icones = new[]
+    {
+        new { valor="bi-laptop",       label="Notebook" },
+        new { valor="bi-display",      label="Monitor" },
+        new { valor="bi-printer",      label="Impressora" },
+        new { valor="bi-phone",        label="Celular" },
+        new { valor="bi-keyboard",     label="Teclado" },
+        new { valor="bi-mouse",        label="Mouse" },
+        new { valor="bi-hdd",          label="HD/Storage" },
+        new { valor="bi-wifi",         label="Rede/WiFi" },
+        new { valor="bi-camera",       label="Câmera" },
+        new { valor="bi-headset",      label="Headset" },
+        new { valor="bi-tv",           label="TV" },
+        new { valor="bi-router",       label="Roteador" },
+        new { valor="bi-server",       label="Servidor" },
+        new { valor="bi-tools",        label="Ferramentas" },
+        new { valor="bi-briefcase",    label="Escritório" },
+        new { valor="bi-lamp",         label="Móvel" },
+        new { valor="bi-building",     label="Infraestrutura" },
+        new { valor="bi-car-front",    label="Veículo" },
+        new { valor="bi-box-seam",     label="Estoque" },
+        new { valor="bi-gear",         label="Equipamento" },
+        new { valor="bi-shield-check", label="Segurança" },
+        new { valor="bi-graph-up",     label="Financeiro" },
+        new { valor="bi-people",       label="RH" },
+        new { valor="bi-bookmark",     label="Geral" },
+    };
+}
+
+<div class="page-header">
+    <h4 class="page-title">Editar Categoria</h4>
+</div>
+
+<div class="form-card">
+    <form asp-controller="Categoria" asp-action="Edit" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Icone" id="Icone" />
+
+        <div class="field-group">
+            <label asp-for="Nome" class="field-label"></label>
+            <input asp-for="Nome" class="field-input" />
+            <span asp-validation-for="Nome" class="field-error"></span>
+        </div>
+        <div class="field-group">
+            <label asp-for="Descricao" class="field-label"></label>
+            <textarea asp-for="Descricao" class="field-input" rows="3"></textarea>
+        </div>
+
+        <div class="field-group">
+            <label class="field-label">Ícone <span style="font-weight:400;color:#aaa">(opcional)</span></label>
+            <div id="icone-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:8px;margin-top:4px">
+                @foreach (var ic in icones)
+                {
+                    <div class="icone-opt" data-valor="@ic.valor" title="@ic.label"
+                         style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 4px;border:1.5px solid #E5E4E0;border-radius:8px;cursor:pointer;font-size:11px;color:#666;background:#fff;transition:all .15s">
+                        <i class="bi @ic.valor" style="font-size:22px"></i>
+                        <span>@ic.label</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (isAdmin)
+        {
+            <div class="field-group">
+                <label class="field-label">Empresa</label>
+                @Html.DropDownList("EmpresaId", (Microsoft.AspNetCore.Mvc.Rendering.SelectList)ViewBag.Empresas, "-- Selecione --", new { @class = "field-input" })
+            </div>
+        }
+
+        <div class="form-actions">
+            <a href="@cancelUrl" class="btn-cancel">Cancelar</a>
+            <button type="submit" class="btn-purple">Salvar alterações</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+    var selectedIcone = "@Model.Icone";
+    function atualizarSelecao() {
+        document.querySelectorAll('.icone-opt').forEach(function(el) {
+            var ativo = el.dataset.valor === selectedIcone;
+            el.style.borderColor = ativo ? '#534AB7' : '#E5E4E0';
+            el.style.background  = ativo ? '#F0EEFF' : '#fff';
+            el.style.color       = ativo ? '#534AB7' : '#666';
+        });
+        document.getElementById('Icone').value = selectedIcone;
+    }
+    document.querySelectorAll('.icone-opt').forEach(function(el) {
+        el.addEventListener('click', function() {
+            selectedIcone = selectedIcone === el.dataset.valor ? '' : el.dataset.valor;
+            atualizarSelecao();
+        });
+    });
+    atualizarSelecao();
+</script>
+}

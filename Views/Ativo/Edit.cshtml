@@ -1,0 +1,93 @@
+@model SistemaAtivos.Models.Ativo
+@{
+    ViewBag.Title = "Editar Ativo";
+    var isAdmin = Context.Session.GetString("UsuarioTipo") == "Admin";
+    var empId   = Context.Session.GetInt32("EmpresaId");
+}
+
+<div class="page-header">
+    <h4 class="page-title">Editar Ativo</h4>
+</div>
+
+<div class="form-card">
+    <form asp-controller="Ativo" asp-action="Edit" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="alert-custom alert-danger-custom"></div>
+
+        <div class="form-row-2">
+            <div class="field-group">
+                <label asp-for="Nome" class="field-label"></label>
+                <input asp-for="Nome" class="field-input" />
+                <span asp-validation-for="Nome" class="field-error"></span>
+            </div>
+            <div class="field-group">
+                <label asp-for="NumeroSerie" class="field-label"></label>
+                <input asp-for="NumeroSerie" class="field-input" />
+            </div>
+        </div>
+        <div class="form-row-2">
+            <div class="field-group">
+                <label asp-for="Marca" class="field-label"></label>
+                <input asp-for="Marca" class="field-input" />
+            </div>
+            <div class="field-group">
+                <label asp-for="Modelo" class="field-label"></label>
+                <input asp-for="Modelo" class="field-input" />
+            </div>
+        </div>
+        <div class="form-row-2">
+            <div class="field-group">
+                <label class="field-label">Categoria</label>
+                @Html.DropDownList("CategoriaId", (Microsoft.AspNetCore.Mvc.Rendering.SelectList)ViewBag.Categorias, "-- Selecione --", new { @class = "field-input" })
+            </div>
+            <div class="field-group">
+                <label class="field-label">Responsável</label>
+                @Html.DropDownList("ColaboradorId", (Microsoft.AspNetCore.Mvc.Rendering.SelectList)ViewBag.Colaboradores, "-- Selecione --", new { @class = "field-input" })
+            </div>
+        </div>
+        <div class="form-row-2">
+            <div class="field-group">
+                <label asp-for="DataAquisicao" class="field-label"></label>
+                <input asp-for="DataAquisicao" type="date" class="field-input" />
+            </div>
+            <div class="field-group">
+                <label asp-for="Valor" class="field-label"></label>
+                <input asp-for="Valor" class="field-input" />
+            </div>
+        </div>
+        <div class="form-row-2">
+            <div class="field-group">
+                <label asp-for="Status" class="field-label"></label>
+                <select asp-for="Status" asp-items="Html.GetEnumSelectList<SistemaAtivos.Models.StatusAtivo>()" class="field-input"></select>
+            </div>
+            @if (isAdmin)
+            {
+                <div class="field-group">
+                    <label class="field-label">Empresa</label>
+                    @Html.DropDownList("EmpresaId", (Microsoft.AspNetCore.Mvc.Rendering.SelectList)ViewBag.EmpresaSelectList, "-- Selecione --", new { @class = "field-input" })
+                </div>
+            }
+            else
+            {
+                <input type="hidden" name="EmpresaId" value="@empId" />
+            }
+        </div>
+        <div class="field-group">
+            <label asp-for="Observacoes" class="field-label"></label>
+            <textarea asp-for="Observacoes" class="field-input" rows="3"></textarea>
+        </div>
+
+        <div class="form-actions">
+            @if (empId.HasValue)
+            {
+                <a asp-controller="Admin" asp-action="Empresa" asp-route-id="@empId" class="btn-cancel">Cancelar</a>
+            }
+            else
+            {
+                <a asp-controller="Ativo" asp-action="Index" class="btn-cancel">Cancelar</a>
+            }
+            <button type="submit" class="btn-purple">Salvar alterações</button>
+        </div>
+    </form>
+</div>

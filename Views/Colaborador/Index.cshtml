@@ -1,0 +1,49 @@
+@model IEnumerable<SistemaAtivos.Models.Colaborador>
+@{
+    ViewBag.Title = "Colaboradores";
+    var isAdmin = Context.Session.GetString("UsuarioTipo") == "Admin";
+}
+<div class="page-header">
+    <div><h4 class="page-title">Colaboradores</h4><p class="page-sub">@Model.Count() colaborador(es)</p></div>
+    <a asp-controller="Colaborador" asp-action="Create" class="btn-purple">+ Novo colaborador</a>
+</div>
+@if (!Model.Any())
+{
+    <div class="empty-state"><p>Nenhum colaborador cadastrado.</p></div>
+}
+else
+{
+    <div class="table-wrap"><table class="table-custom">
+        <thead><tr>
+            <th>Nome</th><th>Cargo</th><th>E-mail</th><th>Telefone</th>
+            @if (isAdmin) { <th>Empresa</th> }
+            <th>Ações</th>
+        </tr></thead>
+        <tbody>
+            @foreach (var col in Model)
+            {
+                <tr>
+                    <td style="font-weight:500">@col.Nome</td>
+                    <td>@(col.Cargo ?? "—")</td>
+                    <td>@(col.Email ?? "—")</td>
+                    <td>@(col.Telefone ?? "—")</td>
+                    @if (isAdmin) { <td>@(col.Empresa?.Nome ?? "—")</td> }
+                    <td>
+                        <div class="dropdown" style="display:inline-block">
+                            <button type="button" class="btn-xs-outline" data-bs-toggle="dropdown">&#8942;</button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" asp-controller="Colaborador" asp-action="Edit" asp-route-id="@col.Id">Editar</a></li>
+                                <li>
+                                    <form asp-controller="Colaborador" asp-action="Delete" asp-route-id="@col.Id" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="dropdown-delete-btn" onclick="return confirm('Excluir colaborador?')">Excluir</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table></div>
+}
