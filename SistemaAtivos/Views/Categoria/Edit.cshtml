@@ -65,11 +65,9 @@
                 @foreach (var ic in icones)
                 {
                     <div class="icone-opt" data-valor="@ic.valor"
-                         role="button" tabindex="0"
-                         aria-label="Ícone @ic.label"
                          title="@ic.label"
                          style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 4px;border:1.5px solid #E5E4E0;border-radius:8px;cursor:pointer;font-size:11px;color:#666;background:#fff;transition:all .15s">
-                        <i class="bi @ic.valor" style="font-size:22px" aria-hidden="true"></i>
+                        <i class="bi @ic.valor" style="font-size:22px"></i>
                         <span>@ic.label</span>
                     </div>
                 }
@@ -80,7 +78,7 @@
         if (isAdmin)
         {
             <div class="field-group">
-                <label class="field-label" for="EmpresaId">Empresa</label>
+                <label class="field-label">Empresa</label>
                 @Html.DropDownList("EmpresaId", (SelectList)ViewBag.Empresas, "-- Selecione --", new { @class = "field-input" })
             </div>
         }
@@ -110,13 +108,6 @@
         el.addEventListener('click', function () {
             selectedIcone = (selectedIcone === el.dataset.valor) ? '' : el.dataset.valor;
             atualizarSelecao();
-        });
-        el.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                selectedIcone = (selectedIcone === el.dataset.valor) ? '' : el.dataset.valor;
-                atualizarSelecao();
-            }
         });
     });
 

@@ -24,13 +24,13 @@
         }
 
         <div class="field-group">
-            <label class="field-label" for="Nome">Nome da empresa <span style="color:red" aria-hidden="true">*</span></label>
+            <label class="field-label">Nome da empresa <span style="color:red">*</span></label>
             @Html.TextBoxFor(m => m.Nome, new { @class = "field-input", placeholder = "Ex: TechNova", required = "required" })
             @Html.ValidationMessageFor(m => m.Nome, "", new { @class = "field-error" })
         </div>
 
         <div class="field-group">
-            <label class="field-label" for="Cor">Cor da marca</label>
+            <label class="field-label">Cor da marca</label>
             @Html.TextBoxFor(m => m.Cor, new { @type = "color", @class = "field-input field-color", value = "#534AB7" })
             <small style="font-size:11px;color:#aaa">Escolha uma cor para identificar a empresa</small>
         </div>

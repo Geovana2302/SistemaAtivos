@@ -14,24 +14,24 @@
 
         <div class="form-row-2">
             <div class="field-group">
-                <label class="field-label" for="Nome">Nome</label>
-                <input id="Nome" name="Nome" class="field-input" placeholder="Nome completo" required />
+                <label class="field-label">Nome</label>
+                <input name="Nome" class="field-input" placeholder="Nome completo" required />
             </div>
             <div class="field-group">
-                <label class="field-label" for="Email">E-mail</label>
-                <input id="Email" name="Email" type="email" class="field-input" placeholder="admin@sistema.com" required />
+                <label class="field-label">E-mail</label>
+                <input name="Email" type="email" class="field-input" placeholder="admin@sistema.com" required />
                 <span class="field-error">@Html.ValidationMessage("Email")</span>
             </div>
         </div>
 
         <div class="form-row-2">
             <div class="field-group">
-                <label class="field-label" for="novaSenha">Senha</label>
+                <label class="field-label">Senha</label>
                 <input id="novaSenha" name="senha" type="password" class="field-input" placeholder="Senha de acesso" required />
                 <span class="field-error">@Html.ValidationMessage("senha")</span>
             </div>
             <div class="field-group">
-                <label class="field-label" for="confirmarSenha">Confirmar Senha</label>
+                <label class="field-label">Confirmar Senha</label>
                 <input id="confirmarSenha" type="password" class="field-input" placeholder="Repita a senha" required />
                 <span id="senhaErro" class="field-error" style="display:none">As senhas nao coincidem.</span>
             </div>

@@ -37,12 +37,12 @@
         </p>
         <div class="form-row-2" style="border:1px solid #F0EFE8;border-radius:8px;padding:12px;margin-bottom:1rem">
             <div class="field-group" style="margin-bottom:0">
-                <label class="field-label" for="novaSenha">Nova Senha</label>
+                <label class="field-label">Nova Senha</label>
                 <input type="password" id="novaSenha" name="senha" class="field-input"
                        placeholder="Digite a nova senha" autocomplete="new-password" />
             </div>
             <div class="field-group" style="margin-bottom:0">
-                <label class="field-label" for="confirmarSenha">Confirmar Nova Senha</label>
+                <label class="field-label">Confirmar Nova Senha</label>
                 <input type="password" id="confirmarSenha" class="field-input"
                        placeholder="Repita a nova senha" autocomplete="new-password" />
                 <span id="senhaErro" class="field-error" style="display:none">As senhas não coincidem.</span>
@@ -57,7 +57,7 @@
                     @Html.DropDownList("Perfil", (SelectList)ViewBag.Perfis, new { @class = "field-input" })
                 </div>
                 <div class="field-group">
-                    <label class="field-label" for="EmpresaId">Empresa</label>
+                    <label class="field-label">Empresa</label>
                     @Html.DropDownList("EmpresaId", (SelectList)ViewBag.EmpresaSelectList,
                         "-- Selecione --", new { @class = "field-input" })
                 </div>
@@ -65,8 +65,8 @@
         }
 
         <div class="field-group">
-            <label class="field-label" for="senhaAdmin">Sua senha atual (para confirmar) <span style="color:red" aria-hidden="true">*</span></label>
-            <input type="password" id="senhaAdmin" name="senhaAdmin" class="field-input" placeholder="Digite sua senha atual" />
+            <label class="field-label">Sua senha atual (para confirmar) <span style="color:red">*</span></label>
+            <input type="password" name="senhaAdmin" class="field-input" placeholder="Digite sua senha atual" />
             <span class="field-error">@Html.ValidationMessage("senhaAdmin")</span>
         </div>
 
