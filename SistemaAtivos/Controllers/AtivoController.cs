@@ -30,11 +30,16 @@ namespace SistemaAtivos.Controllers
             return q;
         }
 
-        public ActionResult Index(int? empresaId, string ordem)
+        public ActionResult Index(int? empresaId, string ordem, string busca, int pagina = 1)
         {
+            const int itensPorPagina = 10;
             var q = AplicarFiltroEOrdem(GetQuery().Where(a => a.Status == StatusAtivo.Ativo), empresaId, ordem);
-            PopularViewBagLista(empresaId, ordem);
-            return View(q.ToList());
+            if (!string.IsNullOrWhiteSpace(busca))
+                q = q.Where(a => a.Nome.Contains(busca) || a.NumeroSerie.Contains(busca));
+            var total = q.Count();
+            var itens = q.Skip((pagina - 1) * itensPorPagina).Take(itensPorPagina).ToList();
+            PopularViewBagLista(empresaId, ordem, busca, pagina, total, itensPorPagina);
+            return View(itens);
         }
 
         public ActionResult Detalhes(int id)
@@ -175,11 +180,16 @@ namespace SistemaAtivos.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult Inativos(int? empresaId, string ordem)
+        public ActionResult Inativos(int? empresaId, string ordem, string busca, int pagina = 1)
         {
+            const int itensPorPagina = 10;
             var q = AplicarFiltroEOrdem(GetQuery().Where(a => a.Status == StatusAtivo.Inativo), empresaId, ordem);
-            PopularViewBagLista(empresaId, ordem);
-            return View(q.ToList());
+            if (!string.IsNullOrWhiteSpace(busca))
+                q = q.Where(a => a.Nome.Contains(busca) || a.NumeroSerie.Contains(busca));
+            var total = q.Count();
+            var itens = q.Skip((pagina - 1) * itensPorPagina).Take(itensPorPagina).ToList();
+            PopularViewBagLista(empresaId, ordem, busca, pagina, total, itensPorPagina);
+            return View(itens);
         }
 
         private IQueryable<Ativo> AplicarFiltroEOrdem(IQueryable<Ativo> q, int? empresaId, string ordem)
@@ -202,11 +212,16 @@ namespace SistemaAtivos.Controllers
             return q;
         }
 
-        private void PopularViewBagLista(int? empresaId, string ordem)
+        private void PopularViewBagLista(int? empresaId, string ordem, string busca = null, int pagina = 1, int total = 0, int itensPorPagina = 10)
         {
-            ViewBag.Empresas = db.Empresas.ToList();
-            ViewBag.EmpresaFiltro = empresaId;
-            ViewBag.OrdemAtual = ordem ?? "recente";
+            ViewBag.Empresas        = db.Empresas.ToList();
+            ViewBag.EmpresaFiltro   = empresaId;
+            ViewBag.OrdemAtual      = ordem ?? "recente";
+            ViewBag.Busca           = busca;
+            ViewBag.PaginaAtual     = pagina;
+            ViewBag.TotalItens      = total;
+            ViewBag.ItensPorPagina  = itensPorPagina;
+            ViewBag.TotalPaginas    = (int)Math.Ceiling((double)total / itensPorPagina);
         }
 
         private void PopularDropdowns(Ativo ativo = null)

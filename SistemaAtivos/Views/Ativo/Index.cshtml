@@ -2,7 +2,6 @@
 @{
     ViewBag.Title = "Ativos";
 
-    // 1. Pegamos as informações do usuário logado
     var tipoUsuario = Session["UsuarioTipo"]?.ToString();
     var isAdmin = (tipoUsuario == "Admin" || tipoUsuario == "Admin Chefe");
     var empresaIdLogada = Session["EmpresaId"] as int?;
@@ -10,15 +9,36 @@
     var empresas = ViewBag.Empresas as List<SistemaAtivos.Models.Empresa>;
     var empresaFiltro = ViewBag.EmpresaFiltro as int?;
     var ordemAtual = ViewBag.OrdemAtual as string ?? "recente";
+    var buscaAtual = ViewBag.Busca as string ?? "";
+    var paginaAtual = (int)(ViewBag.PaginaAtual ?? 1);
+    var totalPaginas = (int)(ViewBag.TotalPaginas ?? 1);
+    var totalItens = (int)(ViewBag.TotalItens ?? 0);
 }
 
 <div class="page-header">
     <div>
         <h4 class="page-title">Ativos</h4>
-        <p class="page-sub">@Model.Count() ativo(s) com status Ativo</p>
+        <p class="page-sub">
+            @totalItens ativo(s) encontrado(s)@(string.IsNullOrEmpty(buscaAtual) ? "" : " para \"" + buscaAtual + "\"")
+        </p>
     </div>
     @Html.ActionLink("+ Novo Ativo", "Create", null, new { @class = "btn-purple" })
 </div>
+
+<form method="get" action="@Url.Action("Index")" style="margin-bottom:1rem">
+    <input type="hidden" name="empresaId" value="@empresaFiltro" />
+    <input type="hidden" name="ordem" value="@ordemAtual" />
+    <div style="display:flex;gap:8px;max-width:480px">
+        <input type="text" name="busca" value="@buscaAtual"
+               class="field-input" placeholder="Buscar por nome ou número de série..."
+               aria-label="Buscar ativo" style="flex:1" />
+        <button type="submit" class="btn-purple" aria-label="Pesquisar">Buscar</button>
+        @if (!string.IsNullOrEmpty(buscaAtual))
+        {
+            <a href="@Url.Action("Index", new { empresaId = empresaFiltro, ordem = ordemAtual })" class="btn-cancel" aria-label="Limpar busca">Limpar</a>
+        }
+    </div>
+</form>
 
 <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
     <span style="font-size:12px;color:#888">Filtrar:</span>
@@ -124,4 +144,26 @@ else
             </tbody>
         </table>
     </div>
+}
+
+@if (totalPaginas > 1)
+{
+    <nav aria-label="Navegação de páginas" style="display:flex;justify-content:center;gap:4px;margin-top:1.25rem;flex-wrap:wrap">
+        @if (paginaAtual > 1)
+        {
+            <a href="@Url.Action("Index", new { empresaId = empresaFiltro, ordem = ordemAtual, busca = buscaAtual, pagina = paginaAtual - 1 })"
+               class="btn-outline-sm" aria-label="Página anterior">&larr;</a>
+        }
+        @for (int p = 1; p <= totalPaginas; p++)
+        {
+            <a href="@Url.Action("Index", new { empresaId = empresaFiltro, ordem = ordemAtual, busca = buscaAtual, pagina = p })"
+               class="btn-outline-sm @(p == paginaAtual ? "filter-chip-active" : "")"
+               aria-label="Página @p" aria-current="@(p == paginaAtual ? "page" : null)">@p</a>
+        }
+        @if (paginaAtual < totalPaginas)
+        {
+            <a href="@Url.Action("Index", new { empresaId = empresaFiltro, ordem = ordemAtual, busca = buscaAtual, pagina = paginaAtual + 1 })"
+               class="btn-outline-sm" aria-label="Próxima página">&rarr;</a>
+        }
+    </nav>
 }
