@@ -8,7 +8,7 @@ namespace SistemaAtivos.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Nome Ã© obrigatÃ³rio")]
+        [Required(ErrorMessage = "Nome é obrigatório")]
         [StringLength(100)]
         public string Nome { get; set; }
 
@@ -17,8 +17,8 @@ namespace SistemaAtivos.Models
         [ForeignKey("EmpresaId")]
         public virtual Empresa Empresa { get; set; }
 
-        [StringLength(100, ErrorMessage = "Email deve ter no mÃ¡ximo 100 caracteres")]
-        [EmailAddress(ErrorMessage = "Email invÃ¡lido")]
+        [StringLength(100, ErrorMessage = "Email deve ter no máximo 100 caracteres")]
+        [EmailAddress(ErrorMessage = "Email inválido")]
         public string Email { get; set; }
 
         [StringLength(15, MinimumLength = 14, ErrorMessage = "Telefone deve estar no formato (99) 9999-9999 ou (99) 99999-9999")]

@@ -8,7 +8,7 @@ namespace SistemaAtivos.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Nome Ã© obrigatÃ³rio")]
+        [Required(ErrorMessage = "Nome é obrigatório")]
         [StringLength(100)]
         [Display(Name = "Categoria")]
         public string Nome { get; set; }
