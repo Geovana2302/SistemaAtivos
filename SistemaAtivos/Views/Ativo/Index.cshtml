@@ -151,22 +151,22 @@ else
             </tbody>
         </table>
     </div>
-
-    <div id="tabela-ajax" class="table-wrap">
-        <table class="table-custom">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Categoria</th>
-                    @if (isAdmin) { <th>Empresa</th> }
-                    <th>Status</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="tbody-ajax"></tbody>
-        </table>
-    </div>
 }
+
+<div id="tabela-ajax" class="table-wrap" style="display:none">
+    <table class="table-custom">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Categoria</th>
+                @if (isAdmin) { <th>Empresa</th> }
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tbody-ajax"></tbody>
+    </table>
+</div>
 
 @if (totalPaginas > 1)
 {
@@ -263,7 +263,7 @@ else
             btnLimpar.style.display = termo ? 'block' : 'none';
 
             if (!termo) {
-                tabelaOrig.style.display = '';
+                if (tabelaOrig) tabelaOrig.style.display = '';
                 tabelaAjax.style.display = 'none';
                 if (paginacao) paginacao.style.display = '';
                 contador.textContent = totalOriginal + ' ativo(s) encontrado(s)';
@@ -276,7 +276,7 @@ else
             if (ordemAtual)    params += '&ordem=' + ordemAtual;
 
             $.getJSON(urlBuscar + params, function (itens) {
-                tabelaOrig.style.display = 'none';
+                if (tabelaOrig) tabelaOrig.style.display = 'none';
                 if (paginacao) paginacao.style.display = 'none';
 
                 if (itens.length === 0) {
