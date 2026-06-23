@@ -32,35 +32,25 @@ namespace SistemaAtivos.Controllers
 
         public ActionResult Index(int? empresaId, string ordem, string busca, int pagina = 1)
         {
-            const int itensPorPagina = 10;
-            var q = AplicarFiltroEOrdem(GetQuery().Where(a => a.Status == StatusAtivo.Ativo), empresaId, ordem);
-            if (!string.IsNullOrWhiteSpace(busca))
-                q = q.Where(a => a.Nome.Contains(busca) || a.NumeroSerie.Contains(busca) || a.Categoria.Nome.Contains(busca) || a.Empresa.Nome.Contains(busca));
-            var total = q.Count();
-            var itens = q.Skip((pagina - 1) * itensPorPagina).Take(itensPorPagina).ToList();
-            PopularViewBagLista(empresaId, ordem, busca, pagina, total, itensPorPagina);
-            return View(itens);
-        }
+            const int itensPorPagina = 20;
+            var baseQ = AplicarFiltroEOrdem(GetQuery(), empresaId, ordem);
 
-        public JsonResult BuscarAtivos(string termo, int? empresaId, string ordem)
-        {
-            var q = AplicarFiltroEOrdem(GetQuery().Where(a => a.Status == StatusAtivo.Ativo), empresaId, ordem);
-            if (!string.IsNullOrWhiteSpace(termo))
-                q = q.Where(a => a.Nome.Contains(termo) || a.NumeroSerie.Contains(termo) || a.Categoria.Nome.Contains(termo) || a.Empresa.Nome.Contains(termo));
-            var itens = q.ToList().Select(a => new
-            {
-                a.Id,
-                a.Nome,
-                NumeroSerie = a.NumeroSerie ?? "",
-                Categoria   = a.Categoria?.Nome ?? "-",
-                Empresa     = a.Empresa?.Nome ?? "",
-                EmpresaCor  = a.Empresa?.Cor ?? "#ccc",
-                Status      = a.Status.ToString(),
-                UrlVer      = Url.Action("Detalhes", "Ativo", new { id = a.Id }),
-                UrlEditar   = Url.Action("Edit", "Ativo", new { id = a.Id }),
-                PodeExcluir = IsAdmin() || (Session["UsuarioTipo"]?.ToString() == "Gestor" && a.EmpresaId == GetEmpresaId())
-            });
-            return Json(itens, JsonRequestBehavior.AllowGet);
+            if (!string.IsNullOrWhiteSpace(busca))
+                baseQ = baseQ.Where(a =>
+                    a.Nome.Contains(busca) ||
+                    a.NumeroSerie.Contains(busca) ||
+                    a.Categoria.Nome.Contains(busca) ||
+                    a.Empresa.Nome.Contains(busca) ||
+                    a.Marca.Contains(busca) ||
+                    a.Modelo.Contains(busca));
+
+            var ativos   = baseQ.Where(a => a.Status == StatusAtivo.Ativo).ToList();
+            var inativos = baseQ.Where(a => a.Status != StatusAtivo.Ativo).ToList();
+
+            PopularViewBagLista(empresaId, ordem, busca, pagina, ativos.Count, itensPorPagina);
+            ViewBag.Inativos      = inativos;
+            ViewBag.TotalInativos = inativos.Count;
+            return View(ativos);
         }
 
         public ActionResult Detalhes(int id)

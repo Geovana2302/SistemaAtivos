@@ -1,19 +1,353 @@
 ﻿@model IEnumerable<SistemaAtivos.Models.Ativo>
 @{
     ViewBag.Title = "Ativos";
-
-    var tipoUsuario = Session["UsuarioTipo"]?.ToString();
-    var isAdmin = (tipoUsuario == "Admin" || tipoUsuario == "Admin Chefe");
+    var tipoUsuario   = Session["UsuarioTipo"]?.ToString();
+    var isAdmin       = (tipoUsuario == "Admin" || tipoUsuario == "Admin Chefe");
     var empresaIdLogada = Session["EmpresaId"] as int?;
-
-    var empresas = ViewBag.Empresas as List<SistemaAtivos.Models.Empresa>;
+    var empresas      = ViewBag.Empresas as List<SistemaAtivos.Models.Empresa>;
     var empresaFiltro = ViewBag.EmpresaFiltro as int?;
-    var ordemAtual = ViewBag.OrdemAtual as string ?? "recente";
-    var buscaAtual = ViewBag.Busca as string ?? "";
-    var paginaAtual = (int)(ViewBag.PaginaAtual ?? 1);
-    var totalPaginas = (int)(ViewBag.TotalPaginas ?? 1);
-    var totalItens = (int)(ViewBag.TotalItens ?? 0);
+    var ordemAtual    = ViewBag.OrdemAtual as string ?? "recente";
+    var buscaAtual    = ViewBag.Busca as string ?? "";
+    var totalItens    = (int)(ViewBag.TotalItens ?? 0);
+    var inativos      = ViewBag.Inativos as List<SistemaAtivos.Models.Ativo> ?? new List<SistemaAtivos.Models.Ativo>();
+    var totalInativos = (int)(ViewBag.TotalInativos ?? 0);
 }
+
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Ativos</h4>
+        <p class="page-sub" id="resultado-contador">
+            <span id="cont-ativos">@totalItens</span> ativo(s) e <span id="cont-inativos">@totalInativos</span> inativo(s)
+        </p>
+    </div>
+    @Html.ActionLink("+ Novo Ativo", "Create", null, new { @class = "btn-purple" })
+</div>
+
+{{-- Barra de busca unificada --}}
+<div style="margin-bottom:1rem">
+    <div style="position:relative;max-width:520px">
+        <i class="bi bi-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#aaa;font-size:14px;pointer-events:none" aria-hidden="true"></i>
+        <input type="text" id="busca-live"
+               value="@buscaAtual"
+               class="field-input"
+               placeholder="Buscar em todas as abas: nome, série, categoria, empresa..."
+               aria-label="Buscar ativo"
+               autocomplete="off"
+               style="padding-left:34px;padding-right:36px;height:38px" />
+        <button id="btn-limpar-busca" type="button" aria-label="Limpar busca"
+                style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;font-size:16px;line-height:1;cursor:pointer">
+            <i class="bi bi-x-circle-fill" aria-hidden="true"></i>
+        </button>
+    </div>
+</div>
+
+{{-- Filtros de empresa e ordem --}}
+<div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+    <span style="font-size:12px;color:#888">Filtrar:</span>
+    <a href="@Url.Action("Index", new { ordem = ordemAtual })"
+       class="filter-chip @(empresaFiltro == null ? "filter-chip-active" : "")">Todas</a>
+    @if (isAdmin && empresas != null)
+    {
+        foreach (var emp in empresas)
+        {
+            <a href="@Url.Action("Index", new { empresaId = emp.Id, ordem = ordemAtual })"
+               class="filter-chip @(empresaFiltro == emp.Id ? "filter-chip-active" : "")"
+               style="@(empresaFiltro == emp.Id ? "background:" + emp.Cor + ";color:#fff;border-color:" + emp.Cor : "")">
+                <span class="filter-dot" style="background:@emp.Cor"></span>@emp.Nome
+            </a>
+        }
+    }
+    <span style="font-size:12px;color:#888;margin-left:12px">Ordenar:</span>
+    <a href="@Url.Action("Index", new { empresaId = empresaFiltro, ordem = "recente" })"
+       class="filter-chip @(ordemAtual == "recente" ? "filter-chip-active" : "")">Mais recente</a>
+    <a href="@Url.Action("Index", new { empresaId = empresaFiltro, ordem = "antigo" })"
+       class="filter-chip @(ordemAtual == "antigo" ? "filter-chip-active" : "")">Mais antigo</a>
+    @if (isAdmin)
+    {
+        <a href="@Url.Action("Index", new { empresaId = empresaFiltro, ordem = "empresa" })"
+           class="filter-chip @(ordemAtual == "empresa" ? "filter-chip-active" : "")">Por empresa</a>
+    }
+</div>
+
+{{-- Abas --}}
+<div style="display:flex;gap:0;border-bottom:2px solid #E5E4E0;margin-bottom:1rem">
+    <button id="tab-btn-ativos" class="tab-btn tab-btn-active" aria-selected="true" aria-controls="tab-ativos" onclick="mudarAba('ativos')">
+        Ativos <span id="badge-ativos" class="tab-badge">@totalItens</span>
+    </button>
+    <button id="tab-btn-inativos" class="tab-btn" aria-selected="false" aria-controls="tab-inativos" onclick="mudarAba('inativos')">
+        Inativos <span id="badge-inativos" class="tab-badge">@totalInativos</span>
+    </button>
+</div>
+
+<p id="sem-resultados" style="display:none;font-size:13px;color:#aaa;margin-bottom:1rem">
+    Nenhum resultado para "<strong id="termo-sem-resultado"></strong>" em nenhuma aba.
+</p>
+
+{{-- Tabela de Ativos --}}
+<div id="tab-ativos" role="tabpanel">
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <p style="font-size:32px;margin-bottom:8px">📦</p>
+            <p style="font-weight:500;color:#555;margin-bottom:4px">Nenhum ativo cadastrado</p>
+            <p style="font-size:12px;color:#aaa;margin-bottom:1rem">Cadastre o primeiro ativo para começar.</p>
+            @Html.ActionLink("+ Novo Ativo", "Create", null, new { @class = "btn-purple" })
+        </div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Categoria</th>
+                        @if (isAdmin) { <th>Empresa</th> }
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-ativos">
+                    @foreach (var ativo in Model)
+                    {
+                        var d = (ativo.Nome + " " + ativo.NumeroSerie + " " + (ativo.Categoria?.Nome ?? "") + " " + (ativo.Empresa?.Nome ?? "") + " " + ativo.Marca + " " + ativo.Modelo).ToLower();
+                        <tr class="linha-ativo" data-busca="@d">
+                            <td>
+                                <p style="font-weight:500;margin:0" class="cb-nome">@ativo.Nome</p>
+                                <p style="font-size:11px;color:#888;margin:0" class="cb-serie">@ativo.NumeroSerie</p>
+                            </td>
+                            <td class="cb-cat">@(ativo.Categoria?.Nome ?? "-")</td>
+                            @if (isAdmin)
+                            {
+                                <td>
+                                    @if (ativo.Empresa != null)
+                                    {
+                                        <span class="filter-dot" style="background:@ativo.Empresa.Cor"></span>@ativo.Empresa.Nome
+                                    }
+                                    else { <text>-</text> }
+                                </td>
+                            }
+                            <td><span class="status-badge status-ativo">Ativo</span></td>
+                            <td>
+                                <div style="display:flex;gap:4px">
+                                    @Html.ActionLink("Ver", "Detalhes", new { id = ativo.Id }, new { @class = "btn-xs-outline" })
+                                    <div class="dropdown" style="display:inline-block">
+                                        <button type="button" class="btn-xs-outline" data-bs-toggle="dropdown" aria-expanded="false">&#8942;</button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>@Html.ActionLink("Editar", "Edit", new { id = ativo.Id }, new { @class = "dropdown-item" })</li>
+                                            @if (isAdmin || (tipoUsuario == "Gestor" && ativo.EmpresaId == empresaIdLogada))
+                                            {
+                                                <li>
+                                                    @using (Html.BeginForm("Delete", "Ativo", new { id = ativo.Id }, FormMethod.Post))
+                                                    {
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Excluir este ativo?')">Excluir</button>
+                                                    }
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+{{-- Tabela de Inativos --}}
+<div id="tab-inativos" role="tabpanel" style="display:none">
+    @if (!inativos.Any())
+    {
+        <div class="empty-state">
+            <p style="font-size:32px;margin-bottom:8px">✅</p>
+            <p style="font-weight:500;color:#555;margin-bottom:4px">Nenhum ativo inativo</p>
+            <p style="font-size:12px;color:#aaa">Todos os ativos estão com status Ativo.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Categoria</th>
+                        @if (isAdmin) { <th>Empresa</th> }
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-inativos">
+                    @foreach (var ativo in inativos)
+                    {
+                        var d = (ativo.Nome + " " + ativo.NumeroSerie + " " + (ativo.Categoria?.Nome ?? "") + " " + (ativo.Empresa?.Nome ?? "") + " " + ativo.Marca + " " + ativo.Modelo).ToLower();
+                        var statusClass = ativo.Status == SistemaAtivos.Models.StatusAtivo.EmManutencao ? "status-emmanutencao" : "status-inativo";
+                        var statusLabel = ativo.Status == SistemaAtivos.Models.StatusAtivo.EmManutencao ? "Em Manutenção" : "Inativo";
+                        <tr class="linha-inativo" data-busca="@d">
+                            <td>
+                                <p style="font-weight:500;margin:0" class="cb-nome">@ativo.Nome</p>
+                                <p style="font-size:11px;color:#888;margin:0" class="cb-serie">@ativo.NumeroSerie</p>
+                            </td>
+                            <td class="cb-cat">@(ativo.Categoria?.Nome ?? "-")</td>
+                            @if (isAdmin)
+                            {
+                                <td>
+                                    @if (ativo.Empresa != null)
+                                    {
+                                        <span class="filter-dot" style="background:@ativo.Empresa.Cor"></span>@ativo.Empresa.Nome
+                                    }
+                                    else { <text>-</text> }
+                                </td>
+                            }
+                            <td><span class="status-badge @statusClass">@statusLabel</span></td>
+                            <td>
+                                <div style="display:flex;gap:4px">
+                                    @Html.ActionLink("Ver", "Detalhes", new { id = ativo.Id }, new { @class = "btn-xs-outline" })
+                                    <div class="dropdown" style="display:inline-block">
+                                        <button type="button" class="btn-xs-outline" data-bs-toggle="dropdown" aria-expanded="false">&#8942;</button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>@Html.ActionLink("Editar", "Edit", new { id = ativo.Id }, new { @class = "dropdown-item" })</li>
+                                            @if (isAdmin || (tipoUsuario == "Gestor" && ativo.EmpresaId == empresaIdLogada))
+                                            {
+                                                <li>
+                                                    @using (Html.BeginForm("Delete", "Ativo", new { id = ativo.Id }, FormMethod.Post))
+                                                    {
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Excluir este ativo?')">Excluir</button>
+                                                    }
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section scripts {
+<style>
+    .tab-btn {
+        padding: 8px 18px;
+        border: none;
+        background: transparent;
+        font-size: 13px;
+        font-weight: 500;
+        color: #888;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        transition: color .15s, border-color .15s;
+    }
+    .tab-btn-active {
+        color: #534AB7;
+        border-bottom-color: #534AB7;
+    }
+    .tab-badge {
+        display: inline-block;
+        background: #F0EFE8;
+        color: #666;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 1px 7px;
+        border-radius: 10px;
+        margin-left: 4px;
+        min-width: 22px;
+        text-align: center;
+        transition: background .15s;
+    }
+    .tab-btn-active .tab-badge { background: #EEEDFE; color: #534AB7; }
+    mark.busca-highlight { background: #FFF176; color: #1a1a1a; border-radius: 2px; padding: 0 1px; font-weight: 600; }
+</style>
+<script>
+(function () {
+    var abaAtual = 'ativos';
+
+    function mudarAba(aba) {
+        abaAtual = aba;
+        document.getElementById('tab-ativos').style.display   = aba === 'ativos'   ? '' : 'none';
+        document.getElementById('tab-inativos').style.display = aba === 'inativos' ? '' : 'none';
+        document.getElementById('tab-btn-ativos').classList.toggle('tab-btn-active',   aba === 'ativos');
+        document.getElementById('tab-btn-inativos').classList.toggle('tab-btn-active', aba === 'inativos');
+        document.getElementById('tab-btn-ativos').setAttribute('aria-selected',   aba === 'ativos');
+        document.getElementById('tab-btn-inativos').setAttribute('aria-selected', aba === 'inativos');
+    }
+    window.mudarAba = mudarAba;
+
+    function escapar(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+    function destacar(el, termo) {
+        el.querySelectorAll('mark.busca-highlight').forEach(function(m){ m.outerHTML = m.textContent; });
+        if (!termo) return;
+        var re = new RegExp('(' + escapar(termo) + ')', 'gi');
+        el.querySelectorAll('.cb-nome, .cb-serie, .cb-cat').forEach(function(c){
+            c.innerHTML = c.textContent.replace(re, '<mark class="busca-highlight">$1</mark>');
+        });
+    }
+
+    function filtrar() {
+        var termo = document.getElementById('busca-live').value.trim().toLowerCase();
+        var btnX  = document.getElementById('btn-limpar-busca');
+        btnX.style.display = termo ? 'block' : 'none';
+
+        var linhasAtivos   = Array.from(document.querySelectorAll('.linha-ativo'));
+        var linhasInativos = Array.from(document.querySelectorAll('.linha-inativo'));
+
+        var vA = 0, vI = 0;
+
+        linhasAtivos.forEach(function(tr) {
+            var ok = !termo || (tr.getAttribute('data-busca') || '').indexOf(termo) !== -1;
+            tr.style.display = ok ? '' : 'none';
+            destacar(tr, ok ? termo : '');
+            if (ok) vA++;
+        });
+
+        linhasInativos.forEach(function(tr) {
+            var ok = !termo || (tr.getAttribute('data-busca') || '').indexOf(termo) !== -1;
+            tr.style.display = ok ? '' : 'none';
+            destacar(tr, ok ? termo : '');
+            if (ok) vI++;
+        });
+
+        document.getElementById('badge-ativos').textContent   = vA;
+        document.getElementById('badge-inativos').textContent = vI;
+        document.getElementById('cont-ativos').textContent    = vA;
+        document.getElementById('cont-inativos').textContent  = vI;
+
+        var semRes = document.getElementById('sem-resultados');
+        if (termo && vA === 0 && vI === 0) {
+            semRes.style.display = 'block';
+            document.getElementById('termo-sem-resultado').textContent = document.getElementById('busca-live').value.trim();
+        } else {
+            semRes.style.display = 'none';
+        }
+
+        // Muda automaticamente para a aba que tem resultados
+        if (termo) {
+            if (vA === 0 && vI > 0) mudarAba('inativos');
+            else if (vI === 0 && vA > 0) mudarAba('ativos');
+        }
+    }
+
+    document.getElementById('busca-live').addEventListener('input', filtrar);
+    document.getElementById('btn-limpar-busca').addEventListener('click', function () {
+        document.getElementById('busca-live').value = '';
+        document.getElementById('busca-live').focus();
+        filtrar();
+    });
+
+    filtrar();
+})();
+</script>
+}
+
 
 <div class="page-header">
     <div>
@@ -84,7 +418,7 @@
 }
 else
 {
-    <div id="tabela-original" class="table-wrap">
+    <div class="table-wrap">
         <table class="table-custom">
             <thead>
                 <tr>
@@ -153,21 +487,6 @@ else
     </div>
 }
 
-<div id="tabela-ajax" class="table-wrap" style="display:none">
-    <table class="table-custom">
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Categoria</th>
-                @if (isAdmin) { <th>Empresa</th> }
-                <th>Status</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody id="tbody-ajax"></tbody>
-    </table>
-</div>
-
 @if (totalPaginas > 1)
 {
     <nav id="paginacao" aria-label="Navegação de páginas" style="display:flex;justify-content:center;gap:4px;margin-top:1.25rem;flex-wrap:wrap">
@@ -193,118 +512,94 @@ else
 @section scripts {
 <style>
     mark.busca-highlight {
-        background: #EDE9FF;
-        color: #3C3489;
-        border-radius: 3px;
-        padding: 0 2px;
+        background: #FFF176;
+        color: #1a1a1a;
+        border-radius: 2px;
+        padding: 0 1px;
         font-weight: 600;
     }
-    #tabela-ajax { display: none; }
 </style>
 <script>
     (function () {
-        var input        = document.getElementById('busca-live');
-        var btnLimpar    = document.getElementById('btn-limpar-busca');
-        var contador     = document.getElementById('resultado-contador');
-        var semResult    = document.getElementById('sem-resultados');
-        var termoSpan    = document.getElementById('termo-sem-resultado');
-        var paginacao    = document.getElementById('paginacao');
-        var tabelaOrig   = document.getElementById('tabela-original');
-        var tabelaAjax   = document.getElementById('tabela-ajax');
-        var tbodyAjax    = document.getElementById('tbody-ajax');
+        var input      = document.getElementById('busca-live');
+        var btnLimpar  = document.getElementById('btn-limpar-busca');
+        var contador   = document.getElementById('resultado-contador');
+        var semResult  = document.getElementById('sem-resultados');
+        var termoSpan  = document.getElementById('termo-sem-resultado');
+        var paginacao  = document.getElementById('paginacao');
+        var linhas     = Array.from(document.querySelectorAll('.linha-ativo'));
 
-        var isAdmin      = @(isAdmin ? "true" : "false");
-        var empresaFiltro = @(empresaFiltro.HasValue ? empresaFiltro.Value.ToString() : "null");
-        var ordemAtual   = '@ordemAtual';
         var totalOriginal = @totalItens;
-        var urlBuscar    = '@Url.Action("BuscarAtivos", "Ativo")';
-        var debounceTimer;
 
         function escaparRegex(str) {
             return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
 
-        function destacar(texto, termo) {
-            if (!termo) return $('<span>').text(texto).html();
-            var regex = new RegExp('(' + escaparRegex(termo) + ')', 'gi');
-            return texto.replace(regex, '<mark class="busca-highlight">$1</mark>');
-        }
-
-        function renderLinhas(itens, termo) {
-            tbodyAjax.innerHTML = '';
-            itens.forEach(function (a) {
-                var statusClass = 'status-ativo';
-                if (a.Status === 'Inativo') statusClass = 'status-inativo';
-                if (a.Status === 'EmManutencao') statusClass = 'status-emmanutencao';
-
-                var acoes = '<a href="' + a.UrlVer + '" class="btn-xs-outline">Ver</a>';
-                if (a.PodeExcluir) {
-                    acoes += ' <a href="' + a.UrlEditar + '" class="btn-xs-outline">Editar</a>';
-                }
-
-                var empresaCol = isAdmin
-                    ? '<td><span class="filter-dot" style="background:' + a.EmpresaCor + '"></span> ' + destacar(a.Empresa, termo) + '</td>'
-                    : '';
-
-                var tr = '<tr>' +
-                    '<td><p style="font-weight:500;margin:0">' + destacar(a.Nome, termo) + '</p>' +
-                    '<p style="font-size:11px;color:#888;margin:0">' + destacar(a.NumeroSerie, termo) + '</p></td>' +
-                    '<td>' + destacar(a.Categoria, termo) + '</td>' +
-                    empresaCol +
-                    '<td><span class="status-badge ' + statusClass + '">Ativo</span></td>' +
-                    '<td><div style="display:flex;gap:4px">' + acoes + '</div></td>' +
-                    '</tr>';
-                tbodyAjax.insertAdjacentHTML('beforeend', tr);
+        function destacar(elemento, termo) {
+            if (!termo) {
+                elemento.querySelectorAll('mark.busca-highlight').forEach(function (m) {
+                    m.outerHTML = m.textContent;
+                });
+                return;
+            }
+            var campos = elemento.querySelectorAll('.campo-busca-nome, .campo-busca-serie, .campo-busca-categoria');
+            campos.forEach(function (el) {
+                var texto = el.textContent;
+                var regex = new RegExp('(' + escaparRegex(termo) + ')', 'gi');
+                el.innerHTML = texto.replace(regex, '<mark class="busca-highlight">$1</mark>');
             });
         }
 
-        function buscar() {
-            var termo = input.value.trim();
+        function filtrar() {
+            var termo = input.value.trim().toLowerCase();
+
             btnLimpar.style.display = termo ? 'block' : 'none';
 
             if (!termo) {
-                if (tabelaOrig) tabelaOrig.style.display = '';
-                tabelaAjax.style.display = 'none';
-                if (paginacao) paginacao.style.display = '';
+                linhas.forEach(function (tr) {
+                    tr.style.display = '';
+                    destacar(tr, '');
+                });
                 contador.textContent = totalOriginal + ' ativo(s) encontrado(s)';
                 semResult.style.display = 'none';
+                if (paginacao) paginacao.style.display = '';
                 return;
             }
 
-            var params = '?termo=' + encodeURIComponent(termo);
-            if (empresaFiltro) params += '&empresaId=' + empresaFiltro;
-            if (ordemAtual)    params += '&ordem=' + ordemAtual;
-
-            $.getJSON(urlBuscar + params, function (itens) {
-                if (tabelaOrig) tabelaOrig.style.display = 'none';
-                if (paginacao) paginacao.style.display = 'none';
-
-                if (itens.length === 0) {
-                    tabelaAjax.style.display = 'none';
-                    semResult.style.display = 'block';
-                    termoSpan.textContent = termo;
-                    contador.textContent = '0 ativo(s) encontrado(s) para "' + termo + '"';
+            var visiveis = 0;
+            linhas.forEach(function (tr) {
+                var data = tr.getAttribute('data-busca') || '';
+                if (data.indexOf(termo) !== -1) {
+                    tr.style.display = '';
+                    destacar(tr, termo);
+                    visiveis++;
                 } else {
-                    tabelaAjax.style.display = '';
-                    semResult.style.display = 'none';
-                    contador.textContent = itens.length + ' ativo(s) encontrado(s) para "' + termo + '"';
-                    renderLinhas(itens, termo);
+                    tr.style.display = 'none';
+                    destacar(tr, '');
                 }
             });
+
+            contador.textContent = visiveis + ' ativo(s) encontrado(s) para "' + input.value.trim() + '"';
+
+            if (visiveis === 0) {
+                semResult.style.display = 'block';
+                termoSpan.textContent = input.value.trim();
+            } else {
+                semResult.style.display = 'none';
+            }
+
+            if (paginacao) paginacao.style.display = termo ? 'none' : '';
         }
 
-        input.addEventListener('input', function () {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(buscar, 200);
-        });
+        input.addEventListener('input', filtrar);
 
         btnLimpar.addEventListener('click', function () {
             input.value = '';
             input.focus();
-            buscar();
+            filtrar();
         });
 
-        buscar();
+        filtrar();
     })();
 </script>
 }
