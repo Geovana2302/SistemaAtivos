@@ -23,7 +23,6 @@
     @Html.ActionLink("+ Novo Ativo", "Create", null, new { @class = "btn-purple" })
 </div>
 
-{{-- Barra de busca unificada --}}
 <div style="margin-bottom:1rem">
     <div style="position:relative;max-width:520px">
         <i class="bi bi-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#aaa;font-size:14px;pointer-events:none" aria-hidden="true"></i>
@@ -41,7 +40,6 @@
     </div>
 </div>
 
-{{-- Filtros de empresa e ordem --}}
 <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
     <span style="font-size:12px;color:#888">Filtrar:</span>
     <a href="@Url.Action("Index", new { ordem = ordemAtual })"
@@ -69,7 +67,6 @@
     }
 </div>
 
-{{-- Abas --}}
 <div style="display:flex;gap:0;border-bottom:2px solid #E5E4E0;margin-bottom:1rem">
     <button id="tab-btn-ativos" class="tab-btn tab-btn-active" aria-selected="true" aria-controls="tab-ativos" onclick="mudarAba('ativos')">
         Ativos <span id="badge-ativos" class="tab-badge">@totalItens</span>
@@ -83,7 +80,6 @@
     Nenhum resultado para "<strong id="termo-sem-resultado"></strong>" em nenhuma aba.
 </p>
 
-{{-- Tabela de Ativos --}}
 <div id="tab-ativos" role="tabpanel">
     @if (!Model.Any())
     {
@@ -487,27 +483,7 @@ else
     </div>
 }
 
-@if (totalPaginas > 1)
-{
-    <nav id="paginacao" aria-label="Navegação de páginas" style="display:flex;justify-content:center;gap:4px;margin-top:1.25rem;flex-wrap:wrap">
-        @if (paginaAtual > 1)
-        {
-            <a href="@Url.Action("Index", new { empresaId = empresaFiltro, ordem = ordemAtual, busca = buscaAtual, pagina = paginaAtual - 1 })"
-               class="btn-outline-sm" aria-label="Página anterior">&larr;</a>
-        }
-        @for (int p = 1; p <= totalPaginas; p++)
-        {
-            <a href="@Url.Action("Index", new { empresaId = empresaFiltro, ordem = ordemAtual, busca = buscaAtual, pagina = p })"
-               class="btn-outline-sm @(p == paginaAtual ? "filter-chip-active" : "")"
-               aria-label="Página @p" aria-current="@(p == paginaAtual ? "page" : null)">@p</a>
-        }
-        @if (paginaAtual < totalPaginas)
-        {
-            <a href="@Url.Action("Index", new { empresaId = empresaFiltro, ordem = ordemAtual, busca = buscaAtual, pagina = paginaAtual + 1 })"
-               class="btn-outline-sm" aria-label="Próxima página">&rarr;</a>
-        }
-    </nav>
-}
+
 
 @section scripts {
 <style>
