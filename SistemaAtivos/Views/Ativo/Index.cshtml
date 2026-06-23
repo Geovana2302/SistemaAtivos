@@ -18,27 +18,33 @@
 <div class="page-header">
     <div>
         <h4 class="page-title">Ativos</h4>
-        <p class="page-sub">
+        <p class="page-sub" id="resultado-contador">
             @totalItens ativo(s) encontrado(s)@(string.IsNullOrEmpty(buscaAtual) ? "" : " para \"" + buscaAtual + "\"")
         </p>
     </div>
     @Html.ActionLink("+ Novo Ativo", "Create", null, new { @class = "btn-purple" })
 </div>
 
-<form method="get" action="@Url.Action("Index")" style="margin-bottom:1rem">
-    <input type="hidden" name="empresaId" value="@empresaFiltro" />
-    <input type="hidden" name="ordem" value="@ordemAtual" />
-    <div style="display:flex;gap:8px;max-width:480px">
-        <input type="text" name="busca" value="@buscaAtual"
-               class="field-input" placeholder="Buscar por nome ou número de série..."
-               aria-label="Buscar ativo" style="flex:1" />
-        <button type="submit" class="btn-purple" aria-label="Pesquisar">Buscar</button>
-        @if (!string.IsNullOrEmpty(buscaAtual))
-        {
-            <a href="@Url.Action("Index", new { empresaId = empresaFiltro, ordem = ordemAtual })" class="btn-cancel" aria-label="Limpar busca">Limpar</a>
-        }
+<div style="margin-bottom:1rem">
+    <div style="position:relative;max-width:520px">
+        <i class="bi bi-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#aaa;font-size:14px;pointer-events:none" aria-hidden="true"></i>
+        <input type="text" id="busca-live"
+               value="@buscaAtual"
+               class="field-input"
+               placeholder="Buscar por nome, série, categoria, empresa..."
+               aria-label="Buscar ativo"
+               autocomplete="off"
+               style="padding-left:34px;padding-right:34px;height:38px" />
+        <button id="btn-limpar-busca" type="button"
+                aria-label="Limpar busca"
+                style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;font-size:16px;line-height:1;cursor:pointer">
+            <i class="bi bi-x-circle-fill" aria-hidden="true"></i>
+        </button>
     </div>
-</form>
+    <p id="sem-resultados" style="display:none;font-size:13px;color:#aaa;margin-top:8px">
+        Nenhum ativo encontrado para "<span id="termo-sem-resultado"></span>"
+    </p>
+</div>
 
 <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
     <span style="font-size:12px;color:#888">Filtrar:</span>
@@ -95,12 +101,13 @@ else
             <tbody>
                 @foreach (var ativo in Model)
                 {
-                    <tr>
+                    var buscaData = (ativo.Nome + " " + ativo.NumeroSerie + " " + (ativo.Categoria?.Nome ?? "") + " " + (ativo.Empresa?.Nome ?? "")).ToLower();
+                    <tr class="linha-ativo" data-busca="@buscaData">
                         <td>
-                            <p style="font-weight:500;margin:0">@ativo.Nome</p>
-                            <p style="font-size:11px;color:#888;margin:0">@ativo.NumeroSerie</p>
+                            <p style="font-weight:500;margin:0" class="campo-busca-nome">@ativo.Nome</p>
+                            <p style="font-size:11px;color:#888;margin:0" class="campo-busca-serie">@ativo.NumeroSerie</p>
                         </td>
-                        <td>@(ativo.Categoria?.Nome ?? "-")</td>
+                        <td class="campo-busca-categoria">@(ativo.Categoria?.Nome ?? "-")</td>
                         @if (isAdmin)
                         {
                             <td>
@@ -148,7 +155,7 @@ else
 
 @if (totalPaginas > 1)
 {
-    <nav aria-label="Navegação de páginas" style="display:flex;justify-content:center;gap:4px;margin-top:1.25rem;flex-wrap:wrap">
+    <nav id="paginacao" aria-label="Navegação de páginas" style="display:flex;justify-content:center;gap:4px;margin-top:1.25rem;flex-wrap:wrap">
         @if (paginaAtual > 1)
         {
             <a href="@Url.Action("Index", new { empresaId = empresaFiltro, ordem = ordemAtual, busca = buscaAtual, pagina = paginaAtual - 1 })"
@@ -166,4 +173,99 @@ else
                class="btn-outline-sm" aria-label="Próxima página">&rarr;</a>
         }
     </nav>
+}
+
+@section scripts {
+<style>
+    mark.busca-highlight {
+        background: #FFF176;
+        color: #1a1a1a;
+        border-radius: 2px;
+        padding: 0 1px;
+        font-weight: 600;
+    }
+</style>
+<script>
+    (function () {
+        var input      = document.getElementById('busca-live');
+        var btnLimpar  = document.getElementById('btn-limpar-busca');
+        var contador   = document.getElementById('resultado-contador');
+        var semResult  = document.getElementById('sem-resultados');
+        var termoSpan  = document.getElementById('termo-sem-resultado');
+        var paginacao  = document.getElementById('paginacao');
+        var linhas     = Array.from(document.querySelectorAll('.linha-ativo'));
+
+        var totalOriginal = @totalItens;
+
+        function escaparRegex(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function destacar(elemento, termo) {
+            if (!termo) {
+                elemento.querySelectorAll('mark.busca-highlight').forEach(function (m) {
+                    m.outerHTML = m.textContent;
+                });
+                return;
+            }
+            var campos = elemento.querySelectorAll('.campo-busca-nome, .campo-busca-serie, .campo-busca-categoria');
+            campos.forEach(function (el) {
+                var texto = el.textContent;
+                var regex = new RegExp('(' + escaparRegex(termo) + ')', 'gi');
+                el.innerHTML = texto.replace(regex, '<mark class="busca-highlight">$1</mark>');
+            });
+        }
+
+        function filtrar() {
+            var termo = input.value.trim().toLowerCase();
+
+            btnLimpar.style.display = termo ? 'block' : 'none';
+
+            if (!termo) {
+                linhas.forEach(function (tr) {
+                    tr.style.display = '';
+                    destacar(tr, '');
+                });
+                contador.textContent = totalOriginal + ' ativo(s) encontrado(s)';
+                semResult.style.display = 'none';
+                if (paginacao) paginacao.style.display = '';
+                return;
+            }
+
+            var visiveis = 0;
+            linhas.forEach(function (tr) {
+                var data = tr.getAttribute('data-busca') || '';
+                if (data.indexOf(termo) !== -1) {
+                    tr.style.display = '';
+                    destacar(tr, termo);
+                    visiveis++;
+                } else {
+                    tr.style.display = 'none';
+                    destacar(tr, '');
+                }
+            });
+
+            contador.textContent = visiveis + ' ativo(s) encontrado(s) para "' + input.value.trim() + '"';
+
+            if (visiveis === 0) {
+                semResult.style.display = 'block';
+                termoSpan.textContent = input.value.trim();
+            } else {
+                semResult.style.display = 'none';
+            }
+
+            if (paginacao) paginacao.style.display = termo ? 'none' : '';
+        }
+
+        input.addEventListener('input', filtrar);
+
+        btnLimpar.addEventListener('click', function () {
+            input.value = '';
+            input.focus();
+            filtrar();
+        });
+
+        filtrar();
+    })();
+</script>
 }
