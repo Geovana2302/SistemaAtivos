@@ -84,7 +84,7 @@
 }
 else
 {
-    <div class="table-wrap">
+    <div id="tabela-original" class="table-wrap">
         <table class="table-custom">
             <thead>
                 <tr>
@@ -151,6 +151,21 @@ else
             </tbody>
         </table>
     </div>
+
+    <div id="tabela-ajax" class="table-wrap">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    @if (isAdmin) { <th>Empresa</th> }
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tbody-ajax"></tbody>
+        </table>
+    </div>
 }
 
 @if (totalPaginas > 1)
@@ -178,94 +193,118 @@ else
 @section scripts {
 <style>
     mark.busca-highlight {
-        background: #FFF176;
-        color: #1a1a1a;
-        border-radius: 2px;
-        padding: 0 1px;
+        background: #EDE9FF;
+        color: #3C3489;
+        border-radius: 3px;
+        padding: 0 2px;
         font-weight: 600;
     }
+    #tabela-ajax { display: none; }
 </style>
 <script>
     (function () {
-        var input      = document.getElementById('busca-live');
-        var btnLimpar  = document.getElementById('btn-limpar-busca');
-        var contador   = document.getElementById('resultado-contador');
-        var semResult  = document.getElementById('sem-resultados');
-        var termoSpan  = document.getElementById('termo-sem-resultado');
-        var paginacao  = document.getElementById('paginacao');
-        var linhas     = Array.from(document.querySelectorAll('.linha-ativo'));
+        var input        = document.getElementById('busca-live');
+        var btnLimpar    = document.getElementById('btn-limpar-busca');
+        var contador     = document.getElementById('resultado-contador');
+        var semResult    = document.getElementById('sem-resultados');
+        var termoSpan    = document.getElementById('termo-sem-resultado');
+        var paginacao    = document.getElementById('paginacao');
+        var tabelaOrig   = document.getElementById('tabela-original');
+        var tabelaAjax   = document.getElementById('tabela-ajax');
+        var tbodyAjax    = document.getElementById('tbody-ajax');
 
+        var isAdmin      = @(isAdmin ? "true" : "false");
+        var empresaFiltro = @(empresaFiltro.HasValue ? empresaFiltro.Value.ToString() : "null");
+        var ordemAtual   = '@ordemAtual';
         var totalOriginal = @totalItens;
+        var urlBuscar    = '@Url.Action("BuscarAtivos", "Ativo")';
+        var debounceTimer;
 
         function escaparRegex(str) {
             return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
 
-        function destacar(elemento, termo) {
-            if (!termo) {
-                elemento.querySelectorAll('mark.busca-highlight').forEach(function (m) {
-                    m.outerHTML = m.textContent;
-                });
-                return;
-            }
-            var campos = elemento.querySelectorAll('.campo-busca-nome, .campo-busca-serie, .campo-busca-categoria');
-            campos.forEach(function (el) {
-                var texto = el.textContent;
-                var regex = new RegExp('(' + escaparRegex(termo) + ')', 'gi');
-                el.innerHTML = texto.replace(regex, '<mark class="busca-highlight">$1</mark>');
+        function destacar(texto, termo) {
+            if (!termo) return $('<span>').text(texto).html();
+            var regex = new RegExp('(' + escaparRegex(termo) + ')', 'gi');
+            return texto.replace(regex, '<mark class="busca-highlight">$1</mark>');
+        }
+
+        function renderLinhas(itens, termo) {
+            tbodyAjax.innerHTML = '';
+            itens.forEach(function (a) {
+                var statusClass = 'status-ativo';
+                if (a.Status === 'Inativo') statusClass = 'status-inativo';
+                if (a.Status === 'EmManutencao') statusClass = 'status-emmanutencao';
+
+                var acoes = '<a href="' + a.UrlVer + '" class="btn-xs-outline">Ver</a>';
+                if (a.PodeExcluir) {
+                    acoes += ' <a href="' + a.UrlEditar + '" class="btn-xs-outline">Editar</a>';
+                }
+
+                var empresaCol = isAdmin
+                    ? '<td><span class="filter-dot" style="background:' + a.EmpresaCor + '"></span> ' + destacar(a.Empresa, termo) + '</td>'
+                    : '';
+
+                var tr = '<tr>' +
+                    '<td><p style="font-weight:500;margin:0">' + destacar(a.Nome, termo) + '</p>' +
+                    '<p style="font-size:11px;color:#888;margin:0">' + destacar(a.NumeroSerie, termo) + '</p></td>' +
+                    '<td>' + destacar(a.Categoria, termo) + '</td>' +
+                    empresaCol +
+                    '<td><span class="status-badge ' + statusClass + '">Ativo</span></td>' +
+                    '<td><div style="display:flex;gap:4px">' + acoes + '</div></td>' +
+                    '</tr>';
+                tbodyAjax.insertAdjacentHTML('beforeend', tr);
             });
         }
 
-        function filtrar() {
-            var termo = input.value.trim().toLowerCase();
-
+        function buscar() {
+            var termo = input.value.trim();
             btnLimpar.style.display = termo ? 'block' : 'none';
 
             if (!termo) {
-                linhas.forEach(function (tr) {
-                    tr.style.display = '';
-                    destacar(tr, '');
-                });
+                tabelaOrig.style.display = '';
+                tabelaAjax.style.display = 'none';
+                if (paginacao) paginacao.style.display = '';
                 contador.textContent = totalOriginal + ' ativo(s) encontrado(s)';
                 semResult.style.display = 'none';
-                if (paginacao) paginacao.style.display = '';
                 return;
             }
 
-            var visiveis = 0;
-            linhas.forEach(function (tr) {
-                var data = tr.getAttribute('data-busca') || '';
-                if (data.indexOf(termo) !== -1) {
-                    tr.style.display = '';
-                    destacar(tr, termo);
-                    visiveis++;
+            var params = '?termo=' + encodeURIComponent(termo);
+            if (empresaFiltro) params += '&empresaId=' + empresaFiltro;
+            if (ordemAtual)    params += '&ordem=' + ordemAtual;
+
+            $.getJSON(urlBuscar + params, function (itens) {
+                tabelaOrig.style.display = 'none';
+                if (paginacao) paginacao.style.display = 'none';
+
+                if (itens.length === 0) {
+                    tabelaAjax.style.display = 'none';
+                    semResult.style.display = 'block';
+                    termoSpan.textContent = termo;
+                    contador.textContent = '0 ativo(s) encontrado(s) para "' + termo + '"';
                 } else {
-                    tr.style.display = 'none';
-                    destacar(tr, '');
+                    tabelaAjax.style.display = '';
+                    semResult.style.display = 'none';
+                    contador.textContent = itens.length + ' ativo(s) encontrado(s) para "' + termo + '"';
+                    renderLinhas(itens, termo);
                 }
             });
-
-            contador.textContent = visiveis + ' ativo(s) encontrado(s) para "' + input.value.trim() + '"';
-
-            if (visiveis === 0) {
-                semResult.style.display = 'block';
-                termoSpan.textContent = input.value.trim();
-            } else {
-                semResult.style.display = 'none';
-            }
-
-            if (paginacao) paginacao.style.display = termo ? 'none' : '';
         }
 
-        input.addEventListener('input', filtrar);
+        input.addEventListener('input', function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(buscar, 200);
+        });
 
         btnLimpar.addEventListener('click', function () {
             input.value = '';
             input.focus();
-            filtrar();
+            buscar();
         });
 
-        filtrar();
+        buscar();
     })();
 </script>
 }
