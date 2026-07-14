@@ -162,6 +162,7 @@
     <Compile Include="Controllers\UsuarioController.cs" />
     <Compile Include="Filters\EmpresaAuthorizeAttribute.cs" />
     <Compile Include="Helpers\CriptoHelper.cs" />
+    <Compile Include="Helpers\DecimalModelBinder.cs" />
     <Compile Include="Models\Ativo.cs" />
     <Compile Include="Models\AtivosContext.cs" />
     <Compile Include="Models\Categoria.cs" />
