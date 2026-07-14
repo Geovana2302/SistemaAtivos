@@ -59,7 +59,10 @@
             </div>
             <div class="field-group">
                 @Html.LabelFor(m => m.Valor, new { @class = "field-label" })
-                @Html.TextBoxFor(m => m.Valor, new { @class = "field-input" })
+                <input type="text" id="ValorDisplay" class="field-input"
+                       placeholder="0,00" maxlength="15" inputmode="numeric"
+                       autocomplete="off" />
+                <input type="hidden" id="Valor" name="Valor" value="@Model.Valor" />
                 @Html.ValidationMessageFor(m => m.Valor, "", new { @class = "field-error" })
             </div>
         </div>
@@ -68,14 +71,13 @@
                 @Html.LabelFor(m => m.Status, new { @class = "field-label" })
                 @Html.EnumDropDownListFor(m => m.Status, new { @class = "field-input" })
             </div>
-            
-                <div class="field-group">
-                    <label class="field-label">Empresa</label>
-                    @Html.DropDownList("EmpresaId", (SelectList)ViewBag.EmpresaSelectList, "-- Selecione --", new { @class = "field-input" })
-                </div>
-            
-                @Html.Hidden("EmpresaId", (int?)Session["EmpresaId"])
-            
+                @if (isAdmin)
+                {
+                    <div class="field-group">
+                        <label class="field-label">Empresa</label>
+                        @Html.DropDownList("EmpresaId", (SelectList)ViewBag.EmpresaSelectList, "-- Selecione --", new { @class = "field-input" })
+                    </div>
+                }
         </div>
         <div class="field-group">
             @Html.LabelFor(m => m.Observacoes, new { @class = "field-label" })
@@ -92,7 +94,34 @@
             {
                 @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn-cancel" })
             }
-            <button type="submit" class="btn-purple">Salvar alterações</button>
+            <button type="submit" id="btnSalvar" class="btn-purple">Salvar alterações</button>
         </div>
     }
 </div>
+
+@section scripts {
+<script>
+    $(document).ready(function () {
+        var display = $('#ValorDisplay');
+        var hidden  = $('#Valor');
+
+        function formatarBR(num) {
+            return num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Pré-preenche o display com o valor existente ao editar
+        var inicial = parseFloat(hidden.val());
+        if (!isNaN(inicial) && inicial > 0) {
+            display.val(formatarBR(inicial));
+        }
+
+        display.on('input', function () {
+            var raw = display.val().replace(/\D/g, '');
+            if (raw === '') { hidden.val(''); display.val(''); return; }
+            var num = parseInt(raw) / 100;
+            display.val(formatarBR(num));
+            hidden.val(num.toFixed(2));
+        });
+    });
+</script>
+}

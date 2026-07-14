@@ -58,14 +58,10 @@
             </div>
             <div class="field-group">
                 @Html.LabelFor(m => m.Valor, new { @class = "field-label" })
-                @Html.TextBoxFor(m => m.Valor, new
-                {
-                    @class = "field-input",
-                    placeholder = "0,00",
-                    maxlength = "15",
-                    inputmode = "numeric",
-                    onkeypress = "return event.charCode >= 48 && event.charCode <= 57"
-                })
+                <input type="text" id="ValorDisplay" class="field-input"
+                       placeholder="0,00" maxlength="15" inputmode="numeric"
+                       autocomplete="off" />
+                <input type="hidden" id="Valor" name="Valor" value="@Model.Valor" />
                 @Html.ValidationMessageFor(m => m.Valor, "", new { @class = "field-error" })
             </div>
         </div>
@@ -102,27 +98,27 @@
 @section scripts {
     <script>
         $(document).ready(function () {
-            // Máscara do Valor
-            $('#Valor').on('input', function (e) {
-                // Remove tudo que não for número (garantia extra do JS)
-                let value = e.target.value.replace(/\D/g, "");
+            var display = $('#ValorDisplay');
+            var hidden  = $('#Valor');
 
-                if (value === "") {
-                    e.target.value = "";
-                    return;
-                }
+            // Formata número para exibição BR: 7000.50 -> "7.000,50"
+            function formatarBR(num) {
+                return num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
 
-                // Transforma em formato decimal (divide por 100)
-                value = (parseInt(value) / 100).toFixed(2) + "";
+            // Se já houver valor ao carregar a página (edição / erro de validação)
+            var inicial = parseFloat(hidden.val());
+            if (!isNaN(inicial) && inicial > 0) {
+                display.val(formatarBR(inicial));
+            }
 
-                // Troca o ponto da casa decimal por vírgula
-                value = value.replace(".", ",");
-
-                // Adiciona o ponto de separação de milhar
-                value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-                // Atualiza o valor no input
-                e.target.value = value;
+            display.on('input', function () {
+                var raw = display.val().replace(/\D/g, '');
+                if (raw === '') { hidden.val(''); display.val(''); return; }
+                var num = parseInt(raw) / 100;
+                display.val(formatarBR(num));
+                // Valor para o POST sempre com ponto decimal
+                hidden.val(num.toFixed(2));
             });
         });
     </script>
