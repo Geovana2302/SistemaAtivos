@@ -40,11 +40,13 @@
                         aria-controls="menu-principal" aria-expanded="false"
                         aria-label="Abrir menu de navegação">
                     <span class="navbar-toggler-icon"></span>
+
+
                 </button>
 
                 <div class="collapse navbar-collapse" id="menu-principal">
                     
-                    <ul class="navbar-nav menu-absoluto gap-4 mb-2 mb-md-0">
+                    <ul class="navbar-nav menu-absoluto gap-5 mb-2 mb-md-0 ms-auto me-5">
                         @if (tipo == "Admin")
                         {
                             <li class="nav-item">@Html.ActionLink("Empresas", "Dashboard", "Admin", null, new { @class = "nav-link", aria_label = "Acessar página de Empresas" })</li>

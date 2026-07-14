@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        if (isAdmin && ViewBag.EmpresaPreSelecionada == true)
+        @if (isAdmin && ViewBag.EmpresaPreSelecionada == true)
         {
             @Html.HiddenFor(m => m.EmpresaId)
         }

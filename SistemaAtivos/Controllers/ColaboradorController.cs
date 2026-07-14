@@ -55,7 +55,7 @@ namespace SistemaAtivos.Controllers
         {
             if (!IsAdmin()) colaborador.EmpresaId = GetEmpresaId();
             if (!colaborador.EmpresaId.HasValue)
-                ModelState.AddModelError("EmpresaId", "Empresa Ã© obrigatÃ³ria.");
+                ModelState.AddModelError("EmpresaId", "Empresa é obrigatória.");
             if (ModelState.IsValid)
             {
                 try
@@ -91,7 +91,7 @@ namespace SistemaAtivos.Controllers
         {
             if (!IsAdmin()) colaborador.EmpresaId = GetEmpresaId();
             if (!colaborador.EmpresaId.HasValue)
-                ModelState.AddModelError("EmpresaId", "Empresa Ã© obrigatÃ³ria.");
+                ModelState.AddModelError("EmpresaId", "Empresa é obrigatória.");
             if (ModelState.IsValid)
             {
                 try
@@ -122,7 +122,7 @@ namespace SistemaAtivos.Controllers
 
             if (db.Ativos.Any(a => a.ColaboradorId == id))
             {
-                TempData["Erro"] = "NÃ£o Ã© possÃ­vel excluir este colaborador pois existem ativos vinculados a ele.";
+                TempData["Erro"] = "Não é possível excluir este colaborador pois existem ativos vinculados a ele.";
                 if (empId.HasValue) return RedirectToAction("Empresa", "Admin", new { id = empId });
                 return RedirectToAction("Index");
             }
@@ -131,7 +131,7 @@ namespace SistemaAtivos.Controllers
             {
                 db.Colaboradores.Remove(col);
                 db.SaveChanges();
-                TempData["Sucesso"] = "Colaborador excluÃ­do.";
+                TempData["Sucesso"] = "Colaborador excluído.";
             }
             catch (Exception)
             {

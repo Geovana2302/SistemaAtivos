@@ -35,7 +35,7 @@
 
         @Html.Hidden("Perfil", "Gestor")
 
-        if (isAdmin)
+        @if (isAdmin)
         {
             <div class="field-group">
                 <label class="field-label">Empresa</label>

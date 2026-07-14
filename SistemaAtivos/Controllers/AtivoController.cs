@@ -194,7 +194,7 @@ namespace SistemaAtivos.Controllers
         public ActionResult Inativos(int? empresaId, string ordem, string busca, int pagina = 1)
         {
             const int itensPorPagina = 10;
-            var q = AplicarFiltroEOrdem(GetQuery().Where(a => a.Status == StatusAtivo.Inativo), empresaId, ordem);
+            var q = AplicarFiltroEOrdem(GetQuery().Where(a => a.Status != StatusAtivo.Ativo), empresaId, ordem);
             if (!string.IsNullOrWhiteSpace(busca))
                 q = q.Where(a => a.Nome.Contains(busca) || a.NumeroSerie.Contains(busca));
             var total = q.Count();
